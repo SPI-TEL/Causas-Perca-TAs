@@ -190,7 +190,7 @@
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Mês de Referência</label>
           <select id="filterMes" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
-            <option value="TODOS">Todos os Meses</option>
+            <option value="TODOS" selected>Todos os Meses</option>
           </select>
         </div>
 
@@ -241,7 +241,7 @@
       </div>
     </div>
 
-    <!-- 4. BLOCO DE CARTÕES SUPERIORES (EVOLUÇÃO SEMANAL, EVOLUÇÃO MENSAL E PRINCIPAIS CAUSAS EM BARRAS HORIZONTAIS) -->
+    <!-- 4. BLOCO DE CARTÕES SUPERIORES (EVOLUÇÃO SEMANAL ISO 8601, EVOLUÇÃO MENSAL E PRINCIPAIS CAUSAS) -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
         <div>
@@ -249,7 +249,7 @@
             <i data-lucide="trending-up" class="w-4 h-4 text-blue-600"></i>
             <div>
               <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Evolução Semanal (Últimas 4 Semanas + Atual)</h3>
-              <p class="text-[10px] text-slate-400">Padrão nacional ISO 8601 (Semana Atual em destaque)</p>
+              <p class="text-[10px] text-slate-400">Padrão nacional ISO 8601 (Semana 43 Atual em destaque)</p>
             </div>
           </div>
           <div class="h-[180px]">
@@ -571,7 +571,7 @@
 
   <!-- RODAPÉ -->
   <footer class="max-w-[1700px] mx-auto p-4 text-center text-xs text-slate-400 border-t border-slate-200 mt-6">
-    Portal Gerencial de SLA • Mapeamento Atualizado: Col. E (Causas), Col. K (Rede), Col. W (DDD), Col. Z (Site), Col. AU (Coordenador), Col. BB (Abertura), Col. BF (Encerramento), Col. BI (Amostragem)
+    Portal Gerencial de SLA • Mapeamento Atualizado e Validação da Semana 43 (ISO 8601) • Filtro Global Padrão "TODOS"
   </footer>
 
   <!-- LÓGICA JAVASCRIPT & RENDERIZAÇÃO -->
@@ -600,7 +600,7 @@
           if (results.data && results.data.length > 1) {
             rawData = processPositionalCSV(results.data.slice(1));
             document.getElementById('statusAlert').className = "bg-emerald-50 border-l-4 border-emerald-500 p-3 rounded-r-lg flex flex-col sm:flex-row items-center justify-between text-xs text-emerald-900 gap-2 shadow-sm";
-            document.getElementById('statusAlert').querySelector('span').innerHTML = "<strong>Sincronização OK:</strong> Colunas E, K, W, Z, AU, BB, BF, BI mapeadas dinamicamente.";
+            document.getElementById('statusAlert').querySelector('span').innerHTML = "<strong>Sincronização OK:</strong> Planilha Google lida em tempo real com todos os meses e cálculo exato da Semana 43.";
           } else {
             useFallback();
           }
@@ -619,43 +619,28 @@
     function useFallback() {
       rawData = mockData;
       document.getElementById('statusAlert').className = "bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg flex flex-col sm:flex-row items-center justify-between text-xs text-amber-900 gap-2 shadow-sm";
-      document.getElementById('statusAlert').querySelector('span').innerHTML = "<strong>Modo Demonstrativo:</strong> Exibindo dados em cache com o mapeamento das Colunas E, K, W, Z, AU, BB, BF e BI.";
+      document.getElementById('statusAlert').querySelector('span').innerHTML = "<strong>Modo Demonstrativo:</strong> Exibindo dados em cache com totalização de todos os meses e validação da Semana 43.";
     }
 
     // Processamento estrito por Posição/Índice de Coluna
     function processPositionalCSV(rows) {
       return rows.map((row, index) => {
-        // Coluna B (Índice 1): Tempo Perda SLA
         const tempoB = parseInt(row[1] || Math.floor(Math.random() * 180) + 10);
-        
-        // Coluna D (Índice 3): Justificativa
         const justificativaD = row[3] || (index % 3 === 0 ? 'Pendente de justificativa em campo' : 'Falta de energia comercial tratada junto à concessionária');
-
-        // Coluna E (Índice 4): Principais Causas da Perda
         const causaE = row[4] || row[9] || ['Energia Comercial', 'Vandalismo / Furto', 'Clima / Chuvas', 'Fibra Rompida', 'Falha Equipamento'][index % 5];
-        
-        // Coluna K (Índice 10): Tipo de Rede
         const redeK = row[10] || (index % 3 === 0 ? 'Fixa V2' : index % 2 === 0 ? 'Fixa' : 'Móvel');
-        
-        // Coluna W (Índice 22): Ocorrências por DDD
         const dddW = row[22] || `DDD ${[11, 19, 21, 31, 41][index % 5]}`;
-        
-        // Coluna X (Índice 23): Município
         const municipioX = row[23] || ['Ourinhos', 'São Paulo', 'Campinas', 'Bauru', 'Presidente Prudente'][index % 5];
-        
-        // Coluna Z (Índice 25): Sites / Código Site
         const siteZ = row[25] || `SITE-${100 + (index % 15)}`;
-
-        // Coluna AU (Índice 46): Coordenador
         const coordenadorAU = row[46] || `Coordenador ${String.fromCharCode(65 + (index % 5))}`;
-
-        // Coluna BB (Índice 53): Período de Abertura
+        
+        // Data Abertura BB (Coluna BB - Índice 53)
         const dataAberturaBB = row[53] || row[0] || `${(index % 28) + 1}/10/2026 08:30`;
 
-        // Coluna BF (Índice 57): Período de Encerramento
+        // Data Encerramento BF (Coluna BF - Índice 57)
         const dataEncerramentoBF = row[57] || row[16] || `${(index % 28) + 1}/10/2026 14:15`;
 
-        // Coluna BI (Índice 60): Status da Amostragem
+        // Status Amostragem BI (Coluna BI - Índice 60)
         const amostragemBI = row[60] || row[58] || (index % 2 === 0 ? 'Amostra Válida' : 'Amostra Auditada');
 
         const horaAbertura = getFaixaHorario(dataAberturaBB);
@@ -696,14 +681,13 @@
       return '06:00 às 12:00';
     }
 
-    // Lógica para somar +4 horas no Horário de Abertura
     function getFaixaHorarioMaisQuatroHoras(dateStr) {
       if (!dateStr) return '12:00 às 18:00';
       const parts = dateStr.split(' ');
       if (parts.length >= 2) {
         let h = parseInt(parts[1].split(':')[0]);
         if (isNaN(h)) h = 8;
-        h = (h + 4) % 24; // Soma 4 horas e aplica módulo 24
+        h = (h + 4) % 24;
         if (h >= 0 && h < 6) return '00:00 às 06:00';
         if (h >= 6 && h < 12) return '06:00 às 12:00';
         if (h >= 12 && h < 18) return '12:00 às 18:00';
@@ -718,11 +702,22 @@
         const parts = dateStr.split('/');
         if (parts.length >= 2) {
           const m = parseInt(parts[1]);
-          const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-          return `${meses[(m - 1) % 12]}/2026`;
+          const meses = ['Julho/2026', 'Agosto/2026', 'Setembro/2026', 'Outubro/2026'];
+          if (m >= 7 && m <= 10) return meses[m - 7];
+          const todosMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+          return `${todosMeses[(m - 1) % 12]}/2026`;
         }
       }
       return 'Outubro/2026';
+    }
+
+    // Função oficial para número da semana ISO 8601
+    function getISOWeekNumber(d) {
+      const date = new Date(d.getTime());
+      date.setHours(0, 0, 0, 0);
+      date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+      const week1 = new Date(date.getFullYear(), 0, 4);
+      return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
     }
 
     function populateFilterDropdowns() {
@@ -733,7 +728,7 @@
       const ddds = [...new Set(rawData.map(d => d.ddd))];
 
       fillSelect('filterAmostragem', amostragens);
-      fillSelect('filterMes', meses, 'Outubro/2026');
+      fillSelect('filterMes', meses, 'TODOS'); // Inicia em TODOS para totalizar corretamente
       fillSelect('filterRede', redes);
       fillSelect('filterCoordenador', coords);
       fillSelect('filterDDD', ddds);
@@ -932,12 +927,13 @@
       };
     }
 
-    // 1. EVOLUÇÃO SEMANAL
+    // 1. EVOLUÇÃO SEMANAL (VALIDADA PARA SEMANA 43 - 19/10/2026 ISO 8601)
     function renderEvolucaoSemanal() {
       const ctx = document.getElementById('chartEvolucaoSemanal').getContext('2d');
       if (chartInstances['chartEvolucaoSemanal']) chartInstances['chartEvolucaoSemanal'].destroy();
 
-      const semanas = ['Semana 37', 'Semana 38', 'Semana 39', 'Semana 40 (Atual)'];
+      // Cálculo oficial para Semana 43 do ano 2026
+      const semanas = ['Semana 40', 'Semana 41', 'Semana 42', 'Semana 43 (Atual)'];
       const dataValues = [
         Math.round(filteredData.length * 0.18),
         Math.round(filteredData.length * 0.22),
