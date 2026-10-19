@@ -79,7 +79,7 @@
     <div id="statusAlert" class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg flex flex-col sm:flex-row items-center justify-between text-xs text-amber-900 gap-2 shadow-sm">
       <div class="flex items-center gap-2">
         <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
-        <span><strong>Sincronização:</strong> Mapeamento de Colunas ativado (Col. A: Abertura, Col. B: Tempo Perda, Col. D: Justificativa, Col. Q: Encerramento, Col. X: Município, Col. BI: Amostragem).</span>
+        <span><strong>Sincronização Ativa:</strong> Col. A (Abertura), Col. B (Tempo Perda), Col. D (Justificativa), Col. K (Rede), Col. Q (Encerramento), Col. W (DDD), Col. X (Município), Col. Z (Site), Col. BI (Amostragem).</span>
       </div>
       <div class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-[11px] font-medium border border-amber-200">
         Objetivo: Redução de Estouro de SLA & Tratativa de Justificativas
@@ -107,7 +107,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200/80">
-          <div class="text-[10px] font-bold text-slate-500 uppercase">Distribuição de Rede</div>
+          <div class="text-[10px] font-bold text-slate-500 uppercase">Distribuição de Rede (Col. K)</div>
           <div id="insightRede" class="text-xs text-slate-700 mt-1">Analisando proporção entre Rede Fixa e Móvel...</div>
         </div>
         <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200/80">
@@ -123,7 +123,6 @@
 
     <!-- 2. CARDS DE INDICADORES (KPIs EM 6 COLUNAS) -->
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-      <!-- Total TAs SLA -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow relative overflow-hidden">
         <div class="flex items-center justify-between text-slate-500">
           <span class="text-[10px] font-bold uppercase tracking-wider">TOTAL TAs SLA</span>
@@ -134,29 +133,26 @@
         <span class="absolute top-2 right-2 bg-red-50 text-red-600 text-[9px] px-1.5 py-0.5 rounded font-bold">Eventos</span>
       </div>
 
-      <!-- Média Perda SLA (Col. B) -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
         <div class="flex items-center justify-between text-slate-500">
           <span class="text-[10px] font-bold uppercase tracking-wider">MÉDIA PERDA SLA</span>
           <i data-lucide="hourglass" class="w-4 h-4 text-amber-500"></i>
         </div>
         <div id="kpiMedia" class="text-2xl font-black text-amber-600 mt-1">0 min</div>
-        <div class="text-[10px] text-slate-400 mt-0.5">Atraso médio por TA</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Atraso médio por TA (Col. B)</div>
         <span class="inline-block bg-amber-50 text-amber-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1">Média</span>
       </div>
 
-      <!-- Maior Perda -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
         <div class="flex items-center justify-between text-slate-500">
           <span class="text-[10px] font-bold uppercase tracking-wider">MAIOR PERDA</span>
           <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-500"></i>
         </div>
         <div id="kpiMaior" class="text-2xl font-black text-rose-600 mt-1">--</div>
-        <div id="kpiMaiorSub" class="text-[10px] text-slate-400 mt-0.5">Site com maior atraso</div>
+        <div id="kpiMaiorSub" class="text-[10px] text-slate-400 mt-0.5">Site com maior atraso (Col. Z)</div>
         <span class="inline-block bg-rose-50 text-rose-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1" id="kpiMaiorTempo">0 min</span>
       </div>
 
-      <!-- Perda < 30min -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
         <div class="flex items-center justify-between text-slate-500">
           <span class="text-[10px] font-bold uppercase tracking-wider">PERDA < 30MIN</span>
@@ -167,7 +163,6 @@
         <span id="kpiPequenasPct" class="inline-block bg-sky-50 text-sky-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1">0%</span>
       </div>
 
-      <!-- Justificados (Col. D) -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
         <div class="flex items-center justify-between text-slate-500">
           <span class="text-[10px] font-bold uppercase tracking-wider">JUSTIFICADOS</span>
@@ -178,7 +173,6 @@
         <span class="inline-block bg-emerald-50 text-emerald-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1">Coluna D</span>
       </div>
 
-      <!-- Pendentes -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
         <div class="flex items-center justify-between text-slate-500">
           <span class="text-[10px] font-bold uppercase tracking-wider">PENDENTES</span>
@@ -193,7 +187,6 @@
     <!-- 3. BARRA DE FILTROS GLOBAIS -->
     <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-        <!-- Mês de Referência -->
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Mês de Referência</label>
           <select id="filterMes" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
@@ -201,15 +194,13 @@
           </select>
         </div>
 
-        <!-- Tipo de Rede -->
         <div>
-          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Tipo de Rede</label>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Tipo de Rede (Col. K)</label>
           <select id="filterRede" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
             <option value="TODOS">Todas as Redes</option>
           </select>
         </div>
 
-        <!-- Coordenador -->
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Filtrar Coordenador</label>
           <select id="filterCoordenador" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
@@ -217,15 +208,13 @@
           </select>
         </div>
 
-        <!-- DDD -->
         <div>
-          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Filtrar DDD</label>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Filtrar DDD (Col. W)</label>
           <select id="filterDDD" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
             <option value="TODOS">Todos os DDDs</option>
           </select>
         </div>
 
-        <!-- Status Análise -->
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Status Análise</label>
           <select id="filterStatus" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
@@ -233,7 +222,6 @@
           </select>
         </div>
 
-        <!-- Amostragem (Coluna BI) -->
         <div>
           <label class="block text-[10px] font-bold text-indigo-700 uppercase mb-1 flex items-center gap-1">
             <i data-lucide="filter" class="w-3 h-3 text-indigo-600"></i> Amostragem (Col. BI)
@@ -243,7 +231,6 @@
           </select>
         </div>
 
-        <!-- Busca Geral -->
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Busca Site / TA / Causa</label>
           <div class="relative">
@@ -254,9 +241,8 @@
       </div>
     </div>
 
-    <!-- 4. BLOCO DE CARTÕES SUPERIORES (EVOLUÇÃO SEMANAL, EVOLUÇÃO MENSAL E PRINCIPAIS CAUSAS) -->
+    <!-- 4. BLOCO DE CARTÕES SUPERIORES (EVOLUÇÃO SEMANAL, EVOLUÇÃO MENSAL E PRINCIPAIS CAUSAS EM BARRAS HORIZONTAIS) -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <!-- EVOLUÇÃO SEMANAL -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-1.5 mb-2">
@@ -273,7 +259,6 @@
         <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Acompanhamento semanal contínuo</div>
       </div>
 
-      <!-- EVOLUÇÃO MENSAL -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-1.5 mb-2">
@@ -290,14 +275,14 @@
         <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Comparativo acumulado dos meses</div>
       </div>
 
-      <!-- PRINCIPAIS CAUSAS DA PERDA -->
+      <!-- PRINCIPAIS CAUSAS DA PERDA (BARRAS HORIZONTAIS) -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-1.5 mb-2">
             <i data-lucide="list-tree" class="w-4 h-4 text-rose-600"></i>
             <div>
               <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Principais Causas da Perda</h3>
-              <p class="text-[10px] text-slate-400">Ranking das principais causas identificadas</p>
+              <p class="text-[10px] text-slate-400">Ranking das principais causas identificadas (Barras Horizontais)</p>
             </div>
           </div>
           <div class="h-[180px]">
@@ -308,15 +293,15 @@
       </div>
     </div>
 
-    <!-- 5. BLOCO DE ESTATÍSTICAS SECUNDÁRIAS (OCORRÊNCIAS POR DDD, STATUS DA ANÁLISE E TIPO DE REDE) -->
+    <!-- 5. BLOCO DE ESTATÍSTICAS SECUNDÁRIAS (OCORRÊNCIAS POR DDD COL. W, MUNICÍPIO COL. X, TIPO DE REDE COL. K) -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <!-- OCORRÊNCIAS POR DDD -->
+      <!-- OCORRÊNCIAS POR DDD (COL. W) -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-1.5 mb-2">
             <i data-lucide="map-pin" class="w-4 h-4 text-emerald-600"></i>
             <div>
-              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Ocorrências por DDD</h3>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Ocorrências por DDD (Col. W)</h3>
               <p class="text-[10px] text-slate-400">Destaque em <span class="text-red-600 font-bold">vermelho</span> para o maior ofensor</p>
             </div>
           </div>
@@ -326,7 +311,7 @@
         </div>
       </div>
 
-      <!-- NOVO: GRÁFICO POR MUNICÍPIO (COL. X) -->
+      <!-- MUNICÍPIO (COL. X) -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-1.5 mb-2">
@@ -343,13 +328,13 @@
         <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Concentração geográfica das perdas</div>
       </div>
 
-      <!-- TIPO DE REDE & STATUS ANÁLISE -->
+      <!-- TIPO DE REDE (COL. K) -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-1.5 mb-2">
             <i data-lucide="pie-chart" class="w-4 h-4 text-amber-600"></i>
             <div>
-              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Tipo de Rede (Fixa e Móvel)</h3>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Tipo de Rede (Col. K)</h3>
               <p class="text-[10px] text-slate-400">Quantidade e % por tecnologia de rede</p>
             </div>
           </div>
@@ -361,7 +346,7 @@
       </div>
     </div>
 
-    <!-- 6. EVOLUÇÃO DE ENCERRAMENTO DIÁRIO (LARGURA TOTAL ABAIXO DOS BLOCOS DE ANÁLISE) -->
+    <!-- 6. EVOLUÇÃO DE ENCERRAMENTO DIÁRIO -->
     <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-1.5">
@@ -380,9 +365,8 @@
       </div>
     </div>
 
-    <!-- 7. BLOCO: ANÁLISE DE PERÍODOS DE HORÁRIO (3 GRÁFICOS UM AO LADO DO OUTRO) -->
+    <!-- 7. BLOCO: ANÁLISE DE PERÍODOS DE HORÁRIO -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <!-- PERÍODO DE ABERTURA (COL. A) -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
         <div>
           <div class="flex items-center justify-between mb-2">
@@ -404,7 +388,6 @@
         </div>
       </div>
 
-      <!-- PERÍODO DE ENCERRAMENTO (COL. Q) -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
         <div>
           <div class="flex items-center justify-between mb-2">
@@ -426,7 +409,6 @@
         </div>
       </div>
 
-      <!-- HORÁRIO DE MAIOR PERDA -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
         <div>
           <div class="flex items-center justify-between mb-2">
@@ -449,9 +431,9 @@
       </div>
     </div>
 
-    <!-- 8. BLOCO: RANKINGS E TABELAS DE GESTÃO (LADO A LADO NA PÁGINA) -->
+    <!-- 8. BLOCO: RANKINGS E TABELAS DE GESTÃO -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-      <!-- TOP 10 SITES OFENSORES -->
+      <!-- TOP 10 SITES OFENSORES (COL. Z) -->
       <div class="bg-white p-3.5 rounded-xl border border-slate-200 card-shadow">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
@@ -469,7 +451,7 @@
             <thead>
               <tr class="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] border-y border-slate-200">
                 <th class="p-2">POS.</th>
-                <th class="p-2">CÓDIGO / SITE</th>
+                <th class="p-2">CÓDIGO / SITE (COL. Z)</th>
                 <th class="p-2">DDD / MUNICÍPIO</th>
                 <th class="p-2 text-rose-600 font-bold">QTD TAS</th>
                 <th class="p-2">TEMPO ACUMULADO (COL. B)</th>
@@ -539,9 +521,10 @@
             <tr>
               <th class="p-2">ABERTURA (COL. A)</th>
               <th class="p-2">ENCERRAMENTO (COL. Q)</th>
+              <th class="p-2">DDD (COL. W)</th>
               <th class="p-2">MUNICÍPIO (COL. X)</th>
-              <th class="p-2">SITE / LOCALIDADE</th>
-              <th class="p-2">REDE</th>
+              <th class="p-2">SITE / LOCALIDADE (COL. Z)</th>
+              <th class="p-2">REDE (COL. K)</th>
               <th class="p-2">COORDENADOR</th>
               <th class="p-2 text-right">TEMPO PERDA (COL. B)</th>
               <th class="p-2 text-center">AMOSTRAGEM (COL. BI)</th>
@@ -585,7 +568,7 @@
 
   <!-- RODAPÉ -->
   <footer class="max-w-[1700px] mx-auto p-4 text-center text-xs text-slate-400 border-t border-slate-200 mt-6">
-    Portal Gerencial de SLA • Layout Reorganizado conforme Modelo de Referência (KPIs 6 Colunas, Filtros, Gráficos Temporais e Causas)
+    Portal Gerencial de SLA • Mapeamento de Colunas Atualizado: Col. K (Rede), Col. W (DDD), Col. Z (Site/Código Site)
   </footer>
 
   <!-- LÓGICA JAVASCRIPT & RENDERIZAÇÃO -->
@@ -614,7 +597,7 @@
           if (results.data && results.data.length > 1) {
             rawData = processPositionalCSV(results.data.slice(1));
             document.getElementById('statusAlert').className = "bg-emerald-50 border-l-4 border-emerald-500 p-3 rounded-r-lg flex flex-col sm:flex-row items-center justify-between text-xs text-emerald-900 gap-2 shadow-sm";
-            document.getElementById('statusAlert').querySelector('span').innerHTML = "<strong>Sincronização OK:</strong> Planilha Google lida com sucesso com o mapeamento correto de colunas (A, B, D, Q, X, BI).";
+            document.getElementById('statusAlert').querySelector('span').innerHTML = "<strong>Sincronização OK:</strong> Mapeamento ajustado para Col. K (Rede), Col. W (DDD) e Col. Z (Sites).";
           } else {
             useFallback();
           }
@@ -633,21 +616,33 @@
     function useFallback() {
       rawData = mockData;
       document.getElementById('statusAlert').className = "bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg flex flex-col sm:flex-row items-center justify-between text-xs text-amber-900 gap-2 shadow-sm";
-      document.getElementById('statusAlert').querySelector('span').innerHTML = "<strong>Modo Demonstrativo:</strong> Exibindo dados em cache com mapeamento das colunas A, B, D, Q, X e BI.";
+      document.getElementById('statusAlert').querySelector('span').innerHTML = "<strong>Modo Demonstrativo:</strong> Exibindo dados em cache com o mapeamento das Colunas K, W, Z e BI.";
     }
 
+    // Processamento com os novos mapeamentos solicitados
     function processPositionalCSV(rows) {
       return rows.map((row, index) => {
         const dataAbertura = row[0] || new Date(2026, 9, (index % 28) + 1).toLocaleDateString('pt-BR') + ' 08:30';
         const tempoB = parseInt(row[1] || Math.floor(Math.random() * 180) + 10);
         const justificativaD = row[3] || (index % 3 === 0 ? 'Pendente de justificativa em campo' : 'Falta de energia comercial tratada junto à concessionária');
+        
+        // Coluna K (Índice 10): Tipo de Rede
+        const redeK = row[10] || row[4] || (index % 3 === 0 ? 'Fixa V2' : index % 2 === 0 ? 'Fixa' : 'Móvel');
+        
         const dataEncerramento = row[16] || row[0] || new Date(2026, 9, (index % 28) + 1).toLocaleDateString('pt-BR');
+        
+        // Coluna W (Índice 22): Ocorrências por DDD
+        const dddW = row[22] || row[5] || `DDD ${[11, 19, 21, 31, 41][index % 5]}`;
+        
+        // Coluna X (Índice 23): Município
         const municipioX = row[23] || ['Ourinhos', 'São Paulo', 'Campinas', 'Bauru', 'Presidente Prudente'][index % 5];
+        
+        // Coluna Z (Índice 25): Sites / Código Site
+        const siteZ = row[25] || row[6] || `SITE-${100 + (index % 15)}`;
+        
+        // Coluna BI (Índice 60): Status da Amostragem
         const amostragemBI = row[60] || row[58] || (index % 2 === 0 ? 'Amostra Válida' : 'Amostra Auditada');
 
-        const rede = row[4] || (index % 3 === 0 ? 'Fixa V2' : index % 2 === 0 ? 'Fixa' : 'Móvel');
-        const ddd = row[5] || `DDD ${[11, 19, 21, 31, 41][index % 5]}`;
-        const site = row[6] || `SITE-${100 + (index % 15)}`;
         const coordenador = row[7] || `Coordenador ${String.fromCharCode(65 + (index % 5))}`;
         const causa = row[9] || ['Energia Comercial', 'Vandalismo / Furto', 'Clima / Chuvas', 'Fibra Rompida', 'Falha Equipamento'][index % 5];
 
@@ -661,11 +656,11 @@
           mes: getMonthName(dataAbertura),
           tempoPerda: isNaN(tempoB) ? 15 : tempoB,
           justificativa: justificativaD,
+          rede: redeK,
+          ddd: dddW,
           municipio: municipioX,
+          site: siteZ,
           amostragem: amostragemBI || 'Geral',
-          rede: rede,
-          ddd: ddd,
-          site: site,
           coordenador: coordenador,
           causa: causa,
           horarioAbertura: horaAbertura,
@@ -819,7 +814,7 @@
       filteredData.forEach(d => countRede[d.rede] = (countRede[d.rede] || 0) + 1);
       const topRede = Object.entries(countRede).sort((a,b) => b[1] - a[1])[0];
       const pctRede = ((topRede[1] / filteredData.length) * 100).toFixed(1);
-      document.getElementById('insightRede').innerHTML = `A tecnologia <strong>${topRede[0]}</strong> representa <strong>${pctRede}%</strong> dos estouros de SLA.`;
+      document.getElementById('insightRede').innerHTML = `A tecnologia <strong>${topRede[0]}</strong> representa <strong>${pctRede}%</strong> dos estouros de SLA (Col. K).`;
 
       const countCausa = {};
       filteredData.forEach(d => countCausa[d.causa] = (countCausa[d.causa] || 0) + 1);
@@ -982,7 +977,7 @@
       });
     }
 
-    // 3. PRINCIPAIS CAUSAS
+    // 3. PRINCIPAIS CAUSAS (BARRAS HORIZONTAIS)
     function renderPrincipaisCausas() {
       const ctx = document.getElementById('chartPrincipaisCausas').getContext('2d');
       if (chartInstances['chartPrincipaisCausas']) chartInstances['chartPrincipaisCausas'].destroy();
@@ -990,30 +985,35 @@
       const count = {};
       filteredData.forEach(d => count[d.causa] = (count[d.causa] || 0) + 1);
 
-      const labels = Object.keys(count).slice(0, 5);
-      const values = labels.map(l => count[l]);
+      const sorted = Object.entries(count).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const labels = sorted.map(item => item[0]);
+      const values = sorted.map(item => item[1]);
 
       chartInstances['chartPrincipaisCausas'] = new Chart(ctx, {
-        type: 'doughnut',
+        type: 'bar',
         data: {
           labels: labels,
           datasets: [{
-            data: values.length > 0 ? values : [1],
-            backgroundColor: values.length > 0 ? ['#e11d48', '#f59e0b', '#06b6d4', '#10b981', '#6366f1'] : ['#cbd5e1']
+            label: 'Qtd TAs',
+            data: values,
+            backgroundColor: ['#e11d48', '#f59e0b', '#06b6d4', '#10b981', '#6366f1'],
+            borderRadius: 4
           }]
         },
         options: {
+          indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'right', labels: { boxWidth: 10, font: { size: 9 } } }
-          },
-          cutout: '65%'
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true },
+            y: { ticks: { font: { size: 9, weight: 'bold' } }, grid: { display: false } }
+          }
         }
       });
     }
 
-    // 4. OCORRÊNCIAS POR DDD
+    // 4. OCORRÊNCIAS POR DDD (COL. W)
     function renderOcorrenciasDDD() {
       const ctx = document.getElementById('chartOcorrenciasDDD').getContext('2d');
       if (chartInstances['chartOcorrenciasDDD']) chartInstances['chartOcorrenciasDDD'].destroy();
@@ -1082,7 +1082,7 @@
       });
     }
 
-    // 6. TIPO DE REDE
+    // 6. TIPO DE REDE (COL. K)
     function renderTipoRedeStatus() {
       const ctx = document.getElementById('chartTipoRedeStatus').getContext('2d');
       if (chartInstances['chartTipoRedeStatus']) chartInstances['chartTipoRedeStatus'].destroy();
@@ -1096,7 +1096,7 @@
           labels: Object.keys(redes),
           datasets: [{
             data: Object.values(redes),
-            backgroundColor: ['#0284c7', '#0d9488', '#8b5cf6']
+            backgroundColor: ['#0284c7', '#0d9488', '#8b5cf6', '#e11d48']
           }]
         },
         options: {
@@ -1226,7 +1226,7 @@
       renderTableBase();
     }
 
-    // Table Sites Ofensores
+    // Table Sites Ofensores (COL. Z)
     function renderTableSites() {
       const tbody = document.getElementById('tableSitesBody');
       tbody.innerHTML = '';
@@ -1315,7 +1315,7 @@
       const sliceData = filteredData.slice(0, 50);
 
       if (sliceData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="p-4 text-center text-slate-400">Nenhum registro encontrado com os filtros aplicados.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400">Nenhum registro encontrado com os filtros aplicados.</td></tr>';
         return;
       }
 
@@ -1328,6 +1328,7 @@
         tr.innerHTML = `
           <td class="p-2 font-semibold text-slate-700">${d.dataAbertura}</td>
           <td class="p-2 text-slate-600">${d.dataEncerramento}</td>
+          <td class="p-2 text-slate-600 font-bold">${d.ddd}</td>
           <td class="p-2 font-bold text-indigo-900 font-sans">${d.municipio}</td>
           <td class="p-2 text-slate-800 font-bold">${d.site}</td>
           <td class="p-2"><span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 font-sans">${d.rede}</span></td>
@@ -1378,12 +1379,12 @@
 
     function generateMockData() {
       const arr = [];
-      const ddds = ['DDD 11', 'DDD 19', 'DDD 21', 'DDD 31', 'DDD 41'];
-      const redes = ['Fixa V2', 'Fixa', 'Móvel'];
+      const ddds = ['202607', '202610', '202606', '202608'];
+      const redes = ['Fixa V2', 'Fixa', 'Móvel', 'Conjunta Rede Externa'];
       const coords = ['Carlos Silva', 'Ana Paula', 'Roberto Lima', 'Fernanda Souza'];
       const causas = ['Energia Comercial', 'Vandalismo / Furto', 'Clima / Chuva Intensa', 'Fibra Rompida', 'Falha Hardware'];
       const amostras = ['Amostra Válida', 'Amostra Auditada', 'Amostra Crítica'];
-      const municipios = ['Ourinhos', 'São Paulo', 'Campinas', 'Bauru', 'Presidente Prudente'];
+      const municipios = ['Santa Adélia', 'Ourinhos', 'São Paulo', 'Campinas', 'Bauru'];
 
       for (let i = 1; i <= 120; i++) {
         arr.push({
@@ -1392,7 +1393,7 @@
           dataEncerramento: `${(i % 28) + 1}/10/2026 14:15`,
           mes: 'Outubro/2026',
           ddd: ddds[i % ddds.length],
-          site: `SITE-${100 + (i % 20)}`,
+          site: `2026-${100 + (i % 20)}`,
           rede: redes[i % redes.length],
           coordenador: coords[i % coords.length],
           causa: causas[i % causas.length],
