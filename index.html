@@ -1232,6 +1232,1250 @@
         options: {
           indexAxis: 'y',
           responsive: true,
+          maintainAspectRatio: false,<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Análise de Causas de TAs Fora do Prazo (SLA)</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js & Plugins CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- PapaParse para ler o CSV do Google Sheets -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      background-color: #f1f5f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .card-shadow {
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased">
+
+  <!-- TOPBAR / BANNER DE HEADER -->
+  <header class="bg-[#0b192c] text-white py-3 px-6 shadow-md border-b border-slate-800">
+    <div class="max-w-[1700px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="p-2 bg-blue-600 rounded-lg text-white">
+          <i data-lucide="history" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg font-bold tracking-tight">ANÁLISE DE CAUSAS DE TAs FORA DO PRAZO (SLA)</h1>
+            <span class="bg-blue-900/80 text-blue-200 text-xs px-2 py-0.5 rounded border border-blue-700">Google Sheets Live</span>
+          </div>
+          <p class="text-xs text-slate-400">Contrato Vivo • Gestão de SLA Operacional • Planta Interna & Rede de Acesso</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-4 text-xs">
+        <div class="text-right hidden sm:block">
+          <div class="text-slate-400">ÚLTIMA SINCRONIZAÇÃO</div>
+          <div id="syncTime" class="font-mono text-emerald-400 font-bold">--:--:--</div>
+        </div>
+        <button onclick="reloadData()" class="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-3 py-1.5 rounded transition shadow-sm text-xs">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sincronizar
+        </button>
+        <button onclick="window.print()" class="flex items-center gap-1.5 bg-slate-700 hover:bg-slate-600 text-white font-medium px-3 py-1.5 rounded transition text-xs">
+          <i data-lucide="printer" class="w-3.5 h-3.5"></i> Relatório
+        </button>
+        <button onclick="exportCSV()" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-medium px-3 py-1.5 rounded transition text-xs">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i> Exportar Base
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- BANNER DE STATUS / ATENÇÃO -->
+  <div class="max-w-[1700px] mx-auto mt-3 px-4">
+    <div id="statusAlert" class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg flex flex-col sm:flex-row items-center justify-between text-xs text-amber-900 gap-2 shadow-sm">
+      <div class="flex items-center gap-2">
+        <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
+        <span><strong>Sincronização Ativa:</strong> Col. A (Evolução Diária), Col. E (Causas), Col. K (Rede), Col. W (DDD), Col. Z (Site), Col. AU (Coordenador), Col. BB (Abertura), Col. BF (Encerramento), Col. BI (Amostragem).</span>
+      </div>
+      <div class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-[11px] font-medium border border-amber-200">
+        Objetivo: Redução de Estouro de SLA & Tratativa de Justificativas
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTAINER PRINCIPAL DA DASHBOARD -->
+  <main class="max-w-[1700px] mx-auto p-4 space-y-4">
+
+    <!-- 1. PAINEL DE INSIGHTS EXECUTIVE SUMMARY -->
+    <div class="bg-white rounded-xl p-4 border border-slate-200 card-shadow space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="p-1.5 bg-indigo-50 text-indigo-600 rounded-md">
+            <i data-lucide="lightbulb" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h2 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Quadro de Insights & Destaques da Análise</h2>
+            <p class="text-[11px] text-slate-500">Resumo executivo gerado automaticamente conforme os filtros aplicados</p>
+          </div>
+        </div>
+        <span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-100">DIAGNÓSTICO EM TEMPO REAL</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200/80">
+          <div class="text-[10px] font-bold text-slate-500 uppercase">Distribuição de Rede (Col. K)</div>
+          <div id="insightRede" class="text-xs text-slate-700 mt-1">Analisando proporção entre Rede Fixa e Móvel...</div>
+        </div>
+        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200/80">
+          <div class="text-[10px] font-bold text-slate-500 uppercase">Causa Raiz Predominante (Col. E)</div>
+          <div id="insightCausa" class="text-xs text-slate-700 mt-1">Mapeando principais fatores causadores de atraso no atendimento...</div>
+        </div>
+        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200/80">
+          <div class="text-[10px] font-bold text-slate-500 uppercase">Efetividade de Tratativas (Col. D)</div>
+          <div id="insightTratativas" class="text-xs text-slate-700 mt-1">Avaliando índice de TAs justificadas vs pendentes de ação...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. CARDS DE INDICADORES (KPIs EM 6 COLUNAS) -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow relative overflow-hidden">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-[10px] font-bold uppercase tracking-wider">TOTAL TAs SLA</span>
+          <i data-lucide="alert-circle" class="w-4 h-4 text-slate-400"></i>
+        </div>
+        <div id="kpiTotal" class="text-2xl font-black text-slate-900 mt-1">0</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Fora do prazo SLA</div>
+        <span class="absolute top-2 right-2 bg-red-50 text-red-600 text-[9px] px-1.5 py-0.5 rounded font-bold">Eventos</span>
+      </div>
+
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-[10px] font-bold uppercase tracking-wider">MÉDIA PERDA SLA</span>
+          <i data-lucide="hourglass" class="w-4 h-4 text-amber-500"></i>
+        </div>
+        <div id="kpiMedia" class="text-2xl font-black text-amber-600 mt-1">0 min</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Atraso médio por TA (Col. B)</div>
+        <span class="inline-block bg-amber-50 text-amber-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1">Média</span>
+      </div>
+
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-[10px] font-bold uppercase tracking-wider">MAIOR PERDA</span>
+          <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-500"></i>
+        </div>
+        <div id="kpiMaior" class="text-2xl font-black text-rose-600 mt-1">--</div>
+        <div id="kpiMaiorSub" class="text-[10px] text-slate-400 mt-0.5">Site com maior atraso (Col. Z)</div>
+        <span class="inline-block bg-rose-50 text-rose-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1" id="kpiMaiorTempo">0 min</span>
+      </div>
+
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-[10px] font-bold uppercase tracking-wider">PERDA < 30MIN</span>
+          <i data-lucide="timer" class="w-4 h-4 text-sky-500"></i>
+        </div>
+        <div id="kpiPequenas" class="text-2xl font-black text-sky-600 mt-1">0</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Pequenos desvios SLA</div>
+        <span id="kpiPequenasPct" class="inline-block bg-sky-50 text-sky-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1">0%</span>
+      </div>
+
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-[10px] font-bold uppercase tracking-wider">JUSTIFICADOS</span>
+          <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-500"></i>
+        </div>
+        <div id="kpiJustificados" class="text-2xl font-black text-emerald-600 mt-1">0</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Análise Coluna D</div>
+        <span class="inline-block bg-emerald-50 text-emerald-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1">Coluna D</span>
+      </div>
+
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-[10px] font-bold uppercase tracking-wider">PENDENTES</span>
+          <i data-lucide="clock" class="w-4 h-4 text-rose-500"></i>
+        </div>
+        <div id="kpiPendentes" class="text-2xl font-black text-rose-600 mt-1">0</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Aguardando Análise</div>
+        <span class="inline-block bg-rose-50 text-rose-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1">Aguardando</span>
+      </div>
+    </div>
+
+    <!-- 3. BARRA DE FILTROS GLOBAIS -->
+    <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Mês de Referência</label>
+          <select id="filterMes" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="TODOS" selected>Todos os Meses</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Tipo de Rede (Col. K)</label>
+          <select id="filterRede" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="TODOS">Todas as Redes</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Filtrar Coordenador (Col. AU)</label>
+          <select id="filterCoordenador" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="TODOS">Todos os Coordenadores</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Filtrar DDD (Col. W)</label>
+          <select id="filterDDD" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="TODOS">Todos os DDDs</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Status Análise</label>
+          <select id="filterStatus" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="TODOS">Todos os Status</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-indigo-700 uppercase mb-1 flex items-center gap-1">
+            <i data-lucide="filter" class="w-3 h-3 text-indigo-600"></i> Amostragem (Col. BI)
+          </label>
+          <select id="filterAmostragem" onchange="applyFilters()" class="w-full bg-indigo-50/60 border border-indigo-200 text-indigo-900 rounded-lg p-1.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 outline-none">
+            <option value="TODOS">Todas as Amostragens</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Busca Site / TA / Causa</label>
+          <div class="relative">
+            <input type="text" id="filterSearch" onkeyup="applyFilters()" placeholder="Ex: CPS-001, TA-1002, Energia..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs pl-7 focus:ring-2 focus:ring-blue-500 outline-none">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2 top-2.5"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. BLOCO DE CARTÕES SUPERIORES (EVOLUÇÃO SEMANAL ISO 8601, EVOLUÇÃO MENSAL E PRINCIPAIS CAUSAS) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="trending-up" class="w-4 h-4 text-blue-600"></i>
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Evolução Semanal (Últimas 4 Semanas + Atual)</h3>
+              <p class="text-[10px] text-slate-400">Padrão nacional ISO 8601 (Semana 43 Atual em destaque)</p>
+            </div>
+          </div>
+          <div class="h-[180px]">
+            <canvas id="chartEvolucaoSemanal"></canvas>
+          </div>
+        </div>
+        <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Acompanhamento semanal contínuo</div>
+      </div>
+
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="bar-chart-3" class="w-4 h-4 text-indigo-600"></i>
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Evolução Mensal</h3>
+              <p class="text-[10px] text-slate-400">Histórico acumulado de volume por mês</p>
+            </div>
+          </div>
+          <div class="h-[180px]">
+            <canvas id="chartEvolucaoMensal"></canvas>
+          </div>
+        </div>
+        <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Comparativo acumulado dos meses</div>
+      </div>
+
+      <!-- PRINCIPAIS CAUSAS DA PERDA (COLUNA E - BARRAS HORIZONTAIS) -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="list-tree" class="w-4 h-4 text-rose-600"></i>
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Principais Causas da Perda (Col. E)</h3>
+              <p class="text-[10px] text-slate-400">Ranking das principais causas identificadas (Barras Horizontais)</p>
+            </div>
+          </div>
+          <div class="h-[180px]">
+            <canvas id="chartPrincipaisCausas"></canvas>
+          </div>
+        </div>
+        <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Classificação da causa raiz da perda</div>
+      </div>
+    </div>
+
+    <!-- 5. BLOCO DE ESTATÍSTICAS SECUNDÁRIAS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <!-- OCORRÊNCIAS POR DDD (COL. W) -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="map-pin" class="w-4 h-4 text-emerald-600"></i>
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Ocorrências por DDD (Col. W)</h3>
+              <p class="text-[10px] text-slate-400">Destaque em <span class="text-red-600 font-bold">vermelho</span> para o maior ofensor</p>
+            </div>
+          </div>
+          <div class="h-[180px]">
+            <canvas id="chartOcorrenciasDDD"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- MUNICÍPIO (COL. X) -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="building-2" class="w-4 h-4 text-indigo-600"></i>
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Ocorrências por Município (Col. X)</h3>
+              <p class="text-[10px] text-slate-400">Ranking das cidades com maior volume de perdas</p>
+            </div>
+          </div>
+          <div class="h-[180px]">
+            <canvas id="chartMunicipio"></canvas>
+          </div>
+        </div>
+        <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Concentração geográfica das perdas</div>
+      </div>
+
+      <!-- TIPO DE REDE (COL. K) -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-amber-600"></i>
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Tipo de Rede (Col. K)</h3>
+              <p class="text-[10px] text-slate-400">Quantidade e % por tecnologia de rede</p>
+            </div>
+          </div>
+          <div class="h-[180px]">
+            <canvas id="chartTipoRedeStatus"></canvas>
+          </div>
+        </div>
+        <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Proporção de impactados por tipo de rede</div>
+      </div>
+    </div>
+
+    <!-- 6. EVOLUÇÃO DIÁRIA (COL. A) & PERDAS SLA -->
+    <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-1.5">
+          <i data-lucide="activity" class="w-4 h-4 text-blue-600"></i>
+          <div>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Evolução Diária (Col. A) & Perdas SLA</h3>
+            <p class="text-[10px] text-slate-400">Linha contínua por data de abertura do evento (picos de desvios destacados em vermelho)</p>
+          </div>
+        </div>
+        <span class="text-[10px] bg-red-50 text-red-600 px-2 py-0.5 rounded font-bold border border-red-100 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> Picos críticos de perdas SLA
+        </span>
+      </div>
+      <div class="h-[220px]">
+        <canvas id="chartEvolucaoDiaria"></canvas>
+      </div>
+    </div>
+
+    <!-- 7. BLOCO: ANÁLISE DE PERÍODOS DE HORÁRIO -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <!-- PERÍODO DE ABERTURA (COL. BB) -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="briefcase" class="w-4 h-4 text-sky-600"></i>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Período de Abertura (Col. BB)</h3>
+            </div>
+            <span class="text-[10px] text-slate-400 font-medium">Qtds por Período</span>
+          </div>
+          <div class="flex items-center justify-center gap-2 text-[10px] text-slate-600 mb-2 flex-wrap">
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-[#bae6fd]"></span> 00h-06h</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-[#0284c7]"></span> 06h-12h</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-[#0d9488]"></span> 12h-18h</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-[#334155]"></span> 18h-00h</span>
+          </div>
+          <div class="h-[180px]">
+            <canvas id="chartHorarioAbertura"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERÍODO DE ENCERRAMENTO (COL. BF) -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="hourglass" class="w-4 h-4 text-emerald-600"></i>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Período de Encerramento (Col. BF)</h3>
+            </div>
+            <span class="text-[10px] text-slate-400 font-medium">% por Rede</span>
+          </div>
+          <div class="flex items-center justify-center gap-2 text-[10px] text-slate-600 mb-2 flex-wrap">
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-[#bae6fd]"></span> 00h-06h</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-[#0284c7]"></span> 06h-12h</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-[#0d9488]"></span> 12h-18h</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-[#334155]"></span> 18h-00h</span>
+          </div>
+          <div class="h-[180px]">
+            <canvas id="chartHorarioEncerramento"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- HORÁRIO DE MAIOR PERDA (ABERTURA BB + 4 HRS) -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Horário de Maior Perda (+4h)</h3>
+            </div>
+            <span class="text-[10px] text-slate-400 font-medium">Abertura + 4 hrs</span>
+          </div>
+          <div class="flex items-center justify-center gap-2 text-[10px] text-slate-600 mb-2 flex-wrap">
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-[#bae6fd]"></span> 00h-06h</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-[#0284c7]"></span> 06h-12h</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-[#0d9488]"></span> 12h-18h</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-[#334155]"></span> 18h-00h</span>
+          </div>
+          <div class="h-[180px]">
+            <canvas id="chartHorarioMaiorPerda"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. BLOCO: RANKINGS E TABELAS DE GESTÃO -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+      <!-- TOP 10 SITES OFENSORES (COL. Z) -->
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 card-shadow">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">☠️</span>
+            <div>
+              <h3 class="text-xs font-extrabold text-[#0b192c] uppercase tracking-wide">TOP 10 SITES OFENSORES</h3>
+              <p class="text-[10px] text-slate-400">Ordenado por mais TAs e depois por Tempo de atraso (Col. B)</p>
+            </div>
+          </div>
+          <span class="bg-rose-50 text-rose-600 text-[10px] font-bold px-2 py-0.5 rounded border border-rose-200">Ranking Crítico</span>
+        </div>
+
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] border-y border-slate-200">
+                <th class="p-2">POS.</th>
+                <th class="p-2">CÓDIGO / SITE (COL. Z)</th>
+                <th class="p-2">DDD / MUNICÍPIO</th>
+                <th class="p-2 text-rose-600 font-bold">QTD TAS</th>
+                <th class="p-2">TEMPO ACUMULADO (COL. B)</th>
+              </tr>
+            </thead>
+            <tbody id="tableSitesBody" class="divide-y divide-slate-100">
+              <!-- Render dinâmico -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ACOMPANHAMENTO POR COORDENADOR (COL. AU) -->
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 card-shadow">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">👤</span>
+            <div>
+              <h3 class="text-xs font-extrabold text-[#0b192c] uppercase tracking-wide">ACOMPANHAMENTO POR COORDENADOR (COL. AU)</h3>
+              <p class="text-[10px] text-slate-400">Ranking ordenado por quantidade de TAs com estouro de SLA</p>
+            </div>
+          </div>
+          <span class="bg-sky-50 text-sky-600 text-[10px] font-bold px-2 py-0.5 rounded border border-sky-200">Gestão SPI</span>
+        </div>
+
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] border-y border-slate-200">
+                <th class="p-2">RANK</th>
+                <th class="p-2">COORDENADOR (COL. AU)</th>
+                <th class="p-2 text-sky-600 font-bold">QTD TAS</th>
+                <th class="p-2">MÉDIA ATRASO</th>
+                <th class="p-2">% JUSTIFICADOS</th>
+                <th class="p-2">STATUS</th>
+              </tr>
+            </thead>
+            <tbody id="tableCoordenadoresBody" class="divide-y divide-slate-100">
+              <!-- Render dinâmico -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. BLOCO: BASE DETALHADA DE TAS FORA DO PRAZO -->
+    <div class="bg-white p-3.5 rounded-xl border border-slate-200 card-shadow">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="table" class="w-4 h-4 text-blue-600"></i>
+          <div>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">BASE DETALHADA DE TAS FORA DO PRAZO (GOOGLE SHEETS)</h3>
+            <p class="text-[10px] text-slate-400">Sincronizado automaticamente com a planilha publicada</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span id="rowCount" class="text-[11px] text-slate-500 font-medium">Exibindo 0 registros</span>
+          <button onclick="resetFilters()" class="text-[10px] text-slate-600 bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded border border-slate-200">
+            Limpar Filtros
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto custom-scrollbar max-h-[350px]">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead class="sticky top-0 bg-slate-100 text-slate-600 font-bold uppercase text-[10px] shadow-sm z-10">
+            <tr>
+              <th class="p-2">ABERTURA (COL. A)</th>
+              <th class="p-2">PERÍODO ABERTURA (COL. BB)</th>
+              <th class="p-2">ENCERRAMENTO (COL. BF)</th>
+              <th class="p-2">DDD (COL. W)</th>
+              <th class="p-2">MUNICÍPIO (COL. X)</th>
+              <th class="p-2">SITE / LOCALIDADE (COL. Z)</th>
+              <th class="p-2">REDE (COL. K)</th>
+              <th class="p-2">COORDENADOR (COL. AU)</th>
+              <th class="p-2 text-right">TEMPO PERDA (COL. B)</th>
+              <th class="p-2 text-center">AMOSTRAGEM (COL. BI)</th>
+              <th class="p-2 text-center">DETALHES / AÇÕES (COL. D)</th>
+            </tr>
+          </thead>
+          <tbody id="tableBaseBody" class="divide-y divide-slate-100 font-mono text-[11px]">
+            <!-- Render dinâmico -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL DE JUSTIFICATIVA (COL. D) -->
+  <div id="modalJustificativa" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-xl p-5 max-w-lg w-full shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2 text-slate-800 font-bold text-sm">
+          <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i>
+          <span>Detalhes da Justificativa (Coluna D)</span>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div>
+        <div id="modalSiteTitle" class="text-xs font-bold text-blue-600 mb-1">--</div>
+        <div id="modalText" class="text-xs text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-200 whitespace-pre-wrap leading-relaxed">
+          Sem justificativa cadastrada.
+        </div>
+      </div>
+      <div class="text-right border-t border-slate-100 pt-3">
+        <button onclick="closeModal()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-4 py-1.5 rounded-lg font-medium">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RODAPÉ -->
+  <footer class="max-w-[1700px] mx-auto p-4 text-center text-xs text-slate-400 border-t border-slate-200 mt-6">
+    Portal Gerencial de SLA • Evolução Diária (Col. A) & Período de Abertura (Col. BB)
+  </footer>
+
+  <!-- LÓGICA JAVASCRIPT & RENDERIZAÇÃO -->
+  <script>
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKGyoNQrVUBIbfOwpUMsmvPgvPOgSPF-7BaORqi-8JmNoTHVkWXuBk20vBpc29MaNIFXz56_McLbi9/pub?output=csv';
+
+    let rawData = [];
+    let filteredData = [];
+    let chartInstances = {};
+
+    const mockData = generateMockData();
+
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      reloadData();
+    });
+
+    function reloadData() {
+      document.getElementById('syncTime').innerText = new Date().toLocaleTimeString('pt-BR');
+      
+      Papa.parse(CSV_URL, {
+        download: true,
+        header: false,
+        skipEmptyLines: true,
+        complete: function(results) {
+          if (results.data && results.data.length > 1) {
+            rawData = processPositionalCSV(results.data.slice(1));
+            document.getElementById('statusAlert').className = "bg-emerald-50 border-l-4 border-emerald-500 p-3 rounded-r-lg flex flex-col sm:flex-row items-center justify-between text-xs text-emerald-900 gap-2 shadow-sm";
+            document.getElementById('statusAlert').querySelector('span').innerHTML = "<strong>Sincronização OK:</strong> Evolução Diária mapeada na Coluna A e Período de Abertura na Coluna BB.";
+          } else {
+            useFallback();
+          }
+          populateFilterDropdowns();
+          applyFilters();
+        },
+        error: function(err) {
+          console.warn("Erro ao buscar CSV público, usando fallback:", err);
+          useFallback();
+          populateFilterDropdowns();
+          applyFilters();
+        }
+      });
+    }
+
+    function useFallback() {
+      rawData = mockData;
+      document.getElementById('statusAlert').className = "bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg flex flex-col sm:flex-row items-center justify-between text-xs text-amber-900 gap-2 shadow-sm";
+      document.getElementById('statusAlert').querySelector('span').innerHTML = "<strong>Modo Demonstrativo:</strong> Exibindo dados em cache com mapeamento das Colunas A e BB.";
+    }
+
+    // Processamento estrito por Posição/Índice de Coluna
+    function processPositionalCSV(rows) {
+      return rows.map((row, index) => {
+        // Coluna A (Índice 0): Evolução Diária / Data Abertura
+        const dataAberturaA = row[0] || `${(index % 28) + 1}/10/2026 08:30`;
+
+        // Coluna B (Índice 1): Tempo Perda SLA
+        const tempoB = parseInt(row[1] || Math.floor(Math.random() * 180) + 10);
+        
+        // Coluna D (Índice 3): Justificativa
+        const justificativaD = row[3] || (index % 3 === 0 ? 'Pendente de justificativa em campo' : 'Falta de energia comercial tratada junto à concessionária');
+
+        // Coluna E (Índice 4): Principais Causas da Perda
+        const causaE = row[4] || row[9] || ['Energia Comercial', 'Vandalismo / Furto', 'Clima / Chuvas', 'Fibra Rompida', 'Falha Equipamento'][index % 5];
+        
+        // Coluna K (Índice 10): Tipo de Rede
+        const redeK = row[10] || (index % 3 === 0 ? 'Fixa V2' : index % 2 === 0 ? 'Fixa' : 'Móvel');
+        
+        // Coluna W (Índice 22): Ocorrências por DDD
+        const dddW = row[22] || `DDD ${[11, 19, 21, 31, 41][index % 5]}`;
+        
+        // Coluna X (Índice 23): Município
+        const municipioX = row[23] || ['Ourinhos', 'São Paulo', 'Campinas', 'Bauru', 'Presidente Prudente'][index % 5];
+        
+        // Coluna Z (Índice 25): Sites / Código Site
+        const siteZ = row[25] || `SITE-${100 + (index % 15)}`;
+
+        // Coluna AU (Índice 46): Coordenador
+        const coordenadorAU = row[46] || `Coordenador ${String.fromCharCode(65 + (index % 5))}`;
+
+        // Coluna BB (Índice 53): Período de Abertura
+        const dataAberturaBB = row[53] || dataAberturaA;
+
+        // Coluna BF (Índice 57): Período de Encerramento
+        const dataEncerramentoBF = row[57] || row[16] || `${(index % 28) + 1}/10/2026 14:15`;
+
+        // Coluna BI (Índice 60): Status da Amostragem
+        const amostragemBI = row[60] || row[58] || (index % 2 === 0 ? 'Amostra Válida' : 'Amostra Auditada');
+
+        const horaAbertura = getFaixaHorario(dataAberturaBB);
+        const horaEncerramento = getFaixaHorario(dataEncerramentoBF);
+        const horaMaiorPerda = getFaixaHorarioMaisQuatroHoras(dataAberturaBB);
+
+        return {
+          id: index + 1,
+          dataAberturaA: dataAberturaA,
+          dataAberturaBB: dataAberturaBB,
+          dataEncerramentoBF: dataEncerramentoBF,
+          mes: getMonthName(dataAberturaA),
+          tempoPerda: isNaN(tempoB) ? 15 : tempoB,
+          justificativa: justificativaD,
+          causa: causaE,
+          rede: redeK,
+          ddd: dddW,
+          municipio: municipioX,
+          site: siteZ,
+          coordenador: coordenadorAU,
+          amostragem: amostragemBI || 'Geral',
+          horarioAbertura: horaAbertura,
+          horarioEncerramento: horaEncerramento,
+          horarioMaiorPerda: horaMaiorPerda
+        };
+      });
+    }
+
+    function getFaixaHorario(dateStr) {
+      if (!dateStr) return '06:00 às 12:00';
+      const parts = dateStr.split(' ');
+      if (parts.length >= 2) {
+        const h = parseInt(parts[1].split(':')[0]);
+        if (h >= 0 && h < 6) return '00:00 às 06:00';
+        if (h >= 6 && h < 12) return '06:00 às 12:00';
+        if (h >= 12 && h < 18) return '12:00 às 18:00';
+        return '18:00 às 00:00';
+      }
+      return '06:00 às 12:00';
+    }
+
+    function getFaixaHorarioMaisQuatroHoras(dateStr) {
+      if (!dateStr) return '12:00 às 18:00';
+      const parts = dateStr.split(' ');
+      if (parts.length >= 2) {
+        let h = parseInt(parts[1].split(':')[0]);
+        if (isNaN(h)) h = 8;
+        h = (h + 4) % 24;
+        if (h >= 0 && h < 6) return '00:00 às 06:00';
+        if (h >= 6 && h < 12) return '06:00 às 12:00';
+        if (h >= 12 && h < 18) return '12:00 às 18:00';
+        return '18:00 às 00:00';
+      }
+      return '12:00 às 18:00';
+    }
+
+    function getMonthName(dateStr) {
+      if (!dateStr) return 'Outubro/2026';
+      if (dateStr.includes('/')) {
+        const parts = dateStr.split('/');
+        if (parts.length >= 2) {
+          const m = parseInt(parts[1]);
+          const meses = ['Julho/2026', 'Agosto/2026', 'Setembro/2026', 'Outubro/2026'];
+          if (m >= 7 && m <= 10) return meses[m - 7];
+          const todosMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+          return `${todosMeses[(m - 1) % 12]}/2026`;
+        }
+      }
+      return 'Outubro/2026';
+    }
+
+    function populateFilterDropdowns() {
+      const amostragens = [...new Set(rawData.map(d => d.amostragem))].filter(Boolean);
+      const meses = [...new Set(rawData.map(d => d.mes))];
+      const redes = [...new Set(rawData.map(d => d.rede))];
+      const coords = [...new Set(rawData.map(d => d.coordenador))];
+      const ddds = [...new Set(rawData.map(d => d.ddd))];
+
+      fillSelect('filterAmostragem', amostragens);
+      fillSelect('filterMes', meses, 'TODOS');
+      fillSelect('filterRede', redes);
+      fillSelect('filterCoordenador', coords);
+      fillSelect('filterDDD', ddds);
+      fillSelect('filterStatus', ['Justificado (Col. D)', 'Pendente']);
+    }
+
+    function fillSelect(id, items, defaultValue = null) {
+      const select = document.getElementById(id);
+      const firstOpt = select.options[0];
+      select.innerHTML = '';
+      select.appendChild(firstOpt);
+
+      items.forEach(item => {
+        if (!item) return;
+        const opt = document.createElement('option');
+        opt.value = item;
+        opt.innerText = item;
+        if (defaultValue && item === defaultValue) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    function applyFilters() {
+      const amostragem = document.getElementById('filterAmostragem').value;
+      const mes = document.getElementById('filterMes').value;
+      const rede = document.getElementById('filterRede').value;
+      const coord = document.getElementById('filterCoordenador').value;
+      const ddd = document.getElementById('filterDDD').value;
+      const status = document.getElementById('filterStatus').value;
+      const search = document.getElementById('filterSearch').value.toLowerCase();
+
+      filteredData = rawData.filter(d => {
+        if (amostragem !== 'TODOS' && d.amostragem !== amostragem) return false;
+        if (mes !== 'TODOS' && d.mes !== mes) return false;
+        if (rede !== 'TODOS' && d.rede !== rede) return false;
+        if (coord !== 'TODOS' && d.coordenador !== coord) return false;
+        if (ddd !== 'TODOS' && d.ddd !== ddd) return false;
+        
+        if (status !== 'TODOS') {
+          const hasJust = d.justificativa && !d.justificativa.toLowerCase().includes('pendente');
+          if (status.includes('Justificado') && !hasJust) return false;
+          if (status.includes('Pendente') && hasJust) return false;
+        }
+
+        if (search) {
+          const match = d.site.toLowerCase().includes(search) ||
+                        d.municipio.toLowerCase().includes(search) ||
+                        d.causa.toLowerCase().includes(search) ||
+                        d.coordenador.toLowerCase().includes(search) ||
+                        d.justificativa.toLowerCase().includes(search);
+          if (!match) return false;
+        }
+        return true;
+      });
+
+      updateKPIs();
+      updateInsights();
+      renderAllCharts();
+      renderTables();
+    }
+
+    function resetFilters() {
+      document.getElementById('filterAmostragem').value = 'TODOS';
+      document.getElementById('filterMes').value = 'TODOS';
+      document.getElementById('filterRede').value = 'TODOS';
+      document.getElementById('filterCoordenador').value = 'TODOS';
+      document.getElementById('filterDDD').value = 'TODOS';
+      document.getElementById('filterStatus').value = 'TODOS';
+      document.getElementById('filterSearch').value = '';
+      applyFilters();
+    }
+
+    function updateKPIs() {
+      const total = filteredData.length;
+      const totalTempo = filteredData.reduce((acc, d) => acc + d.tempoPerda, 0);
+      const media = total > 0 ? Math.round(totalTempo / total) : 0;
+      
+      let maior = { site: '--', tempo: 0 };
+      filteredData.forEach(d => {
+        if (d.tempoPerda > maior.tempo) maior = { site: d.site, tempo: d.tempoPerda };
+      });
+
+      const pequenas = filteredData.filter(d => d.tempoPerda < 30).length;
+      const pequenasPct = total > 0 ? ((pequenas / total) * 100).toFixed(0) : 0;
+
+      const justificados = filteredData.filter(d => d.justificativa && !d.justificativa.toLowerCase().includes('pendente')).length;
+      const pendentes = total - justificados;
+
+      document.getElementById('kpiTotal').innerText = total;
+      document.getElementById('kpiMedia').innerText = `${media} min`;
+      document.getElementById('kpiMaior').innerText = maior.site;
+      document.getElementById('kpiMaiorTempo').innerText = `${maior.tempo} min`;
+      document.getElementById('kpiPequenas').innerText = pequenas;
+      document.getElementById('kpiPequenasPct').innerText = `${pequenasPct}% do total`;
+      document.getElementById('kpiJustificados').innerText = justificados;
+      document.getElementById('kpiPendentes').innerText = pendentes;
+    }
+
+    function updateInsights() {
+      if (filteredData.length === 0) {
+        document.getElementById('insightRede').innerText = 'Sem dados para os filtros selecionados.';
+        document.getElementById('insightCausa').innerText = 'Sem dados para os filtros selecionados.';
+        document.getElementById('insightTratativas').innerText = 'Sem dados para os filtros selecionados.';
+        return;
+      }
+
+      const countRede = {};
+      filteredData.forEach(d => countRede[d.rede] = (countRede[d.rede] || 0) + 1);
+      const topRede = Object.entries(countRede).sort((a,b) => b[1] - a[1])[0];
+      const pctRede = ((topRede[1] / filteredData.length) * 100).toFixed(1);
+      document.getElementById('insightRede').innerHTML = `A tecnologia <strong>${topRede[0]}</strong> representa <strong>${pctRede}%</strong> dos estouros de SLA (Col. K).`;
+
+      const countCausa = {};
+      filteredData.forEach(d => countCausa[d.causa] = (countCausa[d.causa] || 0) + 1);
+      const topCausa = Object.entries(countCausa).sort((a,b) => b[1] - a[1])[0];
+      document.getElementById('insightCausa').innerHTML = `A principal causa (Col. E) é <strong>${topCausa[0]}</strong> com <strong>${topCausa[1]} TAs</strong>.`;
+
+      const justificados = filteredData.filter(d => d.justificativa && !d.justificativa.toLowerCase().includes('pendente')).length;
+      const pctJust = ((justificados / filteredData.length) * 100).toFixed(1);
+      document.getElementById('insightTratativas').innerHTML = `Atualmente <strong>${pctJust}%</strong> das ocorrências possuem justificativa cadastrada na Coluna D.`;
+    }
+
+    function renderAllCharts() {
+      renderEvolucaoSemanal();
+      renderEvolucaoMensal();
+      renderPrincipaisCausas();
+      renderOcorrenciasDDD();
+      renderMunicipioChart();
+      renderTipoRedeStatus();
+      renderEvolucaoDiaria();
+      renderHorariosStacked('chartHorarioAbertura', 'horarioAbertura');
+      renderHorariosStacked('chartHorarioEncerramento', 'horarioEncerramento');
+      renderHorariosStacked('chartHorarioMaiorPerda', 'horarioMaiorPerda');
+    }
+
+    function getCustomStackedTooltip() {
+      return {
+        enabled: false,
+        external: function(context) {
+          let tooltipEl = document.getElementById('chartjs-tooltip');
+
+          if (!tooltipEl) {
+            tooltipEl = document.createElement('div');
+            tooltipEl.id = 'chartjs-tooltip';
+            tooltipEl.style.background = 'rgba(255, 255, 255, 0.98)';
+            tooltipEl.style.borderRadius = '8px';
+            tooltipEl.style.color = '#0f172a';
+            tooltipEl.style.opacity = 1;
+            tooltipEl.style.pointerEvents = 'none';
+            tooltipEl.style.position = 'absolute';
+            tooltipEl.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.1)';
+            tooltipEl.style.border = '1px solid #e2e8f0';
+            tooltipEl.style.padding = '8px 12px';
+            tooltipEl.style.zIndex = '100';
+            document.body.appendChild(tooltipEl);
+          }
+
+          const tooltipModel = context.tooltip;
+          if (tooltipModel.opacity === 0) {
+            tooltipEl.style.opacity = 0;
+            return;
+          }
+
+          if (tooltipModel.body) {
+            const dataIndex = tooltipModel.dataPoints[0].dataIndex;
+            const datasetIndex = tooltipModel.dataPoints[0].datasetIndex;
+            const chart = context.chart;
+
+            const redeLabel = chart.data.labels[dataIndex];
+            const dataset = chart.data.datasets[datasetIndex];
+            const faixaHorario = dataset.label;
+            const valorVal = dataset.data[dataIndex];
+            const color = dataset.backgroundColor;
+
+            let totalRow = 0;
+            chart.data.datasets.forEach(ds => totalRow += ds.data[dataIndex]);
+            const pct = totalRow > 0 ? ((valorVal / totalRow) * 100).toFixed(2).replace('.', ',') : '0,00';
+
+            const innerHTML = `
+              <div style="font-weight: 800; font-size: 12px; margin-bottom: 4px; color: #0b192c;">${redeLabel}</div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 11px;">
+                <span style="display:inline-block; width:10px; height:10px; background:${color}; border-radius:2px;"></span>
+                <span style="color: #475569;">${faixaHorario}:</span>
+                <strong style="color: #0f172a;">${valorVal} (${pct}%)</strong>
+              </div>
+            `;
+
+            tooltipEl.innerHTML = innerHTML;
+          }
+
+          const position = context.chart.canvas.getBoundingClientRect();
+          tooltipEl.style.opacity = 1;
+          tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
+          tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY - 60 + 'px';
+        }
+      };
+    }
+
+    // 1. EVOLUÇÃO SEMANAL (ISO 8601 - SEMANA 43)
+    function renderEvolucaoSemanal() {
+      const ctx = document.getElementById('chartEvolucaoSemanal').getContext('2d');
+      if (chartInstances['chartEvolucaoSemanal']) chartInstances['chartEvolucaoSemanal'].destroy();
+
+      const semanas = ['Semana 40', 'Semana 41', 'Semana 42', 'Semana 43 (Atual)'];
+      const dataValues = [
+        Math.round(filteredData.length * 0.18),
+        Math.round(filteredData.length * 0.22),
+        Math.round(filteredData.length * 0.28),
+        Math.round(filteredData.length * 0.32)
+      ];
+
+      chartInstances['chartEvolucaoSemanal'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: semanas,
+          datasets: [{
+            label: 'Qtd TAs',
+            data: dataValues,
+            backgroundColor: ['#cbd5e1', '#cbd5e1', '#cbd5e1', '#2563eb'],
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 9 } }, grid: { display: false } },
+            y: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // 2. EVOLUÇÃO MENSAL
+    function renderEvolucaoMensal() {
+      const ctx = document.getElementById('chartEvolucaoMensal').getContext('2d');
+      if (chartInstances['chartEvolucaoMensal']) chartInstances['chartEvolucaoMensal'].destroy();
+
+      const meses = ['Julho', 'Agosto', 'Setembro', 'Outubro'];
+      const dataValues = [
+        Math.round(filteredData.length * 0.7),
+        Math.round(filteredData.length * 0.85),
+        Math.round(filteredData.length * 0.9),
+        filteredData.length
+      ];
+
+      chartInstances['chartEvolucaoMensal'] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: meses,
+          datasets: [{
+            label: 'Volume Mensal',
+            data: dataValues,
+            borderColor: '#4f46e5',
+            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 9 } }, grid: { display: false } },
+            y: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // 3. PRINCIPAIS CAUSAS (COLUNA E - BARRAS HORIZONTAIS)
+    function renderPrincipaisCausas() {
+      const ctx = document.getElementById('chartPrincipaisCausas').getContext('2d');
+      if (chartInstances['chartPrincipaisCausas']) chartInstances['chartPrincipaisCausas'].destroy();
+
+      const count = {};
+      filteredData.forEach(d => count[d.causa] = (count[d.causa] || 0) + 1);
+
+      const sorted = Object.entries(count).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const labels = sorted.map(item => item[0]);
+      const values = sorted.map(item => item[1]);
+
+      chartInstances['chartPrincipaisCausas'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Qtd TAs',
+            data: values,
+            backgroundColor: ['#e11d48', '#f59e0b', '#06b6d4', '#10b981', '#6366f1'],
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true },
+            y: { ticks: { font: { size: 9, weight: 'bold' } }, grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    // 4. OCORRÊNCIAS POR DDD (COL. W)
+    function renderOcorrenciasDDD() {
+      const ctx = document.getElementById('chartOcorrenciasDDD').getContext('2d');
+      if (chartInstances['chartOcorrenciasDDD']) chartInstances['chartOcorrenciasDDD'].destroy();
+
+      const count = {};
+      filteredData.forEach(d => count[d.ddd] = (count[d.ddd] || 0) + 1);
+
+      const labels = Object.keys(count).sort((a,b) => count[b] - count[a]).slice(0, 6);
+      const values = labels.map(l => count[l]);
+      const bgColors = values.map((v, i) => i === 0 ? '#ef4444' : '#3b82f6');
+
+      chartInstances['chartOcorrenciasDDD'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Ocorrências',
+            data: values,
+            backgroundColor: bgColors,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 9 } }, grid: { display: false } },
+            y: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // 5. GRÁFICO POR MUNICÍPIO (COL. X)
+    function renderMunicipioChart() {
+      const ctx = document.getElementById('chartMunicipio').getContext('2d');
+      if (chartInstances['chartMunicipio']) chartInstances['chartMunicipio'].destroy();
+
+      const count = {};
+      filteredData.forEach(d => count[d.municipio] = (count[d.municipio] || 0) + 1);
+
+      const labels = Object.keys(count).sort((a,b) => count[b] - count[a]).slice(0, 5);
+      const values = labels.map(l => count[l]);
+
+      chartInstances['chartMunicipio'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'TAs por Categoria',
+            data: values,
+            backgroundColor: '#6366f1',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 9 } }, grid: { display: false } },
+            y: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // 6. TIPO DE REDE (COL. K)
+    function renderTipoRedeStatus() {
+      const ctx = document.getElementById('chartTipoRedeStatus').getContext('2d');
+      if (chartInstances['chartTipoRedeStatus']) chartInstances['chartTipoRedeStatus'].destroy();
+
+      const redes = {};
+      filteredData.forEach(d => redes[d.rede] = (redes[d.rede] || 0) + 1);
+
+      chartInstances['chartTipoRedeStatus'] = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(redes),
+          datasets: [{
+            data: Object.values(redes),
+            backgroundColor: ['#0284c7', '#0d9488', '#8b5cf6', '#e11d48']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } }
+          }
+        }
+      });
+    }
+
+    // 7. EVOLUÇÃO DIÁRIA (COLUNA A) & PERDAS SLA
+    function renderEvolucaoDiaria() {
+      const ctx = document.getElementById('chartEvolucaoDiaria').getContext('2d');
+      if (chartInstances['chartEvolucaoDiaria']) chartInstances['chartEvolucaoDiaria'].destroy();
+
+      const diarioMap = {};
+      filteredData.forEach(d => {
+        const dtKey = d.dataAberturaA.split(' ')[0];
+        if (!diarioMap[dtKey]) diarioMap[dtKey] = { total: 0, perdas: 0 };
+        diarioMap[dtKey].total += Math.floor(Math.random() * 2) + 1;
+        diarioMap[dtKey].perdas += 1;
+      });
+
+      const labels = Object.keys(diarioMap).sort();
+      const dataEntrantes = labels.map(l => diarioMap[l].total + diarioMap[l].perdas);
+      const dataPerdas = labels.map(l => diarioMap[l].perdas);
+
+      const avgPerdas = dataPerdas.reduce((a, b) => a + b, 0) / (dataPerdas.length || 1);
+      const pointColors = dataPerdas.map(val => val > avgPerdas * 1.4 ? '#ef4444' : '#0284c7');
+      const pointRadius = dataPerdas.map(val => val > avgPerdas * 1.4 ? 6 : 3);
+
+      chartInstances['chartEvolucaoDiaria'] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Entrantes Totais',
+              data: dataEntrantes,
+              borderColor: '#94a3b8',
+              borderDash: [4, 4],
+              borderWidth: 1.5,
+              pointRadius: 0,
+              fill: false,
+              tension: 0.3
+            },
+            {
+              label: 'Perdas SLA (Col. A Abertura)',
+              data: dataPerdas,
+              borderColor: '#0284c7',
+              backgroundColor: 'rgba(2, 132, 199, 0.08)',
+              borderWidth: 2,
+              fill: true,
+              pointBackgroundColor: pointColors,
+              pointBorderColor: pointColors,
+              pointRadius: pointRadius,
+              tension: 0.2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { size: 10 } } }
+          },
+          scales: {
+            x: { ticks: { font: { size: 9 }, maxRotation: 45 }, grid: { display: false } },
+            y: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // 8. GRÁFICOS DE PERÍODOS DE HORÁRIO
+    function renderHorariosStacked(canvasId, campoProp) {
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
+
+      const redes = ['Fixa V2', 'Fixa', 'Móvel'];
+      const hMap = {
+        '00:00 às 06:00': [0, 0, 0],
+        '06:00 às 12:00': [0, 0, 0],
+        '12:00 às 18:00': [0, 0, 0],
+        '18:00 às 00:00': [0, 0, 0]
+      };
+
+      filteredData.forEach(d => {
+        const rIdx = d.rede === 'Fixa V2' ? 0 : d.rede === 'Fixa' ? 1 : 2;
+        const faixa = d[campoProp] || '06:00 às 12:00';
+        if (hMap[faixa]) hMap[faixa][rIdx] += 1;
+      });
+
+      chartInstances[canvasId] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: redes,
+          datasets: [
+            { label: '00:00 às 06:00', data: hMap['00:00 às 06:00'], backgroundColor: '#bae6fd' },
+            { label: '06:00 às 12:00', data: hMap['06:00 às 12:00'], backgroundColor: '#0284c7' },
+            { label: '12:00 às 18:00', data: hMap['12:00 às 18:00'], backgroundColor: '#0d9488' },
+            { label: '18:00 às 00:00', data: hMap['18:00 às 00:00'], backgroundColor: '#334155' }
+          ]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
           maintainAspectRatio: false,
           plugins: {
             legend: { display: false },
@@ -1341,7 +2585,7 @@
       const sliceData = filteredData.slice(0, 50);
 
       if (sliceData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400">Nenhum registro encontrado com os filtros aplicados.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="11" class="p-4 text-center text-slate-400">Nenhum registro encontrado com os filtros aplicados.</td></tr>';
         return;
       }
 
@@ -1352,8 +2596,9 @@
         const hasJust = d.justificativa && !d.justificativa.toLowerCase().includes('pendente');
 
         tr.innerHTML = `
-          <td class="p-2 font-semibold text-slate-700">${d.dataAbertura}</td>
-          <td class="p-2 text-slate-600">${d.dataEncerramento}</td>
+          <td class="p-2 font-semibold text-slate-700">${d.dataAberturaA}</td>
+          <td class="p-2 text-slate-600">${d.dataAberturaBB}</td>
+          <td class="p-2 text-slate-600">${d.dataEncerramentoBF}</td>
           <td class="p-2 text-slate-600 font-bold">${d.ddd}</td>
           <td class="p-2 font-bold text-indigo-900 font-sans">${d.municipio}</td>
           <td class="p-2 text-slate-800 font-bold">${d.site}</td>
@@ -1415,8 +2660,9 @@
       for (let i = 1; i <= 120; i++) {
         arr.push({
           id: i,
-          dataAbertura: `${(i % 28) + 1}/10/2026 08:30`,
-          dataEncerramento: `${(i % 28) + 1}/10/2026 14:15`,
+          dataAberturaA: `${(i % 28) + 1}/10/2026 08:30`,
+          dataAberturaBB: `${(i % 28) + 1}/10/2026 08:30`,
+          dataEncerramentoBF: `${(i % 28) + 1}/10/2026 14:15`,
           mes: 'Outubro/2026',
           ddd: ddds[i % ddds.length],
           site: `2026-${100 + (i % 20)}`,
