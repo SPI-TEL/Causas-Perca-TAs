@@ -121,15 +121,15 @@
       </div>
     </div>
 
-    <!-- 2. CARDS DE INDICADORES (KPIs) -->
+    <!-- 2. CARDS DE INDICADORES (KPIs EM 6 COLUNAS) -->
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
       <!-- Total TAs SLA -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow relative overflow-hidden">
         <div class="flex items-center justify-between text-slate-500">
-          <span class="text-[10px] font-bold uppercase tracking-wider">Total TAs SLA</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider">TOTAL TAs SLA</span>
           <i data-lucide="alert-circle" class="w-4 h-4 text-slate-400"></i>
         </div>
-        <div id="kpiTotal" class="text-xl font-black text-slate-900 mt-1">0</div>
+        <div id="kpiTotal" class="text-2xl font-black text-slate-900 mt-1">0</div>
         <div class="text-[10px] text-slate-400 mt-0.5">Fora do prazo SLA</div>
         <span class="absolute top-2 right-2 bg-red-50 text-red-600 text-[9px] px-1.5 py-0.5 rounded font-bold">Eventos</span>
       </div>
@@ -137,21 +137,21 @@
       <!-- Média Perda SLA (Col. B) -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
         <div class="flex items-center justify-between text-slate-500">
-          <span class="text-[10px] font-bold uppercase tracking-wider">Média Perda SLA</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider">MÉDIA PERDA SLA</span>
           <i data-lucide="hourglass" class="w-4 h-4 text-amber-500"></i>
         </div>
-        <div id="kpiMedia" class="text-xl font-black text-amber-600 mt-1">0 min</div>
-        <div class="text-[10px] text-slate-400 mt-0.5">Atraso médio por TA (Col. B)</div>
+        <div id="kpiMedia" class="text-2xl font-black text-amber-600 mt-1">0 min</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Atraso médio por TA</div>
         <span class="inline-block bg-amber-50 text-amber-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1">Média</span>
       </div>
 
       <!-- Maior Perda -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
         <div class="flex items-center justify-between text-slate-500">
-          <span class="text-[10px] font-bold uppercase tracking-wider">Maior Perda</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider">MAIOR PERDA</span>
           <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-500"></i>
         </div>
-        <div id="kpiMaior" class="text-xl font-black text-rose-600 mt-1">--</div>
+        <div id="kpiMaior" class="text-2xl font-black text-rose-600 mt-1">--</div>
         <div id="kpiMaiorSub" class="text-[10px] text-slate-400 mt-0.5">Site com maior atraso</div>
         <span class="inline-block bg-rose-50 text-rose-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1" id="kpiMaiorTempo">0 min</span>
       </div>
@@ -159,10 +159,10 @@
       <!-- Perda < 30min -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
         <div class="flex items-center justify-between text-slate-500">
-          <span class="text-[10px] font-bold uppercase tracking-wider">Perda < 30min</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider">PERDA < 30MIN</span>
           <i data-lucide="timer" class="w-4 h-4 text-sky-500"></i>
         </div>
-        <div id="kpiPequenas" class="text-xl font-black text-sky-600 mt-1">0</div>
+        <div id="kpiPequenas" class="text-2xl font-black text-sky-600 mt-1">0</div>
         <div class="text-[10px] text-slate-400 mt-0.5">Pequenos desvios SLA</div>
         <span id="kpiPequenasPct" class="inline-block bg-sky-50 text-sky-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1">0%</span>
       </div>
@@ -170,22 +170,22 @@
       <!-- Justificados (Col. D) -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
         <div class="flex items-center justify-between text-slate-500">
-          <span class="text-[10px] font-bold uppercase tracking-wider">Justificados</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider">JUSTIFICADOS</span>
           <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-500"></i>
         </div>
-        <div id="kpiJustificados" class="text-xl font-black text-emerald-600 mt-1">0</div>
-        <div class="text-[10px] text-slate-400 mt-0.5">Com Justificativa (Col. D)</div>
+        <div id="kpiJustificados" class="text-2xl font-black text-emerald-600 mt-1">0</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Análise Coluna D</div>
         <span class="inline-block bg-emerald-50 text-emerald-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1">Coluna D</span>
       </div>
 
       <!-- Pendentes -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
         <div class="flex items-center justify-between text-slate-500">
-          <span class="text-[10px] font-bold uppercase tracking-wider">Pendentes</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider">PENDENTES</span>
           <i data-lucide="clock" class="w-4 h-4 text-rose-500"></i>
         </div>
-        <div id="kpiPendentes" class="text-xl font-black text-rose-600 mt-1">0</div>
-        <div class="text-[10px] text-slate-400 mt-0.5">Sem Justificativa</div>
+        <div id="kpiPendentes" class="text-2xl font-black text-rose-600 mt-1">0</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Aguardando Análise</div>
         <span class="inline-block bg-rose-50 text-rose-700 text-[9px] px-1.5 py-0.5 rounded font-bold mt-1">Aguardando</span>
       </div>
     </div>
@@ -193,17 +193,7 @@
     <!-- 3. BARRA DE FILTROS GLOBAIS -->
     <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-        <!-- Amostragem (Coluna BI) -->
-        <div>
-          <label class="block text-[10px] font-bold text-indigo-700 uppercase mb-1 flex items-center gap-1">
-            <i data-lucide="filter" class="w-3 h-3 text-indigo-600"></i> Amostragem (Col. BI)
-          </label>
-          <select id="filterAmostragem" onchange="applyFilters()" class="w-full bg-indigo-50/60 border border-indigo-200 text-indigo-900 rounded-lg p-1.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 outline-none">
-            <option value="TODOS">Todas as Amostragens</option>
-          </select>
-        </div>
-
-        <!-- Mês -->
+        <!-- Mês de Referência -->
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Mês de Referência</label>
           <select id="filterMes" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
@@ -243,79 +233,155 @@
           </select>
         </div>
 
+        <!-- Amostragem (Coluna BI) -->
+        <div>
+          <label class="block text-[10px] font-bold text-indigo-700 uppercase mb-1 flex items-center gap-1">
+            <i data-lucide="filter" class="w-3 h-3 text-indigo-600"></i> Amostragem (Col. BI)
+          </label>
+          <select id="filterAmostragem" onchange="applyFilters()" class="w-full bg-indigo-50/60 border border-indigo-200 text-indigo-900 rounded-lg p-1.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 outline-none">
+            <option value="TODOS">Todas as Amostragens</option>
+          </select>
+        </div>
+
         <!-- Busca Geral -->
         <div>
-          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Busca Site / TA / Município</label>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Busca Site / TA / Causa</label>
           <div class="relative">
-            <input type="text" id="filterSearch" onkeyup="applyFilters()" placeholder="Ex: CPS-001, Ourinhos, Energia..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs pl-7 focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="text" id="filterSearch" onkeyup="applyFilters()" placeholder="Ex: CPS-001, TA-1002, Energia..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs pl-7 focus:ring-2 focus:ring-blue-500 outline-none">
             <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2 top-2.5"></i>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 4. BLOCO 1: HISTÓRICO TEMPORAL -->
-    <div class="space-y-3">
-      <!-- EVOLUÇÃO DIÁRIA (COL. A x COL. Q) -->
-      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-1.5">
-            <i data-lucide="activity" class="w-4 h-4 text-blue-600"></i>
+    <!-- 4. BLOCO DE CARTÕES SUPERIORES (EVOLUÇÃO SEMANAL, EVOLUÇÃO MENSAL E PRINCIPAIS CAUSAS) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <!-- EVOLUÇÃO SEMANAL -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="trending-up" class="w-4 h-4 text-blue-600"></i>
             <div>
-              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Evolução de Encerramento Diário (Col. Q) & Perdas SLA</h3>
-              <p class="text-[10px] text-slate-400">Linha contínua por data de encerramento do evento (picos de desvios destacados em vermelho)</p>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Evolução Semanal (Últimas 4 Semanas + Atual)</h3>
+              <p class="text-[10px] text-slate-400">Padrão nacional ISO 8601 (Semana Atual em destaque)</p>
             </div>
           </div>
-          <span class="text-[10px] bg-red-50 text-red-600 px-2 py-0.5 rounded font-bold border border-red-100 flex items-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> Picos críticos de perdas SLA
-          </span>
+          <div class="h-[180px]">
+            <canvas id="chartEvolucaoSemanal"></canvas>
+          </div>
         </div>
-        <div class="h-[220px]">
-          <canvas id="chartEvolucaoDiaria"></canvas>
-        </div>
+        <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Acompanhamento semanal contínuo</div>
       </div>
 
-      <!-- EVOLUÇÃO SEMANAL E MENSAL -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <!-- EVOLUÇÃO SEMANAL -->
-        <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
-          <div>
-            <div class="flex items-center gap-1.5 mb-2">
-              <i data-lucide="trending-up" class="w-4 h-4 text-blue-600"></i>
-              <div>
-                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Evolução Semanal</h3>
-                <p class="text-[10px] text-slate-400">Padrão nacional ISO 8601 (Semana Atual em destaque)</p>
-              </div>
-            </div>
-            <div class="h-[160px]">
-              <canvas id="chartEvolucaoSemanal"></canvas>
+      <!-- EVOLUÇÃO MENSAL -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="bar-chart-3" class="w-4 h-4 text-indigo-600"></i>
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Evolução Mensal</h3>
+              <p class="text-[10px] text-slate-400">Histórico acumulado de volume por mês</p>
             </div>
           </div>
-          <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Acompanhamento semanal contínuo</div>
+          <div class="h-[180px]">
+            <canvas id="chartEvolucaoMensal"></canvas>
+          </div>
         </div>
+        <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Comparativo acumulado dos meses</div>
+      </div>
 
-        <!-- EVOLUÇÃO MENSAL -->
-        <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
-          <div>
-            <div class="flex items-center gap-1.5 mb-2">
-              <i data-lucide="bar-chart-3" class="w-4 h-4 text-indigo-600"></i>
-              <div>
-                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Evolução Mensal</h3>
-                <p class="text-[10px] text-slate-400">Histórico acumulado de volume por mês</p>
-              </div>
-            </div>
-            <div class="h-[160px]">
-              <canvas id="chartEvolucaoMensal"></canvas>
+      <!-- PRINCIPAIS CAUSAS DA PERDA -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="list-tree" class="w-4 h-4 text-rose-600"></i>
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Principais Causas da Perda</h3>
+              <p class="text-[10px] text-slate-400">Ranking das principais causas identificadas</p>
             </div>
           </div>
-          <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Comparativo acumulado dos meses</div>
+          <div class="h-[180px]">
+            <canvas id="chartPrincipaisCausas"></canvas>
+          </div>
         </div>
+        <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Classificação da causa raiz da perda</div>
       </div>
     </div>
 
-    <!-- 5. BLOCO 2: ANÁLISE DE PERÍODOS DE HORÁRIO (3 GRÁFICOS UM AO LADO DO OUTRO) -->
+    <!-- 5. BLOCO DE ESTATÍSTICAS SECUNDÁRIAS (OCORRÊNCIAS POR DDD, STATUS DA ANÁLISE E TIPO DE REDE) -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      
+      <!-- OCORRÊNCIAS POR DDD -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="map-pin" class="w-4 h-4 text-emerald-600"></i>
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Ocorrências por DDD</h3>
+              <p class="text-[10px] text-slate-400">Destaque em <span class="text-red-600 font-bold">vermelho</span> para o maior ofensor</p>
+            </div>
+          </div>
+          <div class="h-[180px]">
+            <canvas id="chartOcorrenciasDDD"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOVO: GRÁFICO POR MUNICÍPIO (COL. X) -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="building-2" class="w-4 h-4 text-indigo-600"></i>
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Ocorrências por Município (Col. X)</h3>
+              <p class="text-[10px] text-slate-400">Ranking das cidades com maior volume de perdas</p>
+            </div>
+          </div>
+          <div class="h-[180px]">
+            <canvas id="chartMunicipio"></canvas>
+          </div>
+        </div>
+        <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Concentração geográfica das perdas</div>
+      </div>
+
+      <!-- TIPO DE REDE & STATUS ANÁLISE -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-amber-600"></i>
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Tipo de Rede (Fixa e Móvel)</h3>
+              <p class="text-[10px] text-slate-400">Quantidade e % por tecnologia de rede</p>
+            </div>
+          </div>
+          <div class="h-[180px]">
+            <canvas id="chartTipoRedeStatus"></canvas>
+          </div>
+        </div>
+        <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Proporção de impactados por tipo de rede</div>
+      </div>
+    </div>
+
+    <!-- 6. EVOLUÇÃO DE ENCERRAMENTO DIÁRIO (LARGURA TOTAL ABAIXO DOS BLOCOS DE ANÁLISE) -->
+    <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-1.5">
+          <i data-lucide="activity" class="w-4 h-4 text-blue-600"></i>
+          <div>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Evolução de Encerramento Diário (Col. Q) & Perdas SLA</h3>
+            <p class="text-[10px] text-slate-400">Linha contínua por data de encerramento do evento (picos de desvios destacados em vermelho)</p>
+          </div>
+        </div>
+        <span class="text-[10px] bg-red-50 text-red-600 px-2 py-0.5 rounded font-bold border border-red-100 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> Picos críticos de perdas SLA
+        </span>
+      </div>
+      <div class="h-[220px]">
+        <canvas id="chartEvolucaoDiaria"></canvas>
+      </div>
+    </div>
+
+    <!-- 7. BLOCO: ANÁLISE DE PERÍODOS DE HORÁRIO (3 GRÁFICOS UM AO LADO DO OUTRO) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
       <!-- PERÍODO DE ABERTURA (COL. A) -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
         <div>
@@ -360,7 +426,7 @@
         </div>
       </div>
 
-      <!-- HORÁRIO DE MAIOR PERDA (COL. B) -->
+      <!-- HORÁRIO DE MAIOR PERDA -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
         <div>
           <div class="flex items-center justify-between mb-2">
@@ -381,65 +447,10 @@
           </div>
         </div>
       </div>
-
     </div>
 
-    <!-- 6. BLOCO 3: ANÁLISE DE MUNICÍPIO (COL. X), CAUSAS E REGIAO -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <!-- NOVO: GRÁFICO POR MUNICÍPIO (COL. X) -->
-      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
-        <div>
-          <div class="flex items-center gap-1.5 mb-2">
-            <i data-lucide="building-2" class="w-4 h-4 text-indigo-600"></i>
-            <div>
-              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Ocorrências por Município (Col. X)</h3>
-              <p class="text-[10px] text-slate-400">Ranking das cidades com maior volume de perdas</p>
-            </div>
-          </div>
-          <div class="h-[180px]">
-            <canvas id="chartMunicipio"></canvas>
-          </div>
-        </div>
-        <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Concentração geográfica das perdas</div>
-      </div>
-
-      <!-- PRINCIPAIS CAUSAS DA PERDA -->
-      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
-        <div>
-          <div class="flex items-center gap-1.5 mb-2">
-            <i data-lucide="list-tree" class="w-4 h-4 text-rose-600"></i>
-            <div>
-              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Principais Causas da Perda</h3>
-              <p class="text-[10px] text-slate-400">Ranking das principais causas identificadas</p>
-            </div>
-          </div>
-          <div class="h-[180px]">
-            <canvas id="chartPrincipaisCausas"></canvas>
-          </div>
-        </div>
-        <div class="text-[10px] text-slate-400 text-center border-t border-slate-100 pt-1 mt-1">Classificação da causa raiz da perda</div>
-      </div>
-
-      <!-- OCORRÊNCIAS POR DDD -->
-      <div class="bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
-        <div>
-          <div class="flex items-center gap-1.5 mb-2">
-            <i data-lucide="map-pin" class="w-4 h-4 text-emerald-600"></i>
-            <div>
-              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Ocorrências por DDD</h3>
-              <p class="text-[10px] text-slate-400">Destaque em <span class="text-red-600 font-bold">vermelho</span> para o maior ofensor</p>
-            </div>
-          </div>
-          <div class="h-[180px]">
-            <canvas id="chartOcorrenciasDDD"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 7. BLOCO 4: RANKINGS E TABELAS DE GESTÃO (LADO A LADO NA PÁGINA) -->
+    <!-- 8. BLOCO: RANKINGS E TABELAS DE GESTÃO (LADO A LADO NA PÁGINA) -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-      
       <!-- TOP 10 SITES OFENSORES -->
       <div class="bg-white p-3.5 rounded-xl border border-slate-200 card-shadow">
         <div class="flex items-center justify-between mb-2">
@@ -502,10 +513,9 @@
           </table>
         </div>
       </div>
-
     </div>
 
-    <!-- 8. BLOCO 5: BASE DETALHADA DE TAS FORA DO PRAZO -->
+    <!-- 9. BLOCO: BASE DETALHADA DE TAS FORA DO PRAZO -->
     <div class="bg-white p-3.5 rounded-xl border border-slate-200 card-shadow">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3">
         <div class="flex items-center gap-2">
@@ -575,20 +585,17 @@
 
   <!-- RODAPÉ -->
   <footer class="max-w-[1700px] mx-auto p-4 text-center text-xs text-slate-400 border-t border-slate-200 mt-6">
-    Portal Gerencial de SLA • Mapeamento Atualizado: Col A (Abertura), Col B (Tempo SLA), Col D (Justificativa), Col Q (Encerramento), Col X (Município), Col BI (Amostragem)
+    Portal Gerencial de SLA • Layout Reorganizado conforme Modelo de Referência (KPIs 6 Colunas, Filtros, Gráficos Temporais e Causas)
   </footer>
 
   <!-- LÓGICA JAVASCRIPT & RENDERIZAÇÃO -->
   <script>
-    // URL da planilha Google publicada em CSV
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKGyoNQrVUBIbfOwpUMsmvPgvPOgSPF-7BaORqi-8JmNoTHVkWXuBk20vBpc29MaNIFXz56_McLbi9/pub?output=csv';
 
-    // Variáveis Globais de Dados
     let rawData = [];
     let filteredData = [];
     let chartInstances = {};
 
-    // Dados Mock para Fallback de Segurança
     const mockData = generateMockData();
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -601,7 +608,7 @@
       
       Papa.parse(CSV_URL, {
         download: true,
-        header: false, // Leitura por índice exato de colunas
+        header: false,
         skipEmptyLines: true,
         complete: function(results) {
           if (results.data && results.data.length > 1) {
@@ -629,25 +636,13 @@
       document.getElementById('statusAlert').querySelector('span').innerHTML = "<strong>Modo Demonstrativo:</strong> Exibindo dados em cache com mapeamento das colunas A, B, D, Q, X e BI.";
     }
 
-    // Processamento estrito por Posição/Índice da Coluna
     function processPositionalCSV(rows) {
       return rows.map((row, index) => {
-        // Coluna A (Índice 0): Abertura do Evento
         const dataAbertura = row[0] || new Date(2026, 9, (index % 28) + 1).toLocaleDateString('pt-BR') + ' 08:30';
-        
-        // Coluna B (Índice 1): Tempo Perda SLA
         const tempoB = parseInt(row[1] || Math.floor(Math.random() * 180) + 10);
-        
-        // Coluna D (Índice 3): Justificativa
         const justificativaD = row[3] || (index % 3 === 0 ? 'Pendente de justificativa em campo' : 'Falta de energia comercial tratada junto à concessionária');
-        
-        // Coluna Q (Índice 16): Data de Encerramento
         const dataEncerramento = row[16] || row[0] || new Date(2026, 9, (index % 28) + 1).toLocaleDateString('pt-BR');
-        
-        // Coluna X (Índice 23): Município
         const municipioX = row[23] || ['Ourinhos', 'São Paulo', 'Campinas', 'Bauru', 'Presidente Prudente'][index % 5];
-        
-        // Coluna BI (Índice 60): Status da Amostragem
         const amostragemBI = row[60] || row[58] || (index % 2 === 0 ? 'Amostra Válida' : 'Amostra Auditada');
 
         const rede = row[4] || (index % 3 === 0 ? 'Fixa V2' : index % 2 === 0 ? 'Fixa' : 'Móvel');
@@ -656,7 +651,6 @@
         const coordenador = row[7] || `Coordenador ${String.fromCharCode(65 + (index % 5))}`;
         const causa = row[9] || ['Energia Comercial', 'Vandalismo / Furto', 'Clima / Chuvas', 'Fibra Rompida', 'Falha Equipamento'][index % 5];
 
-        // Extrair Horário (Abertura e Encerramento)
         const horaAbertura = getFaixaHorario(dataAbertura);
         const horaEncerramento = getFaixaHorario(dataEncerramento);
 
@@ -706,7 +700,6 @@
       return 'Outubro/2026';
     }
 
-    // Popular os Filtros
     function populateFilterDropdowns() {
       const amostragens = [...new Set(rawData.map(d => d.amostragem))].filter(Boolean);
       const meses = [...new Set(rawData.map(d => d.mes))];
@@ -738,7 +731,6 @@
       });
     }
 
-    // Aplicar Filtros Globais
     function applyFilters() {
       const amostragem = document.getElementById('filterAmostragem').value;
       const mes = document.getElementById('filterMes').value;
@@ -789,7 +781,6 @@
       applyFilters();
     }
 
-    // Atualização dos KPIs
     function updateKPIs() {
       const total = filteredData.length;
       const totalTempo = filteredData.reduce((acc, d) => acc + d.tempoPerda, 0);
@@ -816,7 +807,6 @@
       document.getElementById('kpiPendentes').innerText = pendentes;
     }
 
-    // Insights Inteligentes
     function updateInsights() {
       if (filteredData.length === 0) {
         document.getElementById('insightRede').innerText = 'Sem dados para os filtros selecionados.';
@@ -841,17 +831,17 @@
       document.getElementById('insightTratativas').innerHTML = `Atualmente <strong>${pctJust}%</strong> das ocorrências possuem justificativa cadastrada na Coluna D.`;
     }
 
-    // Renderização Geral dos Gráficos
     function renderAllCharts() {
-      renderEvolucaoDiaria();
       renderEvolucaoSemanal();
       renderEvolucaoMensal();
+      renderPrincipaisCausas();
+      renderOcorrenciasDDD();
+      renderMunicipioChart();
+      renderTipoRedeStatus();
+      renderEvolucaoDiaria();
       renderHorariosStacked('chartHorarioAbertura', 'horarioAbertura');
       renderHorariosStacked('chartHorarioEncerramento', 'horarioEncerramento');
       renderHorariosStacked('chartHorarioMaiorPerda', 'horarioAbertura');
-      renderMunicipioChart();
-      renderPrincipaisCausas();
-      renderOcorrenciasDDD();
     }
 
     function getCustomStackedTooltip() {
@@ -917,7 +907,209 @@
       };
     }
 
-    // 1. EVOLUÇÃO DIÁRIA (DATA DE ENCERRAMENTO COL. Q)
+    // 1. EVOLUÇÃO SEMANAL
+    function renderEvolucaoSemanal() {
+      const ctx = document.getElementById('chartEvolucaoSemanal').getContext('2d');
+      if (chartInstances['chartEvolucaoSemanal']) chartInstances['chartEvolucaoSemanal'].destroy();
+
+      const semanas = ['Semana 37', 'Semana 38', 'Semana 39', 'Semana 40 (Atual)'];
+      const dataValues = [
+        Math.round(filteredData.length * 0.18),
+        Math.round(filteredData.length * 0.22),
+        Math.round(filteredData.length * 0.28),
+        Math.round(filteredData.length * 0.32)
+      ];
+
+      chartInstances['chartEvolucaoSemanal'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: semanas,
+          datasets: [{
+            label: 'Qtd TAs',
+            data: dataValues,
+            backgroundColor: ['#cbd5e1', '#cbd5e1', '#cbd5e1', '#2563eb'],
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 9 } }, grid: { display: false } },
+            y: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // 2. EVOLUÇÃO MENSAL
+    function renderEvolucaoMensal() {
+      const ctx = document.getElementById('chartEvolucaoMensal').getContext('2d');
+      if (chartInstances['chartEvolucaoMensal']) chartInstances['chartEvolucaoMensal'].destroy();
+
+      const meses = ['Julho', 'Agosto', 'Setembro', 'Outubro'];
+      const dataValues = [
+        Math.round(filteredData.length * 0.7),
+        Math.round(filteredData.length * 0.85),
+        Math.round(filteredData.length * 0.9),
+        filteredData.length
+      ];
+
+      chartInstances['chartEvolucaoMensal'] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: meses,
+          datasets: [{
+            label: 'Volume Mensal',
+            data: dataValues,
+            borderColor: '#4f46e5',
+            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 9 } }, grid: { display: false } },
+            y: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // 3. PRINCIPAIS CAUSAS
+    function renderPrincipaisCausas() {
+      const ctx = document.getElementById('chartPrincipaisCausas').getContext('2d');
+      if (chartInstances['chartPrincipaisCausas']) chartInstances['chartPrincipaisCausas'].destroy();
+
+      const count = {};
+      filteredData.forEach(d => count[d.causa] = (count[d.causa] || 0) + 1);
+
+      const labels = Object.keys(count).slice(0, 5);
+      const values = labels.map(l => count[l]);
+
+      chartInstances['chartPrincipaisCausas'] = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values.length > 0 ? values : [1],
+            backgroundColor: values.length > 0 ? ['#e11d48', '#f59e0b', '#06b6d4', '#10b981', '#6366f1'] : ['#cbd5e1']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'right', labels: { boxWidth: 10, font: { size: 9 } } }
+          },
+          cutout: '65%'
+        }
+      });
+    }
+
+    // 4. OCORRÊNCIAS POR DDD
+    function renderOcorrenciasDDD() {
+      const ctx = document.getElementById('chartOcorrenciasDDD').getContext('2d');
+      if (chartInstances['chartOcorrenciasDDD']) chartInstances['chartOcorrenciasDDD'].destroy();
+
+      const count = {};
+      filteredData.forEach(d => count[d.ddd] = (count[d.ddd] || 0) + 1);
+
+      const labels = Object.keys(count).sort((a,b) => count[b] - count[a]).slice(0, 6);
+      const values = labels.map(l => count[l]);
+      const bgColors = values.map((v, i) => i === 0 ? '#ef4444' : '#3b82f6');
+
+      chartInstances['chartOcorrenciasDDD'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Ocorrências',
+            data: values,
+            backgroundColor: bgColors,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 9 } }, grid: { display: false } },
+            y: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // 5. GRÁFICO POR MUNICÍPIO (COL. X)
+    function renderMunicipioChart() {
+      const ctx = document.getElementById('chartMunicipio').getContext('2d');
+      if (chartInstances['chartMunicipio']) chartInstances['chartMunicipio'].destroy();
+
+      const count = {};
+      filteredData.forEach(d => count[d.municipio] = (count[d.municipio] || 0) + 1);
+
+      const labels = Object.keys(count).sort((a,b) => count[b] - count[a]).slice(0, 5);
+      const values = labels.map(l => count[l]);
+
+      chartInstances['chartMunicipio'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'TAs por Categoria',
+            data: values,
+            backgroundColor: '#6366f1',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 9 } }, grid: { display: false } },
+            y: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // 6. TIPO DE REDE
+    function renderTipoRedeStatus() {
+      const ctx = document.getElementById('chartTipoRedeStatus').getContext('2d');
+      if (chartInstances['chartTipoRedeStatus']) chartInstances['chartTipoRedeStatus'].destroy();
+
+      const redes = {};
+      filteredData.forEach(d => redes[d.rede] = (redes[d.rede] || 0) + 1);
+
+      chartInstances['chartTipoRedeStatus'] = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(redes),
+          datasets: [{
+            data: Object.values(redes),
+            backgroundColor: ['#0284c7', '#0d9488', '#8b5cf6']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } }
+          }
+        }
+      });
+    }
+
+    // 7. EVOLUÇÃO DE ENCERRAMENTO DIÁRIO (COL. Q)
     function renderEvolucaoDiaria() {
       const ctx = document.getElementById('chartEvolucaoDiaria').getContext('2d');
       if (chartInstances['chartEvolucaoDiaria']) chartInstances['chartEvolucaoDiaria'].destroy();
@@ -981,82 +1173,7 @@
       });
     }
 
-    // 2. EVOLUÇÃO SEMANAL
-    function renderEvolucaoSemanal() {
-      const ctx = document.getElementById('chartEvolucaoSemanal').getContext('2d');
-      if (chartInstances['chartEvolucaoSemanal']) chartInstances['chartEvolucaoSemanal'].destroy();
-
-      const semanas = ['Semana 37', 'Semana 38', 'Semana 39', 'Semana 40 (Atual)'];
-      const dataValues = [
-        Math.round(filteredData.length * 0.18),
-        Math.round(filteredData.length * 0.22),
-        Math.round(filteredData.length * 0.28),
-        Math.round(filteredData.length * 0.32)
-      ];
-
-      chartInstances['chartEvolucaoSemanal'] = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: semanas,
-          datasets: [{
-            label: 'Qtd TAs',
-            data: dataValues,
-            backgroundColor: ['#cbd5e1', '#cbd5e1', '#cbd5e1', '#2563eb'],
-            borderRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { font: { size: 9 } }, grid: { display: false } },
-            y: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true }
-          }
-        }
-      });
-    }
-
-    // 3. EVOLUÇÃO MENSAL
-    function renderEvolucaoMensal() {
-      const ctx = document.getElementById('chartEvolucaoMensal').getContext('2d');
-      if (chartInstances['chartEvolucaoMensal']) chartInstances['chartEvolucaoMensal'].destroy();
-
-      const meses = ['Julho', 'Agosto', 'Setembro', 'Outubro'];
-      const dataValues = [
-        Math.round(filteredData.length * 0.7),
-        Math.round(filteredData.length * 0.85),
-        Math.round(filteredData.length * 0.9),
-        filteredData.length
-      ];
-
-      chartInstances['chartEvolucaoMensal'] = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: meses,
-          datasets: [{
-            label: 'Volume Mensal',
-            data: dataValues,
-            borderColor: '#4f46e5',
-            backgroundColor: 'rgba(79, 70, 229, 0.1)',
-            fill: true,
-            tension: 0.3,
-            pointRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { font: { size: 9 } }, grid: { display: false } },
-            y: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true }
-          }
-        }
-      });
-    }
-
-    // 4. GRÁFICOS DE PERÍODOS DE HORÁRIO
+    // 8. GRÁFICOS DE PERÍODOS DE HORÁRIO
     function renderHorariosStacked(canvasId, campoProp) {
       const ctx = document.getElementById(canvasId).getContext('2d');
       if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
@@ -1097,106 +1214,6 @@
           scales: {
             x: { stacked: true, ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true },
             y: { stacked: true, ticks: { font: { size: 10, weight: 'bold' } }, grid: { display: false } }
-          }
-        }
-      });
-    }
-
-    // 5. NOVO: GRÁFICO POR MUNICÍPIO (COL. X)
-    function renderMunicipioChart() {
-      const ctx = document.getElementById('chartMunicipio').getContext('2d');
-      if (chartInstances['chartMunicipio']) chartInstances['chartMunicipio'].destroy();
-
-      const count = {};
-      filteredData.forEach(d => count[d.municipio] = (count[d.municipio] || 0) + 1);
-
-      const labels = Object.keys(count).sort((a,b) => count[b] - count[a]).slice(0, 5);
-      const values = labels.map(l => count[l]);
-
-      chartInstances['chartMunicipio'] = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'TAs por Categoria',
-            data: values,
-            backgroundColor: '#6366f1',
-            borderRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { font: { size: 9 } }, grid: { display: false } },
-            y: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true }
-          }
-        }
-      });
-    }
-
-    // 6. PRINCIPAIS CAUSAS
-    function renderPrincipaisCausas() {
-      const ctx = document.getElementById('chartPrincipaisCausas').getContext('2d');
-      if (chartInstances['chartPrincipaisCausas']) chartInstances['chartPrincipaisCausas'].destroy();
-
-      const count = {};
-      filteredData.forEach(d => count[d.causa] = (count[d.causa] || 0) + 1);
-
-      const labels = Object.keys(count).slice(0, 5);
-      const values = labels.map(l => count[l]);
-
-      chartInstances['chartPrincipaisCausas'] = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: values.length > 0 ? values : [1],
-            backgroundColor: values.length > 0 ? ['#e11d48', '#f59e0b', '#06b6d4', '#10b981', '#6366f1'] : ['#cbd5e1']
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'right', labels: { boxWidth: 10, font: { size: 9 } } }
-          },
-          cutout: '65%'
-        }
-      });
-    }
-
-    // 7. OCORRÊNCIAS POR DDD
-    function renderOcorrenciasDDD() {
-      const ctx = document.getElementById('chartOcorrenciasDDD').getContext('2d');
-      if (chartInstances['chartOcorrenciasDDD']) chartInstances['chartOcorrenciasDDD'].destroy();
-
-      const count = {};
-      filteredData.forEach(d => count[d.ddd] = (count[d.ddd] || 0) + 1);
-
-      const labels = Object.keys(count).sort((a,b) => count[b] - count[a]).slice(0, 6);
-      const values = labels.map(l => count[l]);
-      const bgColors = values.map((v, i) => i === 0 ? '#ef4444' : '#3b82f6');
-
-      chartInstances['chartOcorrenciasDDD'] = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Ocorrências',
-            data: values,
-            backgroundColor: bgColors,
-            borderRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { font: { size: 9 } }, grid: { display: false } },
-            y: { ticks: { font: { size: 9 } }, grid: { color: '#f1f5f9' }, beginAtZero: true }
           }
         }
       });
@@ -1288,7 +1305,7 @@
       });
     }
 
-    // Base Detalhada Tabela (Com Botão VER na Justificativa Coluna D)
+    // Base Detalhada Tabela
     function renderTableBase() {
       const tbody = document.getElementById('tableBaseBody');
       tbody.innerHTML = '';
@@ -1347,7 +1364,6 @@
       document.getElementById('modalJustificativa').classList.add('hidden');
     }
 
-    // Exportar CSV
     function exportCSV() {
       const csv = Papa.unparse(filteredData);
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -1360,7 +1376,6 @@
       document.body.removeChild(link);
     }
 
-    // Gerador de Dados Mock para Fallback de Testes
     function generateMockData() {
       const arr = [];
       const ddds = ['DDD 11', 'DDD 19', 'DDD 21', 'DDD 31', 'DDD 41'];
