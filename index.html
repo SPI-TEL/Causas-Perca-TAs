@@ -200,7 +200,7 @@
     <section class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-wrap items-center justify-between gap-4 no-print">
       <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
         <div>
-          <label class="block text-[11px] font-bold text-sky-800 uppercase tracking-wider mb-1">Mês de Referência</label>
+          <label class="block text-[11px] font-bold text-sky-800 uppercase tracking-wider mb-1">Mês de Referência (Encerramento)</label>
           <select id="filter-mes" onchange="applyFilters()" class="text-xs bg-sky-50 border border-sky-300 rounded-lg p-2 font-bold text-sky-900 focus:ring-2 focus:ring-sky-500 focus:outline-none">
             <option value="ALL">Todos os Meses</option>
           </select>
@@ -255,7 +255,7 @@
       </div>
     </section>
 
-    <!-- SECTION: DESTAQUE TOP 10 PRINCIPAIS CAUSAS DA PERDA -->
+    <!-- SECTION: DESTAQUE TOP 10 PRINCIPAIS CAUSAS DA PERDA (COLUNA O) -->
     <section class="bg-white p-5 rounded-2xl border-2 border-rose-200/90 shadow-md">
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-sm font-extrabold uppercase tracking-wider text-rose-800 flex items-center gap-2">
@@ -265,7 +265,7 @@
           Ranking Causa Raiz
         </span>
       </div>
-      <p class="text-xs text-slate-500 mb-4">Mapeamento detalhado das 10 principais causas causadoras de estouro de SLA com percentual relativo ao filtro atual</p>
+      <p class="text-xs text-slate-500 mb-4">Mapeamento detalhado das 10 principais causas causadoras de estouro de SLA (Tipo de Alarme) com percentual relativo ao filtro atual</p>
       <div class="h-80 relative">
         <canvas id="chart-causas-destaque"></canvas>
       </div>
@@ -289,10 +289,10 @@
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-chart-column text-indigo-600"></i> Evolução Mensal
+            <i class="fa-solid fa-chart-column text-indigo-600"></i> Evolução Mensal (Data de Encerramento)
           </h3>
         </div>
-        <p class="text-[10px] text-slate-400 mb-2">Histórico acumulado de volume por mês</p>
+        <p class="text-[10px] text-slate-400 mb-2">Histórico acumulado de volume por mês de encerramento</p>
         <div class="h-56 relative">
           <canvas id="chart-mensal"></canvas>
         </div>
@@ -571,10 +571,17 @@
       parsedData = rows.map((r, index) => {
         const keys = Object.keys(r);
 
-        const getVal = (possibleKeys) => {
+        // Função de busca exata evitando ambiguidades de coluna
+        const getValByKey = (exactKeys) => {
           for (let k of keys) {
-            let lowerK = k.toLowerCase().trim();
-            if (possibleKeys.some(p => lowerK.includes(p.toLowerCase()))) {
+            let cleanK = k.toUpperCase().trim();
+            if (exactKeys.some(e => cleanK === e.toUpperCase())) {
+              return r[k] ? r[k].toString().trim() : '';
+            }
+          }
+          for (let k of keys) {
+            let cleanK = k.toUpperCase().trim();
+            if (exactKeys.some(e => cleanK.includes(e.toUpperCase()))) {
               return r[k] ? r[k].toString().trim() : '';
             }
           }
@@ -592,44 +599,42 @@
           return isNaN(n) ? 0 : Math.round(n);
         };
 
-        const evento = getVal(['evento', 'ta', 'ticket', 'id']) || `EV-${3689000000 + index}`;
+        const evento = getValByKey(['EVENTO', 'TA', 'TICKET', 'ID']) || `EV-${3689000000 + index}`;
         
-        // Coordenador mapeado da coluna AU
-        const coordenador = getVal(['coordenador', 'cador', 'gestor', 'au']) || 'Não informado';
-        const dddRaw = getVal(['ddd']) || 'Não Informado';
-        const municipio = getVal(['município', 'municipio', 'cidade']) || 'Não Informado';
+        // Coordenador da Coluna AU
+        const coordenador = getValByKey(['COORDENADOR', 'CADOR', 'GESTOR']) || 'Não informado';
+        const dddRaw = getValByKey(['DDD']) || 'Não Informado';
+        const municipio = getValByKey(['MUNICÍPIO', 'MUNICIPIO', 'CIDADE']) || 'Não Informado';
 
-        // Tipo de Alarme mapeado da coluna O
-        const tipoAlarme = getVal(['tipo_alarme', 'tipo alarme', 'alarme']) || 'Não Informado';
+        // Tipo de Alarme extraído da Coluna O (TIPO_ALARME)
+        const tipoAlarme = getValByKey(['TIPO_ALARME', 'TIPO ALARME', 'ALARME']) || 'Não Informado';
 
-        // Causa da Perda mapeada especificamente da coluna E
-        let causaE = getVal(['causa da perda', 'causa', 'motivo', 'descrição', 'descricao', 'causa_raiz']);
-        if (!causaE || causaE.trim() === '') causaE = 'Não Informado';
-
-        // Tipo de Rede mapeado de PLANTA
-        const explicitRede = getVal(['planta', 'tipo de rede', 'rede']);
+        // Tipo de Rede mapeado de PLANTA (Coluna K)
+        const explicitRede = getValByKey(['PLANTA', 'TIPO DE REDE', 'REDE']);
         let tipoRede = 'Móvel';
         if (explicitRede) {
           tipoRede = explicitRede.toLowerCase().includes('fix') ? 'Fixa' : 'Móvel';
         }
 
-        const site = getVal(['site', 'estação', 'estacao']) || 'SITE';
-        const tempoMin = parseMinutes(getVal(['tempo perda sla', 'tempo perda', 'tempo', 'atraso']));
-        const amostragem = getVal(['amostragem', 'amostra']) || 'Todas as Amostragens';
+        const site = getValByKey(['SITE', 'ESTAÇÃO', 'ESTACAO']) || 'SITE';
+        const tempoMin = parseMinutes(getValByKey(['TEMPO PERDA SLA', 'TEMPO PERDA', 'TEMPO', 'ATRASO']));
+        const amostragem = getValByKey(['AMOSTRAGEM', 'AMOSTRA']) || 'Todas as Amostragens';
 
         // Período de Abertura (Coluna BB) e Encerramento (Coluna BC)
-        const periodoAbertura = getVal(['período de abertura', 'periodo abertura', 'bb']) || '06:00 às 12:00';
-        const encerramento = getVal(['encerramento', 'data encerramento', 'bc']) || '12:00 às 18:00';
+        const periodoAbertura = getValByKey(['PERÍODO DE ABERTURA', 'PERIODO ABERTURA', 'ABERTURA_PERIODO']) || '06:00 às 12:00';
+        const encerramento = getValByKey(['PERIODO ENCERRAMENTO', 'PERÍODO ENCERRAMENTO', 'ENCERRAMENTO_PERIODO']) || '12:00 às 18:00';
 
-        const analiseVal = getVal(['análise', 'analise', 'status', 'tratativa', 'detalhes']);
+        const analiseVal = getValByKey(['ANÁLISE', 'ANALISE', 'STATUS', 'TRATATIVA', 'DETALHES']);
         const isJustificado = analiseVal.toLowerCase().includes('justificad') || analiseVal.toLowerCase().includes('ok') || analiseVal.toLowerCase().includes('sim');
 
-        const rawDataStr = getVal(['data_cria', 'data', 'dt_evento', 'data_abertura']) || '01/10/2026';
+        // Data de Encerramento (Coluna Q / DATA_ENCERRAMENTO) para agrupar os meses do portal
+        const dataEncerramentoStr = getValByKey(['DATA_ENCERRAMENTO', 'DT_ENCERRAMENTO', 'DATA_ENC', 'DATA_CRIACAO', 'DATA_CRIA', 'DATA']) || '01/10/2026';
+
         let semanaCalculada = '';
         let mesExtenso = '';
 
-        if (rawDataStr.includes('/') || rawDataStr.includes('-')) {
-          let parts = rawDataStr.replace(/-/g, '/').split('/');
+        if (dataEncerramentoStr.includes('/') || dataEncerramentoStr.includes('-')) {
+          let parts = dataEncerramentoStr.replace(/-/g, '/').split('/');
           if (parts.length >= 3) {
             let day = parseInt(parts[0]) || 1;
             let month = parseInt(parts[1]) - 1;
@@ -647,8 +652,8 @@
         if (!semanaCalculada) semanaCalculada = 'Semana 43';
         if (!mesExtenso) mesExtenso = 'Outubro';
 
-        // Formatação apenas para Data DD/MM/AAAA para o gráfico diário
-        let dataApenasDia = rawDataStr.split(' ')[0];
+        // Apenas a data DD/MM/AAAA truncando horários
+        let dataApenasDia = dataEncerramentoStr.split(' ')[0];
 
         return {
           id: evento,
@@ -662,8 +667,8 @@
           tipoAlarme,
           site,
           coordenador,
-          causa: causaE,
-          causaDesc: causaE,
+          causa: tipoAlarme,
+          causaDesc: tipoAlarme,
           tipoRede,
           tempoMin,
           amostragem,
@@ -826,21 +831,19 @@
     function renderCharts() {
       const totalTAsAtual = filteredData.length || 1;
 
-      // --- CHART 0: TOP 10 CAUSAS PRINCIPAIS (COLUNA E - NÃO INFORMADO SEMPRE NA ÚLTIMA LINHA) ---
+      // --- CHART 0: TOP 10 CAUSAS PRINCIPAIS (TIPO DE ALARME DA COLUNA O - NÃO INFORMADO SEMPRE EM ÚLTIMO) ---
       const causaCounts = {};
       filteredData.forEach(d => {
-        let key = d.causa;
+        let key = d.tipoAlarme;
         if (!key || key.trim() === '') key = 'Não Informado';
         causaCounts[key] = (causaCounts[key] || 0) + 1;
       });
 
-      // Separa "Não Informado" para colocar na última posição se existir
       const naoInformadoVal = causaCounts['Não Informado'] || 0;
       delete causaCounts['Não Informado'];
 
       let sortedCausas = Object.entries(causaCounts).sort((a,b) => b[1] - a[1]);
       
-      // Limita em até 9 causas normais para dar espaço a "Não Informado" na 10ª linha se existir
       if (naoInformadoVal > 0) {
         sortedCausas = sortedCausas.slice(0, 9);
         sortedCausas.push(['Não Informado', naoInformadoVal]);
@@ -910,13 +913,12 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART 2: EVOLUÇÃO MENSAL (APENAS MESES COM REGISTROS VÁLIDOS) ---
+      // --- CHART 2: EVOLUÇÃO MENSAL (BASEADO NA DATA DE ENCERRAMENTO DA COLUNA Q) ---
       const mesCounts = {};
       filteredData.forEach(d => {
         if (d.mes) mesCounts[d.mes] = (mesCounts[d.mes] || 0) + 1;
       });
 
-      // Ordena de acordo com a ordem natural dos meses no ano
       const mesesComDados = Object.keys(mesCounts).sort((a, b) => NOME_MESES.indexOf(a) - NOME_MESES.indexOf(b));
       const valoresMeses = mesesComDados.map(m => mesCounts[m]);
 
@@ -931,10 +933,10 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART ENCERRAMENTO DIÁRIO (APENAS POR DIA DD/MM/AAAA) ---
+      // --- CHART ENCERRAMENTO DIÁRIO (AGRUPADO ESTRITAMENTE POR DIA DD/MM/AAAA) ---
       const dataCounts = {};
       filteredData.forEach(d => {
-        let diaSo = d.data.split(' ')[0]; // Garante que trunca a hora
+        let diaSo = d.data.split(' ')[0];
         dataCounts[diaSo] = (dataCounts[diaSo] || 0) + 1;
       });
 
