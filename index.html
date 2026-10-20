@@ -296,11 +296,11 @@
         <div class="h-56 relative">
           <canvas id="chart-mensal"></canvas>
         </div>
-        <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo acumulado dos meses</span>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo acumulado dos meses com registros</span>
       </div>
     </section>
 
-    <!-- SECTION: EVOLUÇÃO DE ENCERRAMENTO DIÁRIO & PERDAS SLA (COMPACTADO) -->
+    <!-- SECTION: EVOLUÇÃO DE ENCERRAMENTO DIÁRIO & PERDAS SLA (AGRUPADO POR DIA) -->
     <section class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
@@ -314,7 +314,7 @@
       </div>
     </section>
 
-    <!-- CHARTS ROW 2: DDD, TOP 10 TIPOS DE ALARME (COLUNA O - ABA ANALÍTICO) E TIPO DE REDE -->
+    <!-- CHARTS ROW 2: DDD, TOP 10 TIPOS DE ALARME E TIPO DE REDE -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
@@ -328,7 +328,7 @@
         </div>
       </div>
 
-      <!-- CARD: TOP 10 TIPOS DE ALARME (COLUNA O DE TIPO_ALARME) -->
+      <!-- CARD: TOP 10 TIPOS DE ALARME -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
@@ -339,7 +339,7 @@
         <div class="h-64 relative">
           <canvas id="chart-alarme"></canvas>
         </div>
-        <span class="text-[10px] text-slate-400 text-center block mt-2">Mapeado diretamente da Coluna O (TIPO_ALARME) da aba Analítico</span>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Mapeado diretamente da aba Analítico</span>
       </div>
 
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
@@ -477,7 +477,7 @@
               <th class="p-3">Encerramento</th>
               <th class="p-3">DDD</th>
               <th class="p-3">Município</th>
-              <th class="p-3">Tipo Alarme (Col. O)</th>
+              <th class="p-3">Tipo Alarme</th>
               <th class="p-3">Site/Localidade</th>
               <th class="p-3">Rede (Planta)</th>
               <th class="p-3">Coordenador</th>
@@ -497,7 +497,6 @@
   <script>
     Chart.register(ChartDataLabels);
 
-    // URL publica do documento (sem gid restritivo à outra aba)
     const GOOGLE_SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKGyoNQrVUBIbfOwpUMsmvPgvPOgSPF-7BaORqi-8JmNoTHVkWXuBk20vBpc29MaNIFXz56_McLbi9/pub?output=csv';
 
     let rawData = [];
@@ -593,16 +592,21 @@
           return isNaN(n) ? 0 : Math.round(n);
         };
 
-        // Identificação exata conforme os cabeçalhos da aba Analítico (Imagem 1)
         const evento = getVal(['evento', 'ta', 'ticket', 'id']) || `EV-${3689000000 + index}`;
-        const coordenador = getVal(['coordenador', 'cador', 'gestor']) || 'Não informado';
+        
+        // Coordenador mapeado da coluna AU
+        const coordenador = getVal(['coordenador', 'cador', 'gestor', 'au']) || 'Não informado';
         const dddRaw = getVal(['ddd']) || 'Não Informado';
         const municipio = getVal(['município', 'municipio', 'cidade']) || 'Não Informado';
 
-        // TIPO_ALARME é mapeado diretamente da Coluna O da aba Analítico
+        // Tipo de Alarme mapeado da coluna O
         const tipoAlarme = getVal(['tipo_alarme', 'tipo alarme', 'alarme']) || 'Não Informado';
 
-        // PLANTA na aba Analítico mapeia para Tipo de Rede (Fixa/Móvel)
+        // Causa da Perda mapeada especificamente da coluna E
+        let causaE = getVal(['causa da perda', 'causa', 'motivo', 'descrição', 'descricao', 'causa_raiz']);
+        if (!causaE || causaE.trim() === '') causaE = 'Não Informado';
+
+        // Tipo de Rede mapeado de PLANTA
         const explicitRede = getVal(['planta', 'tipo de rede', 'rede']);
         let tipoRede = 'Móvel';
         if (explicitRede) {
@@ -610,17 +614,15 @@
         }
 
         const site = getVal(['site', 'estação', 'estacao']) || 'SITE';
-        const causaDesc = getVal(['causa da perda', 'causa', 'motivo', 'descrição', 'descricao', 'tipo_ta']) || 'Sem Causa Mencionada';
         const tempoMin = parseMinutes(getVal(['tempo perda sla', 'tempo perda', 'tempo', 'atraso']));
         const amostragem = getVal(['amostragem', 'amostra']) || 'Todas as Amostragens';
-        const periodoAbertura = getVal(['período de abertura', 'periodo abertura', 'abertura']) || '06:00 às 12:00';
-        const encerramento = getVal(['encerramento', 'data encerramento']) || '12:00 às 18:00';
+
+        // Período de Abertura (Coluna BB) e Encerramento (Coluna BC)
+        const periodoAbertura = getVal(['período de abertura', 'periodo abertura', 'bb']) || '06:00 às 12:00';
+        const encerramento = getVal(['encerramento', 'data encerramento', 'bc']) || '12:00 às 18:00';
 
         const analiseVal = getVal(['análise', 'analise', 'status', 'tratativa', 'detalhes']);
         const isJustificado = analiseVal.toLowerCase().includes('justificad') || analiseVal.toLowerCase().includes('ok') || analiseVal.toLowerCase().includes('sim');
-
-        let causaClassificada = getVal(['segmento', 'classificação', 'classificacao']);
-        if (!causaClassificada || causaClassificada.trim() === '') causaClassificada = causaDesc;
 
         const rawDataStr = getVal(['data_cria', 'data', 'dt_evento', 'data_abertura']) || '01/10/2026';
         let semanaCalculada = '';
@@ -645,9 +647,12 @@
         if (!semanaCalculada) semanaCalculada = 'Semana 43';
         if (!mesExtenso) mesExtenso = 'Outubro';
 
+        // Formatação apenas para Data DD/MM/AAAA para o gráfico diário
+        let dataApenasDia = rawDataStr.split(' ')[0];
+
         return {
           id: evento,
-          data: rawDataStr,
+          data: dataApenasDia,
           periodoAbertura,
           encerramento,
           semana: semanaCalculada,
@@ -657,8 +662,8 @@
           tipoAlarme,
           site,
           coordenador,
-          causa: causaClassificada,
-          causaDesc,
+          causa: causaE,
+          causaDesc: causaE,
           tipoRede,
           tempoMin,
           amostragem,
@@ -821,13 +826,27 @@
     function renderCharts() {
       const totalTAsAtual = filteredData.length || 1;
 
-      // --- CHART 0: DESTAQUE TOP 10 PRINCIPAIS CAUSAS DA PERDA ---
+      // --- CHART 0: TOP 10 CAUSAS PRINCIPAIS (COLUNA E - NÃO INFORMADO SEMPRE NA ÚLTIMA LINHA) ---
       const causaCounts = {};
-      filteredData.forEach(d => causaCounts[d.causa] = (causaCounts[d.causa] || 0) + 1);
+      filteredData.forEach(d => {
+        let key = d.causa;
+        if (!key || key.trim() === '') key = 'Não Informado';
+        causaCounts[key] = (causaCounts[key] || 0) + 1;
+      });
+
+      // Separa "Não Informado" para colocar na última posição se existir
+      const naoInformadoVal = causaCounts['Não Informado'] || 0;
+      delete causaCounts['Não Informado'];
+
+      let sortedCausas = Object.entries(causaCounts).sort((a,b) => b[1] - a[1]);
       
-      const sortedCausas = Object.entries(causaCounts)
-        .sort((a,b) => b[1] - a[1])
-        .slice(0, 10);
+      // Limita em até 9 causas normais para dar espaço a "Não Informado" na 10ª linha se existir
+      if (naoInformadoVal > 0) {
+        sortedCausas = sortedCausas.slice(0, 9);
+        sortedCausas.push(['Não Informado', naoInformadoVal]);
+      } else {
+        sortedCausas = sortedCausas.slice(0, 10);
+      }
 
       const causaLabels = sortedCausas.map(c => c[0]);
       const causaValues = sortedCausas.map(c => c[1]);
@@ -842,7 +861,7 @@
           datasets: [{
             label: 'Qtd TAs',
             data: causaValues.length > 0 ? causaValues : [0],
-            backgroundColor: ['#e11d48', '#f97316', '#0284c7', '#10b981', '#6366f1', '#8b5cf6', '#ec4899', '#14b8a6', '#f59e0b', '#64748b'],
+            backgroundColor: causaLabels.map(l => l === 'Não Informado' ? '#64748b' : '#e11d48'),
             borderRadius: 6
           }]
         },
@@ -891,23 +910,33 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART 2: MENSAL ---
+      // --- CHART 2: EVOLUÇÃO MENSAL (APENAS MESES COM REGISTROS VÁLIDOS) ---
       const mesCounts = {};
-      parsedData.forEach(d => mesCounts[d.mes] = (mesCounts[d.mes] || 0) + 1);
+      filteredData.forEach(d => {
+        if (d.mes) mesCounts[d.mes] = (mesCounts[d.mes] || 0) + 1;
+      });
+
+      // Ordena de acordo com a ordem natural dos meses no ano
+      const mesesComDados = Object.keys(mesCounts).sort((a, b) => NOME_MESES.indexOf(a) - NOME_MESES.indexOf(b));
+      const valoresMeses = mesesComDados.map(m => mesCounts[m]);
+
       const mesCtx = document.getElementById('chart-mensal').getContext('2d');
       if (chartMensalInst) chartMensalInst.destroy();
       chartMensalInst = new Chart(mesCtx, {
         type: 'line',
         data: {
-          labels: Object.keys(mesCounts),
-          datasets: [{ label: 'Qtd TAs', data: Object.values(mesCounts), borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true, tension: 0.3 }]
+          labels: mesesComDados.length > 0 ? mesesComDados : ['Sem dados'],
+          datasets: [{ label: 'Qtd TAs', data: valoresMeses.length > 0 ? valoresMeses : [0], borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true, tension: 0.3 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART ENCERRAMENTO DIÁRIO ---
+      // --- CHART ENCERRAMENTO DIÁRIO (APENAS POR DIA DD/MM/AAAA) ---
       const dataCounts = {};
-      filteredData.forEach(d => dataCounts[d.data] = (dataCounts[d.data] || 0) + 1);
+      filteredData.forEach(d => {
+        let diaSo = d.data.split(' ')[0]; // Garante que trunca a hora
+        dataCounts[diaSo] = (dataCounts[diaSo] || 0) + 1;
+      });
 
       const encDiarioCtx = document.getElementById('chart-encerramento-diario').getContext('2d');
       if (chartEncerramentoDiarioInst) chartEncerramentoDiarioInst.destroy();
@@ -936,10 +965,10 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART 4: TOP 10 TIPOS DE ALARME (EXTRAÍDO DA COLUNA O - TIPO_ALARME DA ABA ANALÍTICO) ---
+      // --- CHART 4: TOP 10 TIPOS DE ALARME (COLUNA O) ---
       const alarmeCounts = {};
       filteredData.forEach(d => {
-        if (d.tipoAlarme && d.tipoAlarme !== 'Não Informado') {
+        if (d.tipoAlarme) {
           alarmeCounts[d.tipoAlarme] = (alarmeCounts[d.tipoAlarme] || 0) + 1;
         }
       });
