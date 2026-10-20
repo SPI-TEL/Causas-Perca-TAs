@@ -196,7 +196,7 @@
       </div>
     </section>
 
-    <!-- PAINEL DE FILTROS (POPUlADO DINAMICAMENTE) -->
+    <!-- PAINEL DE FILTROS -->
     <section class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-wrap items-center justify-between gap-4 no-print">
       <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
         <div>
@@ -271,7 +271,7 @@
       </div>
     </section>
 
-    <!-- CHARTS ROW 1 -->
+    <!-- CHARTS ROW 1: EVOLUÇÃO SEMANAL E MENSAL -->
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-5">
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
@@ -300,7 +300,21 @@
       </div>
     </section>
 
-    <!-- CHARTS ROW 2 -->
+    <!-- SECTION: EVOLUÇÃO DE ENCERRAMENTO DIÁRIO & PERDAS SLA (REALOCADO E COMPACTADO) -->
+    <section class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+          <i class="fa-solid fa-wave-square text-sky-600"></i> Evolução de Encerramento Diário & Perdas SLA
+        </h3>
+        <span class="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Picos críticos de perdas SLA</span>
+      </div>
+      <p class="text-[10px] text-slate-400 mb-2">Linha contínua por data de encerramento do evento (picos de desvios destacados em vermelho)</p>
+      <div class="h-48 relative">
+        <canvas id="chart-encerramento-diario"></canvas>
+      </div>
+    </section>
+
+    <!-- CHARTS ROW 2: DDD, MUNICÍPIO E TIPO DE REDE -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
@@ -338,20 +352,6 @@
           <canvas id="chart-tipo-rede"></canvas>
         </div>
         <span class="text-[10px] text-slate-400 text-center block mt-2">Proporção de impactados por tipo de rede</span>
-      </div>
-    </section>
-
-    <!-- SECTION: EVOLUÇÃO DE ENCERRAMENTO DIÁRIO & PERDAS SLA -->
-    <section class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
-      <div class="flex items-center justify-between mb-2">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-          <i class="fa-solid fa-wave-square text-sky-600"></i> Evolução de Encerramento Diário & Perdas SLA
-        </h3>
-        <span class="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Picos críticos de perdas SLA</span>
-      </div>
-      <p class="text-[10px] text-slate-400 mb-3">Linha contínua por data de encerramento do evento (picos de desvios destacados em vermelho)</p>
-      <div class="h-64 relative">
-        <canvas id="chart-encerramento-diario"></canvas>
       </div>
     </section>
 
@@ -671,13 +671,11 @@
       const selDDD = document.getElementById('filter-ddd');
       const selAmostragem = document.getElementById('filter-amostragem');
 
-      // Popula Meses
       selMes.innerHTML = '<option value="ALL">Todos os Meses</option>';
       mesesExistentes.forEach(m => {
         selMes.innerHTML += `<option value="${m}">${m}</option>`;
       });
 
-      // Seleciona o mês atual/mais recente por padrão
       const mesAtualHoje = NOME_MESES[new Date().getMonth()];
       if (mesesExistentes.includes(mesAtualHoje)) {
         selMes.value = mesAtualHoje;
@@ -687,17 +685,14 @@
         selMes.value = "ALL";
       }
 
-      // Popula Coordenadores
       const coords = [...new Set(parsedData.map(d => d.coordenador))].filter(Boolean).sort();
       selCoord.innerHTML = '<option value="ALL">Todos os Coordenadores</option>';
       coords.forEach(c => selCoord.innerHTML += `<option value="${c}">${c}</option>`);
 
-      // Popula DDDs
       const ddds = [...new Set(parsedData.map(d => d.ddd))].filter(Boolean).sort();
       selDDD.innerHTML = '<option value="ALL">Todos os DDDs</option>';
       ddds.forEach(d => selDDD.innerHTML += `<option value="${d}">${d}</option>`);
 
-      // Popula Amostragens
       if (selAmostragem) {
         const amostras = [...new Set(parsedData.map(d => d.amostragem))].filter(Boolean).sort();
         selAmostragem.innerHTML = '<option value="ALL">Todas as Amostragens</option>';
@@ -819,7 +814,6 @@
       const causaCounts = {};
       filteredData.forEach(d => causaCounts[d.causa] = (causaCounts[d.causa] || 0) + 1);
       
-      // Ordena e pega as TOP 10 causas
       const sortedCausas = Object.entries(causaCounts)
         .sort((a,b) => b[1] - a[1])
         .slice(0, 10);
@@ -900,6 +894,23 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
+      // --- CHART ENCERRAMENTO DIÁRIO (COMPACTADO) ---
+      const dataCounts = {};
+      filteredData.forEach(d => dataCounts[d.data] = (dataCounts[d.data] || 0) + 1);
+
+      const encDiarioCtx = document.getElementById('chart-encerramento-diario').getContext('2d');
+      if (chartEncerramentoDiarioInst) chartEncerramentoDiarioInst.destroy();
+      chartEncerramentoDiarioInst = new Chart(encDiarioCtx, {
+        type: 'line',
+        data: {
+          labels: Object.keys(dataCounts),
+          datasets: [
+            { label: 'Perdas SLA', data: Object.values(dataCounts), borderColor: '#e11d48', pointBackgroundColor: '#e11d48', tension: 0.3 }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } } }
+      });
+
       // --- CHART 3: DDD ---
       const dddCounts = {};
       filteredData.forEach(d => dddCounts[d.ddd] = (dddCounts[d.ddd] || 0) + 1);
@@ -954,23 +965,6 @@
             }
           }
         }
-      });
-
-      // --- CHART 6: ENCERRAMENTO DIÁRIO ---
-      const dataCounts = {};
-      filteredData.forEach(d => dataCounts[d.data] = (dataCounts[d.data] || 0) + 1);
-
-      const encDiarioCtx = document.getElementById('chart-encerramento-diario').getContext('2d');
-      if (chartEncerramentoDiarioInst) chartEncerramentoDiarioInst.destroy();
-      chartEncerramentoDiarioInst = new Chart(encDiarioCtx, {
-        type: 'line',
-        data: {
-          labels: Object.keys(dataCounts),
-          datasets: [
-            { label: 'Perdas SLA', data: Object.values(dataCounts), borderColor: '#e11d48', pointBackgroundColor: '#e11d48', tension: 0.3 }
-          ]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } } }
       });
 
       // --- HELPER BARRAS EMPILHADAS 100% COM RÓTULO % ---
