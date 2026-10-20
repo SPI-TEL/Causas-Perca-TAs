@@ -180,7 +180,7 @@
           <span class="text-2xl font-extrabold text-emerald-600" id="kpi-justificados">0</span>
           <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded" id="kpi-perc-just">0%</span>
         </div>
-        <p class="text-[10px] text-slate-400 mt-1">Status Justificado</p>
+        <p class="text-[10px] text-slate-400 mt-1">Status Justificado (Coluna C)</p>
       </div>
 
       <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
@@ -192,7 +192,7 @@
           <span class="text-2xl font-extrabold text-rose-600" id="kpi-pendentes">0</span>
           <span class="text-[11px] font-semibold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded" id="kpi-perc-pend">0%</span>
         </div>
-        <p class="text-[10px] text-slate-400 mt-1">Aguardando Análise</p>
+        <p class="text-[10px] text-slate-400 mt-1">Aguardando Análise (Coluna C)</p>
       </div>
     </section>
 
@@ -238,6 +238,16 @@
           </select>
         </div>
 
+        <!-- NOVO FILTRO: FAIXA DE TEMPO (< 30 MIN) -->
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Tempo Perda SLA</label>
+          <select id="filter-tempo" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <option value="ALL">Todos os Tempos</option>
+            <option value="LT30">&lt; 30 Minutos</option>
+            <option value="GTE30">&gt;= 30 Minutos</option>
+          </select>
+        </div>
+
         <div>
           <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Amostragem</label>
           <select id="filter-amostragem" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
@@ -255,7 +265,7 @@
       </div>
     </section>
 
-    <!-- SECTION: DESTAQUE TOP 10 PRINCIPAIS CAUSAS DA PERDA -->
+    <!-- SECTION: DESTAQUE TOP 10 PRINCIPAIS CAUSAS DA PERDA (COLUNA E) -->
     <section class="bg-white p-5 rounded-2xl border-2 border-rose-200/90 shadow-md">
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-sm font-extrabold uppercase tracking-wider text-rose-800 flex items-center gap-2">
@@ -529,7 +539,6 @@
       return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
     }
 
-    // Identificador de faixa de horário a partir de um objeto de data ou string HH:MM
     function getTurnoByHour(hourNum) {
       if (hourNum >= 0 && hourNum < 6) return '00h-06h';
       if (hourNum >= 6 && hourNum < 12) return '06h-12h';
@@ -611,13 +620,17 @@
 
         const evento = getValByKey(['EVENTO', 'TA', 'TICKET', 'ID']) || `EV-${3689000000 + index}`;
         
-        // COORDENADOR da COLUNA AU (Índice 46 em base zero)
+        // COORDENADOR da COLUNA AU (Índice 46)
         const coordenador = getValByKey(['COORDENADOR', 'CADOR'], 46) || 'Não informado';
         const dddRaw = getValByKey(['DDD']) || 'Não Informado';
         const municipio = getValByKey(['MUNICÍPIO', 'MUNICIPIO', 'CIDADE']) || 'Não Informado';
 
-        // TIPO_ALARME / CAUSA PRINCIPAL da COLUNA O (Índice 14 em base zero)
+        // TIPO_ALARME da COLUNA O (Índice 14)
         const tipoAlarme = getValByKey(['TIPO_ALARME', 'TIPO ALARME', 'ALARME'], 14) || 'Não Informado';
+
+        // CAUSA RAIZ PREDOMINANTE da COLUNA E (Índice 4)
+        let causaE = getValByKey(['SEGMENTO', 'CAUSA DA PERDA', 'CAUSA'], 4);
+        if (!causaE || causaE.trim() === '') causaE = 'Não Informado';
 
         // TIPO DE REDE (PLANTA)
         const explicitRede = getValByKey(['PLANTA', 'TIPO DE REDE', 'REDE']);
@@ -636,16 +649,16 @@
         // PERÍODO DE ENCERRAMENTO da COLUNA BC (Índice 54)
         const encerramento = getValByKey(['PERIODO ENCERRAMENTO', 'PERÍODO ENCERRAMENTO', 'PERIODO_ENCERRAMENTO'], 54) || '12:00 às 18:00';
 
-        // DATA DE ABERTURA (COLUNA A)
-        const dataAberturaStr = getValByKey(['DATA_CRIACAO', 'DATA_CRIA', 'DATA_ABERTURA', 'ABERTURA', 'EVENTO_DATA'], 0) || '01/10/2026';
+        // JUSTIFICADOS E PENDENTES da COLUNA C (Índice 2)
+        const analiseValC = getValByKey(['ANÁLISE', 'ANALISE', 'STATUS', 'JUSTIFICADO', 'TRATATIVA'], 2);
+        const isJustificado = analiseValC.toLowerCase().includes('justificad') || analiseValC.toLowerCase().includes('ok') || analiseValC.toLowerCase().includes('sim');
 
-        // DATA DE ENCERRAMENTO (COLUNA Q / Índice 16) - Utilizada para agrupar o Mês
+        // DATA DE ABERTURA (COLUNA A)
+        const dataAberturaStr = getValByKey(['DATA_CRIACAO', 'DATA_CRIA', 'DATA_ABERTURA', 'ABERTURA'], 0) || '01/10/2026';
+
+        // DATA DE ENCERRAMENTO (COLUNA Q / AY)
         const dataEncerramentoStr = getValByKey(['DATA_ENCERRAMENTO', 'DT_ENCERRAMENTO', 'DATA_ENC'], 16) || dataAberturaStr;
 
-        const analiseVal = getValByKey(['ANÁLISE', 'ANALISE', 'STATUS', 'TRATATIVA', 'DETALHES']);
-        const isJustificado = analiseVal.toLowerCase().includes('justificad') || analiseVal.toLowerCase().includes('ok') || analiseVal.toLowerCase().includes('sim');
-
-        // Extrai Semana do Ano a partir da Coluna A (Abertura)
         let semanaCalculada = '';
         if (dataAberturaStr.includes('/') || dataAberturaStr.includes('-')) {
           let parts = dataAberturaStr.replace(/-/g, '/').split('/');
@@ -662,10 +675,7 @@
         }
         if (!semanaCalculada) semanaCalculada = 'Semana 43';
 
-        // Extrai o Mês de Referência a partir da Data de Encerramento (Coluna Q / AY)
         let mesExtenso = '';
-        let horaAberturaNum = 8; // Padrão 8h
-
         if (dataEncerramentoStr.includes('/') || dataEncerramentoStr.includes('-')) {
           let partsEnc = dataEncerramentoStr.replace(/-/g, '/').split('/');
           if (partsEnc.length >= 2) {
@@ -677,15 +687,32 @@
         }
         if (!mesExtenso) mesExtenso = 'Outubro';
 
-        // Extração de Hora da Data de Abertura para o Cálculo de Maior Perda (+4h)
-        if (dataAberturaStr.includes(':')) {
-          let timePart = dataAberturaStr.split(' ')[1] || dataAberturaStr;
-          let hourPart = parseInt(timePart.split(':')[0]);
-          if (!isNaN(hourPart)) horaAberturaNum = hourPart;
+        // CÁLCULO EXATO DA HORA DE ABERTURA + 4 HORAS (EIXO MAIOR PERDA)
+        let horaAberturaNum = 8;
+        let dataObjAbertura = null;
+
+        if (dataAberturaStr.includes('/') || dataAberturaStr.includes('-')) {
+          let parts = dataAberturaStr.replace(/-/g, '/').split(' ');
+          let dParts = parts[0].replace(/-/g, '/').split('/');
+          let tParts = parts[1] ? parts[1].split(':') : ['08', '00'];
+          
+          if (dParts.length >= 3) {
+            let day = parseInt(dParts[0]) || 1;
+            let month = parseInt(dParts[1]) - 1;
+            let year = parseInt(dParts[2]) || 2026;
+            let h = parseInt(tParts[0]) || 0;
+            let m = parseInt(tParts[1]) || 0;
+            dataObjAbertura = new Date(year, month, day, h, m);
+          }
         }
 
-        let horaMais4 = (horaAberturaNum + 4) % 24;
-        let turnoMaiorPerda = getTurnoByHour(horaMais4);
+        if (!dataObjAbertura || isNaN(dataObjAbertura.getTime())) {
+          dataObjAbertura = new Date(2026, 9, 1, 8, 0);
+        }
+
+        // Soma exatamente 4 horas na data/hora de abertura
+        let dataObjMais4 = new Date(dataObjAbertura.getTime() + (4 * 3600 * 1000));
+        let turnoMaiorPerda = getTurnoByHour(dataObjMais4.getHours());
 
         let dataApenasDia = dataEncerramentoStr.split(' ')[0];
 
@@ -702,8 +729,8 @@
           tipoAlarme,
           site,
           coordenador,
-          causa: tipoAlarme,
-          causaDesc: tipoAlarme,
+          causa: causaE,
+          causaDesc: causaE,
           tipoRede,
           tempoMin,
           amostragem,
@@ -761,6 +788,7 @@
       const coordVal = document.getElementById('filter-coordenador').value;
       const dddVal = document.getElementById('filter-ddd').value;
       const statusVal = document.getElementById('filter-status').value;
+      const tempoVal = document.getElementById('filter-tempo') ? document.getElementById('filter-tempo').value : 'ALL';
       const amostragemElem = document.getElementById('filter-amostragem');
       const amostragemVal = amostragemElem ? amostragemElem.value : 'ALL';
       const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
@@ -772,6 +800,11 @@
         const matchDDD = dddVal === "ALL" || item.ddd === dddVal;
         const matchStatus = statusVal === "ALL" || item.status === statusVal;
         const matchAmostragem = amostragemVal === "ALL" || item.amostragem === amostragemVal;
+        
+        let matchTempo = true;
+        if (tempoVal === 'LT30') matchTempo = item.tempoMin < 30;
+        else if (tempoVal === 'GTE30') matchTempo = item.tempoMin >= 30;
+
         const matchSearch = searchVal === "" ||
           item.id.toLowerCase().includes(searchVal) ||
           item.site.toLowerCase().includes(searchVal) ||
@@ -779,7 +812,7 @@
           item.tipoAlarme.toLowerCase().includes(searchVal) ||
           item.coordenador.toLowerCase().includes(searchVal);
 
-        return matchMes && matchRede && matchCoord && matchDDD && matchStatus && matchAmostragem && matchSearch;
+        return matchMes && matchRede && matchCoord && matchDDD && matchStatus && matchAmostragem && matchTempo && matchSearch;
       });
 
       updateKPIs();
@@ -797,6 +830,7 @@
       document.getElementById('filter-coordenador').value = "ALL";
       document.getElementById('filter-ddd').value = "ALL";
       document.getElementById('filter-status').value = "ALL";
+      if (document.getElementById('filter-tempo')) document.getElementById('filter-tempo').value = "ALL";
       const amostragemElem = document.getElementById('filter-amostragem');
       if (amostragemElem) amostragemElem.value = "ALL";
       document.getElementById('search-input').value = "";
@@ -860,16 +894,16 @@
       const justPerc = ((justCount / filteredData.length)*100).toFixed(1);
 
       document.getElementById('insight-tratativa').innerHTML = 
-        `Atualmente <strong>${justPerc}%</strong> das ocorrências (${justCount} TAs) possuem justificativa cadastrada.`;
+        `Atualmente <strong>${justPerc}%</strong> das ocorrências (${justCount} TAs) possuem justificativa cadastrada na Coluna C.`;
     }
 
     function renderCharts() {
       const totalTAsAtual = filteredData.length || 1;
 
-      // --- CHART 0: TOP 10 CAUSAS PRINCIPAIS (TIPO DE ALARME DA COLUNA O - NÃO INFORMADO EM ÚLTIMO) ---
+      // --- CHART 0: TOP 10 CAUSAS PRINCIPAIS (COLUNA E) ---
       const causaCounts = {};
       filteredData.forEach(d => {
-        let key = d.tipoAlarme;
+        let key = d.causa;
         if (!key || key.trim() === '') key = 'Não Informado';
         causaCounts[key] = (causaCounts[key] || 0) + 1;
       });
@@ -931,7 +965,7 @@
         }
       });
 
-      // --- CHART 1: SEMANAL (CALCULADO PELA COLUNA A) ---
+      // --- CHART 1: SEMANAL (COLUNA A) ---
       const semanasUnicas = [...new Set(filteredData.map(d => d.semana))].filter(Boolean);
       const semCounts = {};
       semanasUnicas.forEach(s => semCounts[s] = 0);
@@ -968,7 +1002,7 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART ENCERRAMENTO DIÁRIO (AGRUPADO POR DIA DD/MM/AAAA) ---
+      // --- CHART ENCERRAMENTO DIÁRIO ---
       const dataCounts = {};
       filteredData.forEach(d => {
         let diaSo = d.data.split(' ')[0];
@@ -1078,12 +1112,11 @@
         }
       });
 
-      // --- HELPER BARRAS EMPILHADAS 100% COM RÓTULOS REALMENTE CALCULADOS ---
+      // --- HELPER BARRAS EMPILHADAS 100% DINÂMICAS COM CÁLCULO REAL ---
       const buildDynamicStacked100 = (elemId, keyField) => {
         const turnos = ['00h-06h', '06h-12h', '12h-18h', '18h-00h'];
         const redes = ['Fixa', 'Móvel'];
         
-        // Estrutura de contagem: { 'Fixa': { '00h-06h': 0, ... }, 'Móvel': { ... } }
         const counts = { Fixa: {}, Móvel: {} };
         redes.forEach(r => turnos.forEach(t => counts[r][t] = 0));
 
@@ -1099,7 +1132,6 @@
           counts[r][t]++;
         });
 
-        // Converte para percentual 100% empilhado por Rede
         const datasets = [
           { label: '00h-06h', backgroundColor: '#10b981', data: [] },
           { label: '06h-12h', backgroundColor: '#0284c7', data: [] },
