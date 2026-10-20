@@ -171,18 +171,19 @@
         <p class="text-[10px] text-slate-400 mt-1">Pequenos desvios SLA</p>
       </div>
 
+      <!-- RENOMEADO DE JUSTIFICADOS PARA ANALISADOS + REMOVIDA DESCRIÇÃO COLUNA C -->
       <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between text-slate-500">
-          <span class="text-xs font-medium uppercase tracking-wider">Justificados</span>
+          <span class="text-xs font-medium uppercase tracking-wider">Analisados</span>
           <i class="fa-solid fa-file-circle-check text-emerald-500"></i>
         </div>
         <div class="mt-2 flex items-baseline justify-between">
           <span class="text-2xl font-extrabold text-emerald-600" id="kpi-justificados">0</span>
           <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded" id="kpi-perc-just">0%</span>
         </div>
-        <p class="text-[10px] text-slate-400 mt-1">Status Justificado (Coluna C)</p>
       </div>
 
+      <!-- REMOVIDA DESCRIÇÃO COLUNA C -->
       <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between text-slate-500">
           <span class="text-xs font-medium uppercase tracking-wider">Pendentes</span>
@@ -192,7 +193,6 @@
           <span class="text-2xl font-extrabold text-rose-600" id="kpi-pendentes">0</span>
           <span class="text-[11px] font-semibold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded" id="kpi-perc-pend">0%</span>
         </div>
-        <p class="text-[10px] text-slate-400 mt-1">Aguardando Análise (Coluna C)</p>
       </div>
     </section>
 
@@ -233,12 +233,11 @@
           <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Status Análise</label>
           <select id="filter-status" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
             <option value="ALL">Todos os Status</option>
-            <option value="Justificado">Justificados</option>
+            <option value="Justificado">Analisados / Validados</option>
             <option value="Pendente">Pendentes</option>
           </select>
         </div>
 
-        <!-- NOVO FILTRO: FAIXA DE TEMPO (< 30 MIN) -->
         <div>
           <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Tempo Perda SLA</label>
           <select id="filter-tempo" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
@@ -265,7 +264,7 @@
       </div>
     </section>
 
-    <!-- SECTION: DESTAQUE TOP 10 PRINCIPAIS CAUSAS DA PERDA (COLUNA E) -->
+    <!-- SECTION: DESTAQUE TOP 10 PRINCIPAIS CAUSAS DA PERDA -->
     <section class="bg-white p-5 rounded-2xl border-2 border-rose-200/90 shadow-md">
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-sm font-extrabold uppercase tracking-wider text-rose-800 flex items-center gap-2">
@@ -649,9 +648,9 @@
         // PERÍODO DE ENCERRAMENTO da COLUNA BC (Índice 54)
         const encerramento = getValByKey(['PERIODO ENCERRAMENTO', 'PERÍODO ENCERRAMENTO', 'PERIODO_ENCERRAMENTO'], 54) || '12:00 às 18:00';
 
-        // JUSTIFICADOS E PENDENTES da COLUNA C (Índice 2)
-        const analiseValC = getValByKey(['ANÁLISE', 'ANALISE', 'STATUS', 'JUSTIFICADO', 'TRATATIVA'], 2);
-        const isJustificado = analiseValC.toLowerCase().includes('justificad') || analiseValC.toLowerCase().includes('ok') || analiseValC.toLowerCase().includes('sim');
+        // JUSTIFICADOS E PENDENTES ESTRITAMENTE DA COLUNA C (Índice 2)
+        const analiseValC = getValByKey(['VALIDAÇÃO', 'VALIDACAO', 'ANÁLISE', 'ANALISE', 'STATUS', 'JUSTIFICADO'], 2);
+        const isJustificado = analiseValC.toLowerCase().includes('validad') || analiseValC.toLowerCase().includes('justificad') || analiseValC.toLowerCase().includes('ok') || analiseValC.toLowerCase().includes('sim');
 
         // DATA DE ABERTURA (COLUNA A)
         const dataAberturaStr = getValByKey(['DATA_CRIACAO', 'DATA_CRIA', 'DATA_ABERTURA', 'ABERTURA'], 0) || '01/10/2026';
@@ -688,7 +687,6 @@
         if (!mesExtenso) mesExtenso = 'Outubro';
 
         // CÁLCULO EXATO DA HORA DE ABERTURA + 4 HORAS (EIXO MAIOR PERDA)
-        let horaAberturaNum = 8;
         let dataObjAbertura = null;
 
         if (dataAberturaStr.includes('/') || dataAberturaStr.includes('-')) {
@@ -894,13 +892,13 @@
       const justPerc = ((justCount / filteredData.length)*100).toFixed(1);
 
       document.getElementById('insight-tratativa').innerHTML = 
-        `Atualmente <strong>${justPerc}%</strong> das ocorrências (${justCount} TAs) possuem justificativa cadastrada na Coluna C.`;
+        `Atualmente <strong>${justPerc}%</strong> das ocorrências (${justCount} TAs) possuem justificativa/validação cadastrada.`;
     }
 
     function renderCharts() {
       const totalTAsAtual = filteredData.length || 1;
 
-      // --- CHART 0: TOP 10 CAUSAS PRINCIPAIS (COLUNA E) ---
+      // --- CHART 0: TOP 10 CAUSAS PRINCIPAIS (COLUNA E - NÃO INFORMADO EM ÚLTIMO) ---
       const causaCounts = {};
       filteredData.forEach(d => {
         let key = d.causa;
