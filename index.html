@@ -314,7 +314,7 @@
       </div>
     </section>
 
-    <!-- CHARTS ROW 2: DDD, TOP 10 TIPOS DE ALARME (COLUNA O) E TIPO DE REDE -->
+    <!-- CHARTS ROW 2: DDD, TOP 10 TIPOS DE ALARME (COLUNA O - ABA ANALÍTICO) E TIPO DE REDE -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
@@ -328,7 +328,7 @@
         </div>
       </div>
 
-      <!-- CARD: TOP 10 TIPOS DE ALARME (COLUNA O) -->
+      <!-- CARD: TOP 10 TIPOS DE ALARME (COLUNA O DE TIPO_ALARME) -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
@@ -339,7 +339,7 @@
         <div class="h-64 relative">
           <canvas id="chart-alarme"></canvas>
         </div>
-        <span class="text-[10px] text-slate-400 text-center block mt-2">Mapeado diretamente da Coluna O da aba Analítico</span>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Mapeado diretamente da Coluna O (TIPO_ALARME) da aba Analítico</span>
       </div>
 
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
@@ -456,7 +456,7 @@
       <div class="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-slate-100">
         <div>
           <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
-            <i class="fa-solid fa-table-list text-sky-600"></i> Base Detalhada de TAs Fora do Prazo (Google Sheets - Analítico)
+            <i class="fa-solid fa-table-list text-sky-600"></i> Base Detalhada de TAs Fora do Prazo (Aba Analítico)
           </h2>
           <p class="text-[11px] text-slate-400">Sincronizado automaticamente com a planilha publicada</p>
         </div>
@@ -477,9 +477,9 @@
               <th class="p-3">Encerramento</th>
               <th class="p-3">DDD</th>
               <th class="p-3">Município</th>
-              <th class="p-3">Tipo Alarme</th>
+              <th class="p-3">Tipo Alarme (Col. O)</th>
               <th class="p-3">Site/Localidade</th>
-              <th class="p-3">Rede</th>
+              <th class="p-3">Rede (Planta)</th>
               <th class="p-3">Coordenador</th>
               <th class="p-3 text-center">Tempo Perda</th>
               <th class="p-3 text-center">Amostragem</th>
@@ -497,8 +497,8 @@
   <script>
     Chart.register(ChartDataLabels);
 
-    // URL direcionada à planilha e garantindo parâmetros para exportar a aba "Analítico"
-    const GOOGLE_SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKGyoNQrVUBIbfOwpUMsmvPgvPOgSPF-7BaORqi-8JmNoTHVkWXuBk20vBpc29MaNIFXz56_McLbi9/pub?gid=134770159&single=true&output=csv';
+    // URL publica do documento (sem gid restritivo à outra aba)
+    const GOOGLE_SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKGyoNQrVUBIbfOwpUMsmvPgvPOgSPF-7BaORqi-8JmNoTHVkWXuBk20vBpc29MaNIFXz56_McLbi9/pub?output=csv';
 
     let rawData = [];
     let parsedData = [];
@@ -555,7 +555,7 @@
                   processRawData(rawData);
                   
                   icon.className = "fa-solid fa-circle-check text-emerald-600";
-                  bannerText.innerHTML = `<strong>Sucesso:</strong> Aba Analítico carregada com ${parsedData.length} registros!`;
+                  bannerText.innerHTML = `<strong>Sucesso:</strong> Aba Analítico sincronizada com ${parsedData.length} registros!`;
                   document.getElementById('clock-timestamp').innerText = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                 }
               }
@@ -570,12 +570,9 @@
 
     function processRawData(rows) {
       parsedData = rows.map((r, index) => {
-        const getVal = (possibleKeys, targetColIdx = null) => {
-          const keys = Object.keys(r);
-          if (targetColIdx !== null && keys[targetColIdx]) {
-            const val = r[keys[targetColIdx]];
-            if (val && val.toString().trim() !== '') return val.toString().trim();
-          }
+        const keys = Object.keys(r);
+
+        const getVal = (possibleKeys) => {
           for (let k of keys) {
             let lowerK = k.toLowerCase().trim();
             if (possibleKeys.some(p => lowerK.includes(p.toLowerCase()))) {
@@ -596,20 +593,28 @@
           return isNaN(n) ? 0 : Math.round(n);
         };
 
+        // Identificação exata conforme os cabeçalhos da aba Analítico (Imagem 1)
         const evento = getVal(['evento', 'ta', 'ticket', 'id']) || `EV-${3689000000 + index}`;
-        const coordenador = getVal(['coordenador', 'gestor', 'coord']) || 'Não informado';
+        const coordenador = getVal(['coordenador', 'cador', 'gestor']) || 'Não informado';
         const dddRaw = getVal(['ddd']) || 'Não Informado';
         const municipio = getVal(['município', 'municipio', 'cidade']) || 'Não Informado';
-        
-        // Mapeamento específico para Tipo de Alarme a partir da Coluna O (Índice 14)
-        const tipoAlarme = getVal(['tipo de alarme', 'tipo alarme', 'alarme', 'nome alarme', 'tipo_alarme'], 14) || 'Não Informado';
-        
+
+        // TIPO_ALARME é mapeado diretamente da Coluna O da aba Analítico
+        const tipoAlarme = getVal(['tipo_alarme', 'tipo alarme', 'alarme']) || 'Não Informado';
+
+        // PLANTA na aba Analítico mapeia para Tipo de Rede (Fixa/Móvel)
+        const explicitRede = getVal(['planta', 'tipo de rede', 'rede']);
+        let tipoRede = 'Móvel';
+        if (explicitRede) {
+          tipoRede = explicitRede.toLowerCase().includes('fix') ? 'Fixa' : 'Móvel';
+        }
+
         const site = getVal(['site', 'estação', 'estacao']) || 'SITE';
-        const causaDesc = getVal(['causa da perda', 'causa', 'motivo', 'descrição', 'descricao']) || 'Sem Causa Mencionada';
+        const causaDesc = getVal(['causa da perda', 'causa', 'motivo', 'descrição', 'descricao', 'tipo_ta']) || 'Sem Causa Mencionada';
         const tempoMin = parseMinutes(getVal(['tempo perda sla', 'tempo perda', 'tempo', 'atraso']));
         const amostragem = getVal(['amostragem', 'amostra']) || 'Todas as Amostragens';
-        const periodoAbertura = getVal(['período de abertura', 'periodo abertura', 'período abertura', 'abertura período']) || '06:00 às 12:00';
-        const encerramento = getVal(['encerramento', 'data encerramento', 'dt_encerramento']) || '12:00 às 18:00';
+        const periodoAbertura = getVal(['período de abertura', 'periodo abertura', 'abertura']) || '06:00 às 12:00';
+        const encerramento = getVal(['encerramento', 'data encerramento']) || '12:00 às 18:00';
 
         const analiseVal = getVal(['análise', 'analise', 'status', 'tratativa', 'detalhes']);
         const isJustificado = analiseVal.toLowerCase().includes('justificad') || analiseVal.toLowerCase().includes('ok') || analiseVal.toLowerCase().includes('sim');
@@ -617,15 +622,7 @@
         let causaClassificada = getVal(['segmento', 'classificação', 'classificacao']);
         if (!causaClassificada || causaClassificada.trim() === '') causaClassificada = causaDesc;
 
-        let tipoRede = 'Móvel';
-        const explicitRede = getVal(['tipo de rede', 'tipo rede', 'rede']);
-        if (explicitRede) {
-          tipoRede = explicitRede.toLowerCase().includes('fix') ? 'Fixa' : 'Móvel';
-        } else if (causaClassificada.toLowerCase().includes('conjunta') || causaClassificada.toLowerCase().includes('fibra')) {
-          tipoRede = 'Fixa';
-        }
-
-        const rawDataStr = getVal(['data', 'dt_evento', 'data_abertura', 'abertura']) || '01/10/2026';
+        const rawDataStr = getVal(['data_cria', 'data', 'dt_evento', 'data_abertura']) || '01/10/2026';
         let semanaCalculada = '';
         let mesExtenso = '';
 
@@ -939,10 +936,10 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART 4: TOP 10 TIPOS DE ALARME (BUSCANDO DA COLUNA O / ÍNDICE 14) ---
+      // --- CHART 4: TOP 10 TIPOS DE ALARME (EXTRAÍDO DA COLUNA O - TIPO_ALARME DA ABA ANALÍTICO) ---
       const alarmeCounts = {};
       filteredData.forEach(d => {
-        if (d.tipoAlarme) {
+        if (d.tipoAlarme && d.tipoAlarme !== 'Não Informado') {
           alarmeCounts[d.tipoAlarme] = (alarmeCounts[d.tipoAlarme] || 0) + 1;
         }
       });
