@@ -247,7 +247,7 @@
       </div>
 
       <div class="w-full lg:w-64">
-        <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Busca Site / TA / Causa</label>
+        <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Busca Site / TA / Causa / Alarme</label>
         <div class="relative">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
           <input type="text" id="search-input" onkeyup="applyFilters()" placeholder="Ex: CPS-001, TA-1002, Energia..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
@@ -300,7 +300,7 @@
       </div>
     </section>
 
-    <!-- SECTION: EVOLUÇÃO DE ENCERRAMENTO DIÁRIO & PERDAS SLA (REALOCADO E COMPACTADO) -->
+    <!-- SECTION: EVOLUÇÃO DE ENCERRAMENTO DIÁRIO & PERDAS SLA (COMPACTADO) -->
     <section class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
@@ -314,7 +314,7 @@
       </div>
     </section>
 
-    <!-- CHARTS ROW 2: DDD, TIPO DE ALARME E TIPO DE REDE -->
+    <!-- CHARTS ROW 2: DDD, TOP 10 TIPOS DE ALARME E TIPO DE REDE -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
@@ -323,23 +323,23 @@
           </h3>
         </div>
         <p class="text-[10px] text-slate-400 mb-2">Destaque em vermelho para o maior ofensor</p>
-        <div class="h-56 relative">
+        <div class="h-64 relative">
           <canvas id="chart-ddd"></canvas>
         </div>
       </div>
 
-      <!-- CARD SUBSTITUÍDO: OCORRÊNCIAS POR TIPO DE ALARME -->
+      <!-- CARD: TOP 10 TIPOS DE ALARME (COLUNA O) -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-bell text-indigo-600"></i> Ocorrências por Tipo de Alarme
+            <i class="fa-solid fa-bell text-indigo-600"></i> Top 10 Tipos de Alarme
           </h3>
         </div>
-        <p class="text-[10px] text-slate-400 mb-2">Ranking dos tipos de alarmes com maior volume de perdas</p>
-        <div class="h-56 relative">
+        <p class="text-[10px] text-slate-400 mb-2">Ranking dos 10 tipos de alarmes com maior volume de perdas</p>
+        <div class="h-64 relative">
           <canvas id="chart-alarme"></canvas>
         </div>
-        <span class="text-[10px] text-slate-400 text-center block mt-2">Distribuição por severidade e categoria de alarme</span>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Mapeado diretamente da Coluna O da planilha</span>
       </div>
 
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
@@ -349,7 +349,7 @@
           </h3>
         </div>
         <p class="text-[10px] text-slate-400 mb-2">Quantidade e % por tecnologia de rede</p>
-        <div class="h-56 relative">
+        <div class="h-64 relative">
           <canvas id="chart-tipo-rede"></canvas>
         </div>
         <span class="text-[10px] text-slate-400 text-center block mt-2">Proporção de impactados por tipo de rede</span>
@@ -569,8 +569,16 @@
 
     function processRawData(rows) {
       parsedData = rows.map((r, index) => {
-        const getVal = (possibleKeys) => {
-          for (let k of Object.keys(r)) {
+        // Busca valor por nomes de colunas ou por índice/posição caso disponível
+        const getVal = (possibleKeys, targetColIdx = null) => {
+          const keys = Object.keys(r);
+          // Tenta primeiro pelo índice da coluna se especificado (ex: Coluna O é índice 14)
+          if (targetColIdx !== null && keys[targetColIdx]) {
+            const val = r[keys[targetColIdx]];
+            if (val && val.toString().trim() !== '') return val.toString().trim();
+          }
+          // Caso contrário faz a busca por palavra-chave no nome do cabeçalho
+          for (let k of keys) {
             let lowerK = k.toLowerCase().trim();
             if (possibleKeys.some(p => lowerK.includes(p.toLowerCase()))) {
               return r[k] ? r[k].toString().trim() : '';
@@ -594,7 +602,10 @@
         const coordenador = getVal(['coordenador', 'gestor', 'coord']) || 'Não informado';
         const dddRaw = getVal(['ddd']) || 'Não Informado';
         const municipio = getVal(['município', 'municipio', 'cidade']) || 'Não Informado';
-        const tipoAlarme = getVal(['tipo de alarme', 'tipo alarme', 'alarme', 'nome alarme']) || 'Não Informado';
+        
+        // Mapeamento específico da COLUNA O (Índice 14 na planilha de base 0)
+        const tipoAlarme = getVal(['tipo de alarme', 'tipo alarme', 'alarme', 'nome alarme', 'tipo_alarme'], 14) || 'Não Informado';
+        
         const site = getVal(['site', 'estação', 'estacao']) || 'SITE';
         const causaDesc = getVal(['causa da perda', 'causa', 'motivo', 'descrição', 'descricao']) || 'Sem Causa Mencionada';
         const tempoMin = parseMinutes(getVal(['tempo perda sla', 'tempo perda', 'tempo', 'atraso']));
@@ -930,20 +941,54 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART 4: TIPO DE ALARME (NOVO) ---
+      // --- CHART 4: TOP 10 TIPOS DE ALARME (BUSCANDO DA COLUNA O) ---
       const alarmeCounts = {};
-      filteredData.forEach(d => alarmeCounts[d.tipoAlarme] = (alarmeCounts[d.tipoAlarme] || 0) + 1);
-      const sortedAlarmes = Object.entries(alarmeCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
+      filteredData.forEach(d => {
+        if (d.tipoAlarme) {
+          alarmeCounts[d.tipoAlarme] = (alarmeCounts[d.tipoAlarme] || 0) + 1;
+        }
+      });
+
+      const sortedAlarmes = Object.entries(alarmeCounts)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0, 10);
+
+      const alarmeLabels = sortedAlarmes.map(a => a[0]);
+      const alarmeValues = sortedAlarmes.map(a => a[1]);
 
       const alarmeCtx = document.getElementById('chart-alarme').getContext('2d');
       if (chartAlarmeInst) chartAlarmeInst.destroy();
+      
       chartAlarmeInst = new Chart(alarmeCtx, {
         type: 'bar',
         data: {
-          labels: sortedAlarmes.length > 0 ? sortedAlarmes.map(a => a[0]) : ['Sem dados'],
-          datasets: [{ label: 'Qtd TAs', data: sortedAlarmes.length > 0 ? sortedAlarmes.map(a => a[1]) : [0], backgroundColor: '#6366f1', borderRadius: 4 }]
+          labels: alarmeLabels.length > 0 ? alarmeLabels : ['Sem dados'],
+          datasets: [{
+            label: 'Qtd TAs',
+            data: alarmeValues.length > 0 ? alarmeValues : [0],
+            backgroundColor: ['#6366f1', '#4f46e5', '#4338ca', '#3730a3', '#0284c7', '#0369a1', '#075985', '#0f766e', '#115e59', '#134e4a'],
+            borderRadius: 4
+          }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            datalabels: {
+              anchor: 'end',
+              align: 'right',
+              color: '#334155',
+              font: { weight: 'bold', size: 10 },
+              formatter: (value) => value > 0 ? `${value}` : ''
+            }
+          },
+          scales: {
+            x: { grid: { color: '#f1f5f9' } },
+            y: { grid: { display: false } }
+          }
+        }
       });
 
       // --- CHART 5: TIPO DE REDE ---
