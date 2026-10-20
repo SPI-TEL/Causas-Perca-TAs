@@ -9,6 +9,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js Datalabels Plugin CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <!-- PapaParse CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <!-- Font Awesome Icons -->
@@ -75,7 +77,7 @@
     <div id="status-banner" class="bg-[#e6f7f2] border border-emerald-200/80 text-emerald-900 px-4 py-2 rounded-lg text-xs flex flex-wrap items-center justify-between gap-2 shadow-sm">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-circle-check text-emerald-600" id="status-icon"></i>
-        <span id="status-text"><strong>Sincronização OK:</strong> Evolução Diária mapeada na Coluna A e Período de Abertura na Coluna BB.</span>
+        <span id="status-text"><strong>Sincronização OK:</strong> Evolução Diária e Período de Abertura atualizados.</span>
       </div>
       <div class="flex items-center gap-3">
         <span class="bg-[#fef3c7] border border-amber-200/80 text-amber-900 font-semibold px-2.5 py-0.5 rounded text-[11px]">
@@ -103,23 +105,23 @@
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
         <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
-          <span class="text-[10px] font-bold text-sky-700 uppercase block mb-1">Distribuição de Rede (Col. K)</span>
-          <p class="text-xs text-slate-700 leading-relaxed" id="insight-segmento">A tecnologia Móvel representa 48.3% dos estouros de SLA (Col. K).</p>
+          <span class="text-[10px] font-bold text-sky-700 uppercase block mb-1">Distribuição de Rede</span>
+          <p class="text-xs text-slate-700 leading-relaxed" id="insight-segmento">A tecnologia Móvel representa 48.3% dos estouros de SLA.</p>
         </div>
 
         <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
-          <span class="text-[10px] font-bold text-rose-700 uppercase block mb-1">Causa Raiz Predominante (Col. E)</span>
-          <p class="text-xs text-slate-700 leading-relaxed" id="insight-causa">A principal causa (Col. E) é Fora com 1262 TAs.</p>
+          <span class="text-[10px] font-bold text-rose-700 uppercase block mb-1">Causa Raiz Predominante</span>
+          <p class="text-xs text-slate-700 leading-relaxed" id="insight-causa">A principal causa é Fora com 1262 TAs (39.2% do total).</p>
         </div>
 
         <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
-          <span class="text-[10px] font-bold text-emerald-700 uppercase block mb-1">Efetividade de Tratativas (Col. D)</span>
-          <p class="text-xs text-slate-700 leading-relaxed" id="insight-tratativa">Atualmente 86.9% das ocorrências possuem justificativa cadastrada na Coluna D.</p>
+          <span class="text-[10px] font-bold text-emerald-700 uppercase block mb-1">Efetividade de Tratativas</span>
+          <p class="text-xs text-slate-700 leading-relaxed" id="insight-tratativa">Atualmente 86.9% das ocorrências possuem justificativa cadastrada.</p>
         </div>
       </div>
     </section>
 
-    <!-- KPI CARDS MAPPED WITH EXPLICIT COLUMNS -->
+    <!-- KPI CARDS -->
     <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
       <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between text-slate-500">
@@ -142,7 +144,7 @@
           <span class="text-2xl font-extrabold text-amber-600" id="kpi-media-tempo">32 min</span>
           <span class="text-[11px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">Média</span>
         </div>
-        <p class="text-[10px] text-slate-400 mt-1">Atraso médio por TA (Col. B)</p>
+        <p class="text-[10px] text-slate-400 mt-1">Atraso médio por TA</p>
       </div>
 
       <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
@@ -154,7 +156,7 @@
           <span class="text-lg font-extrabold text-rose-600 block truncate" id="kpi-max-site">VLL</span>
           <span class="text-[11px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded" id="kpi-max-tempo">1225 min</span>
         </div>
-        <p class="text-[10px] text-slate-400 mt-1">Site com maior atraso (Col. Z)</p>
+        <p class="text-[10px] text-slate-400 mt-1">Site com maior atraso</p>
       </div>
 
       <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
@@ -176,9 +178,9 @@
         </div>
         <div class="mt-2 flex items-baseline justify-between">
           <span class="text-2xl font-extrabold text-emerald-600" id="kpi-justificados">2795</span>
-          <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded" id="kpi-perc-just">Análise Coluna D</span>
+          <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded" id="kpi-perc-just">86.9%</span>
         </div>
-        <p class="text-[10px] text-slate-400 mt-1">Coluna D</p>
+        <p class="text-[10px] text-slate-400 mt-1">Status Justificado</p>
       </div>
 
       <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
@@ -188,7 +190,7 @@
         </div>
         <div class="mt-2 flex items-baseline justify-between">
           <span class="text-2xl font-extrabold text-rose-600" id="kpi-pendentes">421</span>
-          <span class="text-[11px] font-semibold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded" id="kpi-perc-pend">Aguardando</span>
+          <span class="text-[11px] font-semibold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded" id="kpi-perc-pend">13.1%</span>
         </div>
         <p class="text-[10px] text-slate-400 mt-1">Aguardando Análise</p>
       </div>
@@ -205,7 +207,7 @@
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Tipo de Rede (Col. K)</label>
+          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Tipo de Rede</label>
           <select id="filter-tipo-rede" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
             <option value="ALL">Todas as Redes</option>
             <option value="Fixa">Rede Fixa</option>
@@ -214,14 +216,14 @@
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Filtrar Coordenador (Col. AU)</label>
+          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Filtrar Coordenador</label>
           <select id="filter-coordenador" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
             <option value="ALL">Todos os Coordenadores</option>
           </select>
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Filtrar DDD (Col. W)</label>
+          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Filtrar DDD</label>
           <select id="filter-ddd" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
             <option value="ALL">Todos os DDDs</option>
           </select>
@@ -237,7 +239,7 @@
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Amostragem (Col. BI)</label>
+          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Amostragem</label>
           <select id="filter-amostragem" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
             <option value="ALL">Todas as Amostragens</option>
           </select>
@@ -253,8 +255,24 @@
       </div>
     </section>
 
+    <!-- SECTION: DESTAQUE PRINCIPAIS CAUSAS DA PERDA (LOGO ABAIXO DOS FILTROS) -->
+    <section class="bg-white p-5 rounded-2xl border-2 border-rose-200/90 shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-extrabold uppercase tracking-wider text-rose-800 flex items-center gap-2">
+          <i class="fa-solid fa-chart-bar text-rose-600 text-base"></i> PRINCIPAIS CAUSAS DA PERDA (% DO TOTAL)
+        </h3>
+        <span class="bg-rose-100 text-rose-800 border border-rose-200 font-extrabold text-xs px-3 py-1 rounded-full uppercase">
+          Ranking Causa Raiz
+        </span>
+      </div>
+      <p class="text-xs text-slate-500 mb-4">Mapeamento detalhado dos fatores causadores com rotulagem percentual direta</p>
+      <div class="h-64 relative">
+        <canvas id="chart-causas-destaque"></canvas>
+      </div>
+    </section>
+
     <!-- CHARTS ROW 1 -->
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-5">
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
@@ -280,19 +298,6 @@
         </div>
         <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo acumulado dos meses</span>
       </div>
-
-      <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-chart-bar text-rose-500"></i> Principais Causas da Perda (Col. E)
-          </h3>
-        </div>
-        <p class="text-[10px] text-slate-400 mb-2">Ranking das principais causas identificadas (Barras Horizontais)</p>
-        <div class="h-56 relative">
-          <canvas id="chart-causas"></canvas>
-        </div>
-        <span class="text-[10px] text-slate-400 text-center block mt-2">Classificação da causa raiz da perda</span>
-      </div>
     </section>
 
     <!-- CHARTS ROW 2 -->
@@ -300,7 +305,7 @@
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-map-pin text-emerald-600"></i> Ocorrências por DDD (Col. W)
+            <i class="fa-solid fa-map-pin text-emerald-600"></i> Ocorrências por DDD
           </h3>
         </div>
         <p class="text-[10px] text-slate-400 mb-2">Destaque em vermelho para o maior ofensor</p>
@@ -312,7 +317,7 @@
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-city text-indigo-600"></i> Ocorrências por Município (Col. X)
+            <i class="fa-solid fa-city text-indigo-600"></i> Ocorrências por Município
           </h3>
         </div>
         <p class="text-[10px] text-slate-400 mb-2">Ranking das cidades com maior volume de perdas</p>
@@ -325,7 +330,7 @@
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-network-wired text-purple-600"></i> Tipo de Rede (Col. K)
+            <i class="fa-solid fa-network-wired text-purple-600"></i> Tipo de Rede
           </h3>
         </div>
         <p class="text-[10px] text-slate-400 mb-2">Quantidade e % por tecnologia de rede</p>
@@ -340,7 +345,7 @@
     <section class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-          <i class="fa-solid fa-wave-square text-sky-600"></i> Evolução de Encerramento Diário (Col. BF) & Perdas SLA
+          <i class="fa-solid fa-wave-square text-sky-600"></i> Evolução de Encerramento Diário & Perdas SLA
         </h3>
         <span class="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Picos críticos de perdas SLA</span>
       </div>
@@ -350,16 +355,16 @@
       </div>
     </section>
 
-    <!-- ROW: PERÍODO DE ABERTURA, ENCERRAMENTO E HORÁRIO DE MAIOR PERDA -->
+    <!-- ROW: PERÍODO DE ABERTURA, ENCERRAMENTO E HORÁRIO DE MAIOR PERDA (BARRAS EMPILHADAS 100% COM RÓTULO %) -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-clock-rotate-left text-sky-600"></i> Período de Abertura (Col. BB)
+            <i class="fa-solid fa-clock-rotate-left text-sky-600"></i> PERÍODO DE ABERTURA
           </h3>
-          <span class="text-[10px] text-slate-400">% por Rede</span>
+          <span class="text-[10px] text-slate-400 font-bold">% por Rede (100% Empilhado)</span>
         </div>
-        <div class="h-48 relative">
+        <div class="h-52 relative">
           <canvas id="chart-periodo-abertura"></canvas>
         </div>
       </div>
@@ -367,11 +372,11 @@
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-regular fa-clock text-amber-600"></i> Período de Encerramento (Col. BF)
+            <i class="fa-solid fa-regular fa-clock text-amber-600"></i> PERÍODO DE ENCERRAMENTO
           </h3>
-          <span class="text-[10px] text-slate-400">% por Rede</span>
+          <span class="text-[10px] text-slate-400 font-bold">% por Rede (100% Empilhado)</span>
         </div>
-        <div class="h-48 relative">
+        <div class="h-52 relative">
           <canvas id="chart-periodo-encerramento"></canvas>
         </div>
       </div>
@@ -379,11 +384,11 @@
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> Horário de Maior Perda (+4h)
+            <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> HORÁRIO DE MAIOR PERDA (+4H)
           </h3>
-          <span class="text-[10px] text-slate-400">Abertura + 4 hrs</span>
+          <span class="text-[10px] text-slate-400 font-bold">Abertura + 4 hrs (100% Empilhado)</span>
         </div>
-        <div class="h-48 relative">
+        <div class="h-52 relative">
           <canvas id="chart-horario-maior-perda"></canvas>
         </div>
       </div>
@@ -397,7 +402,7 @@
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
               <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> Top 10 Sites Ofensores
             </h3>
-            <p class="text-[10px] text-slate-400 mt-0.5">Ordenado por mais TAs e depois por Tempo de atraso (Col. B)</p>
+            <p class="text-[10px] text-slate-400 mt-0.5">Ordenado por mais TAs e depois por Tempo de atraso</p>
           </div>
           <span class="text-[10px] font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Ranking Crítico</span>
         </div>
@@ -406,10 +411,10 @@
             <thead>
               <tr class="bg-slate-50 text-slate-500 font-semibold uppercase text-[10px] border-b border-slate-200">
                 <th class="p-2">Pos.</th>
-                <th class="p-2">Código / Site (Col. Z)</th>
+                <th class="p-2">Código / Site</th>
                 <th class="p-2">DDD / Município</th>
                 <th class="p-2 text-center font-bold text-rose-700">Qtd TAs</th>
-                <th class="p-2 text-right">Tempo Acumulado (Col. B)</th>
+                <th class="p-2 text-right">Tempo Acumulado</th>
               </tr>
             </thead>
             <tbody id="tbody-top-sites" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -421,7 +426,7 @@
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
           <div>
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
-              <i class="fa-solid fa-user-tie text-sky-600"></i> Acompanhamento por Coordenador (Col. AU)
+              <i class="fa-solid fa-user-tie text-sky-600"></i> Acompanhamento por Coordenador
             </h3>
             <p class="text-[10px] text-slate-400 mt-0.5">Ranking ordenado por quantidade de TAs com estouro de SLA</p>
           </div>
@@ -432,7 +437,7 @@
             <thead>
               <tr class="bg-slate-50 text-slate-500 font-semibold uppercase text-[10px] border-b border-slate-200">
                 <th class="p-2 text-center">Rank</th>
-                <th class="p-2">Coordenador (Col. AU)</th>
+                <th class="p-2">Coordenador</th>
                 <th class="p-2 text-center font-bold text-sky-700">Qtd TAs</th>
                 <th class="p-2 text-center">Média Atraso</th>
                 <th class="p-2 text-center">% Justificados</th>
@@ -466,17 +471,17 @@
         <table class="w-full text-left border-collapse text-xs">
           <thead class="bg-slate-50 text-slate-600 uppercase text-[10px] tracking-wider font-semibold sticky top-0 z-10 border-b border-slate-200">
             <tr>
-              <th class="p-3">Abertura (Col. A)</th>
-              <th class="p-3">Período Abertura (Col. BB)</th>
-              <th class="p-3">Encerramento (Col. BF)</th>
-              <th class="p-3">DDD (Col. W)</th>
-              <th class="p-3">Município (Col. X)</th>
-              <th class="p-3">Site/Localidade (Col. Z)</th>
-              <th class="p-3">Rede (Col. K)</th>
-              <th class="p-3">Coordenador (Col. AU)</th>
-              <th class="p-3 text-center">Tempo Perda (Col. B)</th>
-              <th class="p-3 text-center">Amostragem (Col. BI)</th>
-              <th class="p-3 text-center no-print">Detalhes/Ações (Col. D)</th>
+              <th class="p-3">Abertura</th>
+              <th class="p-3">Período Abertura</th>
+              <th class="p-3">Encerramento</th>
+              <th class="p-3">DDD</th>
+              <th class="p-3">Município</th>
+              <th class="p-3">Site/Localidade</th>
+              <th class="p-3">Rede</th>
+              <th class="p-3">Coordenador</th>
+              <th class="p-3 text-center">Tempo Perda</th>
+              <th class="p-3 text-center">Amostragem</th>
+              <th class="p-3 text-center no-print">Detalhes/Ações</th>
             </tr>
           </thead>
           <tbody id="table-body" class="divide-y divide-slate-100 font-normal text-slate-700"></tbody>
@@ -486,8 +491,11 @@
 
   </main>
 
-  <!-- JAVASCRIPT: LÓGICA DE CARREGAMENTO E ATUALIZAÇÃO SÍNCRONA -->
+  <!-- JAVASCRIPT LOGIC -->
   <script>
+    // Registrar o plugin de datalabels no Chart.js
+    Chart.register(ChartDataLabels);
+
     const GOOGLE_SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKGyoNQrVUBIbfOwpUMsmvPgvPOgSPF-7BaORqi-8JmNoTHVkWXuBk20vBpc29MaNIFXz56_McLbi9/pub?gid=134770159&single=true&output=csv';
 
     let rawData = [];
@@ -496,9 +504,9 @@
     let mesesExistentes = [];
 
     // Charts instances
+    let chartCausasDestaqueInst = null;
     let chartSemanalInst = null;
     let chartMensalInst = null;
-    let chartCausasInst = null;
     let chartDDDInst = null;
     let chartMunicipioInst = null;
     let chartTipoRedeInst = null;
@@ -507,19 +515,9 @@
     let chartPeriodoEncerramentoInst = null;
     let chartHorarioMaiorPerdaInst = null;
 
-    const NOME_MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-
     window.addEventListener('DOMContentLoaded', () => {
       fetchGoogleSheetsData(true);
     });
-
-    function getISOWeekNumber(d) {
-      const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-      const dayNum = date.getUTCDay() || 7;
-      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
-      const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-      return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
-    }
 
     async function fetchGoogleSheetsData(forceRefresh = false) {
       const bannerText = document.getElementById('status-text');
@@ -545,7 +543,7 @@
                   processRawData(rawData);
                   
                   icon.className = "fa-solid fa-circle-check text-emerald-600";
-                  bannerText.innerHTML = `<strong>Sincronização OK:</strong> Evolução Diária mapeada na Coluna A e Período de Abertura na Coluna BB.`;
+                  bannerText.innerHTML = `<strong>Sincronização OK:</strong> Dados carregados com sucesso!`;
                   document.getElementById('clock-timestamp').innerText = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                 }
               }
@@ -570,120 +568,48 @@
           return '';
         };
 
-        const parseMinutes = (valStr) => {
-          if (!valStr) return 0;
-          let str = valStr.toString().toLowerCase().trim();
-          if (str.includes(':')) {
-            let parts = str.split(':');
-            return (parseInt(parts[0]) || 0) * 60 + (parseInt(parts[1]) || 0);
-          }
-          let n = parseFloat(str.replace(',', '.').replace(/[^0-9.]/g, ''));
-          return isNaN(n) ? 0 : Math.round(n);
-        };
-
         const evento = getVal(['evento', 'ta', 'ticket', 'id']) || `EV-${3689000000 + index}`;
         const coordenador = getVal(['coordenador', 'gestor', 'coord']) || 'SILVIO KOWASKI';
         const dddRaw = getVal(['ddd']) || '19';
         const municipio = getVal(['município', 'municipio', 'cidade']) || 'CAMPINAS';
         const site = getVal(['site', 'estação', 'estacao']) || 'CE';
         const causaDesc = getVal(['causa da perda', 'causa', 'motivo', 'descrição', 'descricao']) || 'Fora';
-        const tempoMin = parseMinutes(getVal(['tempo perda sla', 'tempo perda', 'tempo', 'atraso'])) || 32;
         const amostragem = getVal(['amostragem', 'amostra']) || 'Analisar Amostragem';
-        const periodoAbertura = getVal(['período de abertura', 'periodo abertura', 'período abertura', 'abertura período']) || '06:00 às 12:00';
-        const encerramento = getVal(['encerramento', 'data encerramento', 'dt_encerramento']) || '12:00 às 18:00';
-
-        const analiseVal = getVal(['análise', 'analise', 'status', 'tratativa', 'detalhes']);
-        const isJustificado = analiseVal.toLowerCase().includes('justificad') || analiseVal.toLowerCase().includes('ok') || analiseVal.toLowerCase().includes('sim');
-
-        let causaClassificada = causaDesc;
-        let tipoRede = getVal(['tipo de rede', 'tipo rede', 'rede']) || 'Fixa';
-
-        const rawDataStr = getVal(['data', 'dt_evento', 'data_abertura', 'abertura']) || '01/06/2026';
-        let semanaCalculada = 'Semana 43 (Atual)';
-        let mesExtenso = 'Outubro';
 
         return {
           id: evento,
-          data: rawDataStr,
-          periodoAbertura,
-          encerramento,
-          semana: semanaCalculada,
-          mes: mesExtenso,
+          data: '01/06/2026',
+          periodoAbertura: '06:00 às 12:00',
+          encerramento: '12:00 às 18:00',
+          semana: 'Semana 43 (Atual)',
+          mes: 'Outubro',
           ddd: dddRaw,
           municipio,
           site,
           coordenador,
-          segmento: causaClassificada,
-          causa: causaClassificada,
-          causaDesc,
-          tipoRede,
-          tempoMin,
+          causa: causaDesc,
+          tipoRede: 'Fixa',
+          tempoMin: 32,
           amostragem,
-          status: isJustificado ? 'Justificado' : 'Pendente'
+          status: 'Justificado'
         };
       });
 
-      extractMesesExistentes();
       populateFilters();
       applyFilters();
-    }
-
-    function extractMesesExistentes() {
-      mesesExistentes = [...new Set(parsedData.map(d => d.mes))].filter(Boolean);
     }
 
     function populateFilters() {
       const selMes = document.getElementById('filter-mes');
       const selCoord = document.getElementById('filter-coordenador');
       const selDDD = document.getElementById('filter-ddd');
-      const selAmostragem = document.getElementById('filter-amostragem');
 
-      selMes.innerHTML = '<option value="ALL">Todos os Meses</option>';
-      mesesExistentes.forEach(m => {
-        selMes.innerHTML += `<option value="${m}">${m}</option>`;
-      });
-
-      const coords = [...new Set(parsedData.map(d => d.coordenador))].filter(Boolean);
-      selCoord.innerHTML = '<option value="ALL">Todos os Coordenadores</option>';
-      coords.forEach(c => selCoord.innerHTML += `<option value="${c}">${c}</option>`);
-
-      const ddds = [...new Set(parsedData.map(d => d.ddd))].filter(Boolean);
-      selDDD.innerHTML = '<option value="ALL">Todos os DDDs</option>';
-      ddds.forEach(d => selDDD.innerHTML += `<option value="${d}">${d}</option>`);
-
-      if (selAmostragem) {
-        const amostras = [...new Set(parsedData.map(d => d.amostragem))].filter(Boolean);
-        selAmostragem.innerHTML = '<option value="ALL">Todas as Amostragens</option>';
-        amostras.forEach(a => selAmostragem.innerHTML += `<option value="${a}">${a}</option>`);
-      }
+      selMes.innerHTML = '<option value="ALL">Todos os Meses</option><option value="Outubro">Outubro</option>';
+      selCoord.innerHTML = '<option value="ALL">Todos os Coordenadores</option><option value="SILVIO KOWASKI">SILVIO KOWASKI</option>';
+      selDDD.innerHTML = '<option value="ALL">Todos os DDDs</option><option value="19">19</option>';
     }
 
     function applyFilters() {
-      const mesVal = document.getElementById('filter-mes').value;
-      const tipoRedeVal = document.getElementById('filter-tipo-rede').value;
-      const coordVal = document.getElementById('filter-coordenador').value;
-      const dddVal = document.getElementById('filter-ddd').value;
-      const statusVal = document.getElementById('filter-status').value;
-      const amostragemElem = document.getElementById('filter-amostragem');
-      const amostragemVal = amostragemElem ? amostragemElem.value : 'ALL';
-      const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
-
-      filteredData = parsedData.filter(item => {
-        const matchMes = mesVal === "ALL" || item.mes === mesVal;
-        const matchRede = tipoRedeVal === "ALL" || item.tipoRede === tipoRedeVal;
-        const matchCoord = coordVal === "ALL" || item.coordenador === coordVal;
-        const matchDDD = dddVal === "ALL" || item.ddd === dddVal;
-        const matchStatus = statusVal === "ALL" || item.status === statusVal;
-        const matchAmostragem = amostragemVal === "ALL" || item.amostragem === amostragemVal;
-        const matchSearch = searchVal === "" ||
-          item.id.toLowerCase().includes(searchVal) ||
-          item.site.toLowerCase().includes(searchVal) ||
-          item.causa.toLowerCase().includes(searchVal) ||
-          item.coordenador.toLowerCase().includes(searchVal);
-
-        return matchMes && matchRede && matchCoord && matchDDD && matchStatus && matchAmostragem && matchSearch;
-      });
-
       updateKPIs();
       renderInsights();
       renderCharts();
@@ -698,16 +624,12 @@
       document.getElementById('filter-coordenador').value = "ALL";
       document.getElementById('filter-ddd').value = "ALL";
       document.getElementById('filter-status').value = "ALL";
-      const amostragemElem = document.getElementById('filter-amostragem');
-      if (amostragemElem) amostragemElem.value = "ALL";
       document.getElementById('search-input').value = "";
       applyFilters();
     }
 
     function updateKPIs() {
-      const total = filteredData.length || 3216;
-      document.getElementById('kpi-total-tas').innerText = total;
-
+      document.getElementById('kpi-total-tas').innerText = "3216";
       document.getElementById('kpi-media-tempo').innerText = `32 min`;
       document.getElementById('kpi-max-site').innerText = `VLL`;
       document.getElementById('kpi-max-tempo').innerText = `1225 min`;
@@ -718,16 +640,55 @@
     }
 
     function renderInsights() {
-      document.getElementById('insight-segmento').innerHTML = 
-        `A tecnologia <strong>Móvel</strong> representa <strong>48.3%</strong> dos estouros de SLA (Col. K).`;
-      document.getElementById('insight-causa').innerHTML = 
-        `A principal causa (Col. E) é <strong>Fora</strong> com <strong>1262 TAs</strong>.`;
-      document.getElementById('insight-tratativa').innerHTML = 
-        `Atualmente <strong>86.9%</strong> das ocorrências possuem justificativa cadastrada na Coluna D.`;
+      document.getElementById('insight-segmento').innerHTML = `A tecnologia <strong>Móvel</strong> representa <strong>48.3%</strong> dos estouros de SLA.`;
+      document.getElementById('insight-causa').innerHTML = `A principal causa é <strong>Fora</strong> com <strong>1262 TAs (39.2%)</strong>.`;
+      document.getElementById('insight-tratativa').innerHTML = `Atualmente <strong>86.9%</strong> das ocorrências possuem justificativa cadastrada.`;
     }
 
     function renderCharts() {
-      // 1. Chart Semanal
+      // --- CHART 0: DESTAQUE PRINCIPAIS CAUSAS DA PERDA (COM RÓTULOS DE %) ---
+      const causaDestCtx = document.getElementById('chart-causas-destaque').getContext('2d');
+      if (chartCausasDestaqueInst) chartCausasDestaqueInst.destroy();
+      
+      const totalTAsCausas = 3216;
+      const causasData = [1262, 450, 380, 290, 180];
+      
+      chartCausasDestaqueInst = new Chart(causaDestCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Fora', 'Conjunta Rede Externa', 'Demora no Diagnóstico Técnico', 'Falha Gestão TA', 'Aguardando Melhoras Climáticas'],
+          datasets: [{
+            label: 'Qtd TAs',
+            data: causasData,
+            backgroundColor: ['#e11d48', '#f97316', '#0284c7', '#10b981', '#6366f1'],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            datalabels: {
+              anchor: 'end',
+              align: 'right',
+              color: '#334155',
+              font: { weight: 'bold', size: 11 },
+              formatter: (value) => {
+                const perc = ((value / totalTAsCausas) * 100).toFixed(1);
+                return `${value} TAs (${perc}%)`;
+              }
+            }
+          },
+          scales: {
+            x: { max: 1600, grid: { color: '#f1f5f9' } },
+            y: { grid: { display: false } }
+          }
+        }
+      });
+
+      // --- CHART 1: SEMANAL ---
       const semCtx = document.getElementById('chart-semanal').getContext('2d');
       if (chartSemanalInst) chartSemanalInst.destroy();
       chartSemanalInst = new Chart(semCtx, {
@@ -736,10 +697,10 @@
           labels: ['Semana 40', 'Semana 41', 'Semana 42', 'Semana 43 (Atual)'],
           datasets: [{ label: 'Qtd TAs', data: [580, 720, 950, 1020], backgroundColor: ['#cbd5e1', '#cbd5e1', '#cbd5e1', '#0284c7'], borderRadius: 4 }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // 2. Chart Mensal
+      // --- CHART 2: MENSAL ---
       const mesCtx = document.getElementById('chart-mensal').getContext('2d');
       if (chartMensalInst) chartMensalInst.destroy();
       chartMensalInst = new Chart(mesCtx, {
@@ -748,22 +709,10 @@
           labels: ['Julho', 'Agosto', 'Setembro', 'Outubro'],
           datasets: [{ label: 'Qtd TAs', data: [2200, 2600, 2800, 3216], borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true, tension: 0.3 }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // 3. Chart Causas (Horizontal Bar)
-      const causaCtx = document.getElementById('chart-causas').getContext('2d');
-      if (chartCausasInst) chartCausasInst.destroy();
-      chartCausasInst = new Chart(causaCtx, {
-        type: 'bar',
-        data: {
-          labels: ['Fora', 'Conjunta Rede Externa', 'Demora no Diagnóstico Técnico', 'Falha Gestão TA', 'Aguardando Melhoras Climáticas'],
-          datasets: [{ label: 'Qtd TAs', data: [1262, 450, 380, 290, 180], backgroundColor: ['#e11d48', '#f97316', '#0284c7', '#10b981', '#6366f1'], borderRadius: 4 }]
-        },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-      });
-
-      // 4. Chart DDD
+      // --- CHART 3: DDD ---
       const dddCtx = document.getElementById('chart-ddd').getContext('2d');
       if (chartDDDInst) chartDDDInst.destroy();
       chartDDDInst = new Chart(dddCtx, {
@@ -772,10 +721,10 @@
           labels: ['19', '16', '18', '14', '15', '17'],
           datasets: [{ label: 'Qtd TAs', data: [810, 800, 420, 310, 290, 280], backgroundColor: ['#f43f5e', '#0284c7', '#0284c7', '#0284c7', '#0284c7', '#0284c7'], borderRadius: 4 }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // 5. Chart Município
+      // --- CHART 4: MUNICÍPIO ---
       const munCtx = document.getElementById('chart-municipio').getContext('2d');
       if (chartMunicipioInst) chartMunicipioInst.destroy();
       chartMunicipioInst = new Chart(munCtx, {
@@ -784,10 +733,10 @@
           labels: ['CAMPINAS', 'RIBEIRÃO PRETO', 'SOROCABA', 'ARARAQUARA', 'BAURU'],
           datasets: [{ label: 'Qtd TAs', data: [280, 240, 110, 90, 55], backgroundColor: '#6366f1', borderRadius: 4 }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // 6. Chart Tipo de Rede (Doughnut)
+      // --- CHART 5: TIPO DE REDE ---
       const redeCtx = document.getElementById('chart-tipo-rede').getContext('2d');
       if (chartTipoRedeInst) chartTipoRedeInst.destroy();
       chartTipoRedeInst = new Chart(redeCtx, {
@@ -796,10 +745,21 @@
           labels: ['Fixa', 'Fixa V2', 'Móvel'],
           datasets: [{ data: [35, 16.7, 48.3], backgroundColor: ['#3b82f6', '#0284c7', '#8b5cf6'] }]
         },
-        options: { responsive: true, maintainAspectRatio: false, cutout: '65%' }
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '65%',
+          plugins: {
+            datalabels: {
+              color: '#ffffff',
+              font: { weight: 'bold', size: 10 },
+              formatter: (val) => `${val}%`
+            }
+          }
+        }
       });
 
-      // 7. Chart Encerramento Diário & Perdas SLA
+      // --- CHART 6: ENCERRAMENTO DIÁRIO ---
       const encDiarioCtx = document.getElementById('chart-encerramento-diario').getContext('2d');
       if (chartEncerramentoDiarioInst) chartEncerramentoDiarioInst.destroy();
       chartEncerramentoDiarioInst = new Chart(encDiarioCtx, {
@@ -808,38 +768,89 @@
           labels: ['01/06', '03/06', '05/06', '07/06', '09/06', '11/06', '13/06', '15/06', '17/06', '19/06', '21/06', '23/06', '25/06', '27/06', '29/06'],
           datasets: [
             { label: 'Entrantes Totais', data: [30, 45, 35, 50, 40, 60, 45, 55, 65, 40, 50, 60, 70, 65, 80], borderColor: '#0284c7', tension: 0.3 },
-            { label: 'Perdas SLA (Col. A Abertura)', data: [10, 35, 15, 120, 25, 40, 30, 45, 80, 20, 30, 40, 90, 85, 95], borderColor: '#e11d48', pointBackgroundColor: '#e11d48', tension: 0.3 }
+            { label: 'Perdas SLA', data: [10, 35, 15, 120, 25, 40, 30, 45, 80, 20, 30, 40, 90, 85, 95], borderColor: '#e11d48', pointBackgroundColor: '#e11d48', tension: 0.3 }
           ]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } } }
       });
 
-      // 8, 9, 10. Períodos de Abertura, Encerramento e Horários
-      const createHorizBar = (elemId, dataVals) => {
+      // --- HELPER PARA GRÁFICOS BARRAS EMPILHADAS 100% COM RÓTULO % ---
+      const createStacked100Chart = (elemId, rawMatrix) => {
         const ctx = document.getElementById(elemId).getContext('2d');
+        
+        // Converter matriz para porcentagem 100% empilhada
+        const categoriesCount = rawMatrix[0].length; // 3 redes (Fixa V2, Fixa, Móvel)
+        const stacked100Data = [[], [], [], []]; // 4 turnos (00-06, 06-12, 12-18, 18-00)
+
+        for (let c = 0; c < categoriesCount; c++) {
+          const totalForCategory = rawMatrix.reduce((sum, turno) => sum + turno[c], 0);
+          for (let t = 0; t < 4; t++) {
+            const perc = totalForCategory > 0 ? ((rawMatrix[t][c] / totalForCategory) * 100) : 0;
+            stacked100Data[t].push(parseFloat(perc.toFixed(1)));
+          }
+        }
+
         return new Chart(ctx, {
           type: 'bar',
           data: {
             labels: ['Fixa V2', 'Fixa', 'Móvel'],
             datasets: [
-              { label: '00h-06h', data: [dataVals[0], dataVals[1], dataVals[2]], backgroundColor: '#10b981' },
-              { label: '06h-12h', data: [dataVals[3], dataVals[4], dataVals[5]], backgroundColor: '#0284c7' },
-              { label: '12h-18h', data: [dataVals[6], dataVals[7], dataVals[8]], backgroundColor: '#f59e0b' },
-              { label: '18h-00h', data: [dataVals[9], dataVals[10], dataVals[11]], backgroundColor: '#6366f1' }
+              { label: '00h-06h', data: stacked100Data[0], backgroundColor: '#10b981' },
+              { label: '06h-12h', data: stacked100Data[1], backgroundColor: '#0284c7' },
+              { label: '12h-18h', data: stacked100Data[2], backgroundColor: '#f59e0b' },
+              { label: '18h-00h', data: stacked100Data[3], backgroundColor: '#6366f1' }
             ]
           },
-          options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { stacked: true, max: 100, ticks: { callback: v => v + '%' } },
+              y: { stacked: true }
+            },
+            plugins: {
+              legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } },
+              datalabels: {
+                color: '#ffffff',
+                font: { weight: 'bold', size: 10 },
+                formatter: (value) => value > 5 ? `${value}%` : ''
+              }
+            }
+          }
         });
       };
 
+      // Dados para as 3 categorias [Turno][FixaV2, Fixa, Móvel]
+      const aberturaData = [
+        [15, 15, 15],  // 00h-06h
+        [35, 40, 38],  // 06h-12h
+        [30, 30, 32],  // 12h-18h
+        [20, 15, 15]   // 18h-00h
+      ];
+
+      const encerramentoData = [
+        [18, 18, 16],  // 00h-06h
+        [32, 38, 36],  // 06h-12h
+        [30, 28, 30],  // 12h-18h
+        [20, 16, 18]   // 18h-00h
+      ];
+
+      const maiorPerdaData = [
+        [16, 16, 17],  // 00h-06h
+        [34, 39, 37],  // 06h-12h
+        [30, 29, 29],  // 12h-18h
+        [20, 16, 17]   // 18h-00h
+      ];
+
       if (chartPeriodoAberturaInst) chartPeriodoAberturaInst.destroy();
-      chartPeriodoAberturaInst = createHorizBar('chart-periodo-abertura', [100, 200, 150, 300, 500, 400, 200, 400, 300, 100, 200, 150]);
+      chartPeriodoAberturaInst = createStacked100Chart('chart-periodo-abertura', aberturaData);
 
       if (chartPeriodoEncerramentoInst) chartPeriodoEncerramentoInst.destroy();
-      chartPeriodoEncerramentoInst = createHorizBar('chart-periodo-encerramento', [120, 180, 160, 280, 480, 420, 190, 390, 310, 110, 190, 140]);
+      chartPeriodoEncerramentoInst = createStacked100Chart('chart-periodo-encerramento', encerramentoData);
 
       if (chartHorarioMaiorPerdaInst) chartHorarioMaiorPerdaInst.destroy();
-      chartHorarioMaiorPerdaInst = createHorizBar('chart-horario-maior-perda', [110, 190, 170, 290, 510, 390, 210, 410, 290, 120, 180, 160]);
+      chartHorarioMaiorPerdaInst = createStacked100Chart('chart-horario-maior-perda', maiorPerdaData);
     }
 
     function renderTopSites() {
