@@ -314,7 +314,7 @@
       </div>
     </section>
 
-    <!-- CHARTS ROW 2: DDD, MUNICÍPIO E TIPO DE REDE -->
+    <!-- CHARTS ROW 2: DDD, TIPO DE ALARME E TIPO DE REDE -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
@@ -328,17 +328,18 @@
         </div>
       </div>
 
+      <!-- CARD SUBSTITUÍDO: OCORRÊNCIAS POR TIPO DE ALARME -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-city text-indigo-600"></i> Ocorrências por Município
+            <i class="fa-solid fa-bell text-indigo-600"></i> Ocorrências por Tipo de Alarme
           </h3>
         </div>
-        <p class="text-[10px] text-slate-400 mb-2">Ranking das cidades com maior volume de perdas</p>
+        <p class="text-[10px] text-slate-400 mb-2">Ranking dos tipos de alarmes com maior volume de perdas</p>
         <div class="h-56 relative">
-          <canvas id="chart-municipio"></canvas>
+          <canvas id="chart-alarme"></canvas>
         </div>
-        <span class="text-[10px] text-slate-400 text-center block mt-2">Concentração geográfica das perdas</span>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Distribuição por severidade e categoria de alarme</span>
       </div>
 
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
@@ -476,6 +477,7 @@
               <th class="p-3">Encerramento</th>
               <th class="p-3">DDD</th>
               <th class="p-3">Município</th>
+              <th class="p-3">Tipo Alarme</th>
               <th class="p-3">Site/Localidade</th>
               <th class="p-3">Rede</th>
               <th class="p-3">Coordenador</th>
@@ -507,7 +509,7 @@
     let chartSemanalInst = null;
     let chartMensalInst = null;
     let chartDDDInst = null;
-    let chartMunicipioInst = null;
+    let chartAlarmeInst = null;
     let chartTipoRedeInst = null;
     let chartEncerramentoDiarioInst = null;
     let chartPeriodoAberturaInst = null;
@@ -592,6 +594,7 @@
         const coordenador = getVal(['coordenador', 'gestor', 'coord']) || 'Não informado';
         const dddRaw = getVal(['ddd']) || 'Não Informado';
         const municipio = getVal(['município', 'municipio', 'cidade']) || 'Não Informado';
+        const tipoAlarme = getVal(['tipo de alarme', 'tipo alarme', 'alarme', 'nome alarme']) || 'Não Informado';
         const site = getVal(['site', 'estação', 'estacao']) || 'SITE';
         const causaDesc = getVal(['causa da perda', 'causa', 'motivo', 'descrição', 'descricao']) || 'Sem Causa Mencionada';
         const tempoMin = parseMinutes(getVal(['tempo perda sla', 'tempo perda', 'tempo', 'atraso']));
@@ -645,6 +648,7 @@
           mes: mesExtenso,
           ddd: dddRaw,
           municipio,
+          tipoAlarme,
           site,
           coordenador,
           causa: causaClassificada,
@@ -721,6 +725,7 @@
           item.id.toLowerCase().includes(searchVal) ||
           item.site.toLowerCase().includes(searchVal) ||
           item.causa.toLowerCase().includes(searchVal) ||
+          item.tipoAlarme.toLowerCase().includes(searchVal) ||
           item.coordenador.toLowerCase().includes(searchVal);
 
         return matchMes && matchRede && matchCoord && matchDDD && matchStatus && matchAmostragem && matchSearch;
@@ -894,7 +899,7 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART ENCERRAMENTO DIÁRIO (COMPACTADO) ---
+      // --- CHART ENCERRAMENTO DIÁRIO ---
       const dataCounts = {};
       filteredData.forEach(d => dataCounts[d.data] = (dataCounts[d.data] || 0) + 1);
 
@@ -925,18 +930,18 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART 4: MUNICÍPIO ---
-      const munCounts = {};
-      filteredData.forEach(d => munCounts[d.municipio] = (munCounts[d.municipio] || 0) + 1);
-      const sortedMuns = Object.entries(munCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
+      // --- CHART 4: TIPO DE ALARME (NOVO) ---
+      const alarmeCounts = {};
+      filteredData.forEach(d => alarmeCounts[d.tipoAlarme] = (alarmeCounts[d.tipoAlarme] || 0) + 1);
+      const sortedAlarmes = Object.entries(alarmeCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
 
-      const munCtx = document.getElementById('chart-municipio').getContext('2d');
-      if (chartMunicipioInst) chartMunicipioInst.destroy();
-      chartMunicipioInst = new Chart(munCtx, {
+      const alarmeCtx = document.getElementById('chart-alarme').getContext('2d');
+      if (chartAlarmeInst) chartAlarmeInst.destroy();
+      chartAlarmeInst = new Chart(alarmeCtx, {
         type: 'bar',
         data: {
-          labels: sortedMuns.map(m => m[0]),
-          datasets: [{ label: 'Qtd TAs', data: sortedMuns.map(m => m[1]), backgroundColor: '#6366f1', borderRadius: 4 }]
+          labels: sortedAlarmes.length > 0 ? sortedAlarmes.map(a => a[0]) : ['Sem dados'],
+          datasets: [{ label: 'Qtd TAs', data: sortedAlarmes.length > 0 ? sortedAlarmes.map(a => a[1]) : [0], backgroundColor: '#6366f1', borderRadius: 4 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
@@ -1091,7 +1096,7 @@
       document.getElementById('rows-count').innerText = `Exibindo ${filteredData.length} registros`;
 
       if (filteredData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" class="p-8 text-center text-slate-400">Nenhum registro encontrado para os filtros selecionados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-slate-400">Nenhum registro encontrado para os filtros selecionados.</td></tr>`;
         return;
       }
 
@@ -1104,6 +1109,7 @@
           <td class="p-3 font-medium text-slate-700">${row.encerramento}</td>
           <td class="p-3 font-semibold text-slate-800">${row.ddd}</td>
           <td class="p-3 font-semibold text-slate-800">${row.municipio}</td>
+          <td class="p-3 font-semibold text-indigo-700">${row.tipoAlarme}</td>
           <td class="p-3 font-bold text-sky-700">${row.site}</td>
           <td class="p-3 font-medium text-slate-700">${row.tipoRede}</td>
           <td class="p-3 font-medium text-slate-700">${row.coordenador}</td>
@@ -1118,9 +1124,9 @@
     }
 
     function exportCSV() {
-      let csv = "ID;Data;PeriodoAbertura;Encerramento;DDD;Municipio;Site;TipoRede;Coordenador;Causa;TempoMin;Amostragem;Status\n";
+      let csv = "ID;Data;PeriodoAbertura;Encerramento;DDD;Municipio;TipoAlarme;Site;TipoRede;Coordenador;Causa;TempoMin;Amostragem;Status\n";
       filteredData.forEach(r => {
-        csv += `${r.id};${r.data};"${r.periodoAbertura}";"${r.encerramento}";"${r.ddd}";"${r.municipio}";"${r.site}";"${r.tipoRede}";"${r.coordenador}";"${r.causa}";${r.tempoMin};"${r.amostragem}";"${r.status}"\n`;
+        csv += `${r.id};${r.data};"${r.periodoAbertura}";"${r.encerramento}";"${r.ddd}";"${r.municipio}";"${r.tipoAlarme}";"${r.site}";"${r.tipoRede}";"${r.coordenador}";"${r.causa}";${r.tempoMin};"${r.amostragem}";"${r.status}"\n`;
       });
       const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
