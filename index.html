@@ -171,7 +171,6 @@
         <p class="text-[10px] text-slate-400 mt-1">Pequenos desvios SLA</p>
       </div>
 
-      <!-- RENOMEADO DE JUSTIFICADOS PARA ANALISADOS + REMOVIDA DESCRIÇÃO COLUNA C -->
       <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between text-slate-500">
           <span class="text-xs font-medium uppercase tracking-wider">Analisados</span>
@@ -183,7 +182,6 @@
         </div>
       </div>
 
-      <!-- REMOVIDA DESCRIÇÃO COLUNA C -->
       <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between text-slate-500">
           <span class="text-xs font-medium uppercase tracking-wider">Pendentes</span>
@@ -305,7 +303,7 @@
         <div class="h-56 relative">
           <canvas id="chart-mensal"></canvas>
         </div>
-        <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo acumulado dos meses com registros</span>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo acumulado dos meses do trimestre</span>
       </div>
     </section>
 
@@ -648,15 +646,18 @@
         // PERÍODO DE ENCERRAMENTO da COLUNA BC (Índice 54)
         const encerramento = getValByKey(['PERIODO ENCERRAMENTO', 'PERÍODO ENCERRAMENTO', 'PERIODO_ENCERRAMENTO'], 54) || '12:00 às 18:00';
 
-        // JUSTIFICADOS E PENDENTES ESTRITAMENTE DA COLUNA C (Índice 2)
+        // CONTABILIZAÇÃO DAS TRATATIVAS PELA COLUNA C (Índice 2)
         const analiseValC = getValByKey(['VALIDAÇÃO', 'VALIDACAO', 'ANÁLISE', 'ANALISE', 'STATUS', 'JUSTIFICADO'], 2);
-        const isJustificado = analiseValC.toLowerCase().includes('validad') || analiseValC.toLowerCase().includes('justificad') || analiseValC.toLowerCase().includes('ok') || analiseValC.toLowerCase().includes('sim');
+        const cleanC = analiseValC.toLowerCase();
+        
+        // Validados / Analisados vs Pendentes
+        const isJustificado = cleanC.includes('validad') || cleanC.includes('justificad') || cleanC.includes('ok') || cleanC.includes('sim');
 
         // DATA DE ABERTURA (COLUNA A)
         const dataAberturaStr = getValByKey(['DATA_CRIACAO', 'DATA_CRIA', 'DATA_ABERTURA', 'ABERTURA'], 0) || '01/10/2026';
 
         // DATA DE ENCERRAMENTO (COLUNA Q / AY)
-        const dataEncerramentoStr = getValByKey(['DATA_ENCERRAMENTO', 'DT_ENCERRAMENTO', 'DATA_ENC'], 16) || dataAberturaStr;
+        const dataEncerramentoStr = getValByKey(['DATA_ENCERRAMENTO', 'DT_ENCERRAMENTO', 'DATA_ENC', 'MES_ENCERRAMENTO'], 50) || getValByKey(['MES_ENCERRAMENTO'], 16) || dataAberturaStr;
 
         let semanaCalculada = '';
         if (dataAberturaStr.includes('/') || dataAberturaStr.includes('-')) {
@@ -674,8 +675,9 @@
         }
         if (!semanaCalculada) semanaCalculada = 'Semana 43';
 
-        let mesExtenso = '';
-        if (dataEncerramentoStr.includes('/') || dataEncerramentoStr.includes('-')) {
+        // Busca o Mês a partir da Coluna AY ou Encerramento
+        let mesExtenso = getValByKey(['MES_ENCERRAMENTO', 'MES ENCERRAMENTO', 'MÊS ENCERRAMENTO'], 50);
+        if (!mesExtenso && (dataEncerramentoStr.includes('/') || dataEncerramentoStr.includes('-'))) {
           let partsEnc = dataEncerramentoStr.replace(/-/g, '/').split('/');
           if (partsEnc.length >= 2) {
             let monthEnc = parseInt(partsEnc[1]) - 1;
@@ -686,7 +688,7 @@
         }
         if (!mesExtenso) mesExtenso = 'Outubro';
 
-        // CÁLCULO EXATO DA HORA DE ABERTURA + 4 HORAS (EIXO MAIOR PERDA)
+        // CÁLCULO EXATO DO HORÁRIO DE MAIOR PERDA (+4H)
         let dataObjAbertura = null;
 
         if (dataAberturaStr.includes('/') || dataAberturaStr.includes('-')) {
@@ -708,7 +710,7 @@
           dataObjAbertura = new Date(2026, 9, 1, 8, 0);
         }
 
-        // Soma exatamente 4 horas na data/hora de abertura
+        // Soma 4 horas exatas no objeto Date de Abertura
         let dataObjMais4 = new Date(dataObjAbertura.getTime() + (4 * 3600 * 1000));
         let turnoMaiorPerda = getTurnoByHour(dataObjMais4.getHours());
 
@@ -892,7 +894,7 @@
       const justPerc = ((justCount / filteredData.length)*100).toFixed(1);
 
       document.getElementById('insight-tratativa').innerHTML = 
-        `Atualmente <strong>${justPerc}%</strong> das ocorrências (${justCount} TAs) possuem justificativa/validação cadastrada.`;
+        `Atualmente <strong>${justPerc}%</strong> das ocorrências (${justCount} TAs) possuem justificativa/validação cadastrada na Coluna C.`;
     }
 
     function renderCharts() {
