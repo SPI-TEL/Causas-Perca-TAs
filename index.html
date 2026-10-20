@@ -58,7 +58,7 @@
       <div class="flex items-center gap-3 no-print">
         <div class="text-right hidden sm:block">
           <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Última sincronização</p>
-          <p class="text-xs font-bold text-slate-200" id="clock-timestamp">13:18:40</p>
+          <p class="text-xs font-bold text-slate-200" id="clock-timestamp">--:--:--</p>
         </div>
 
         <button onclick="fetchGoogleSheetsData(true)" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5 transition">
@@ -77,7 +77,7 @@
     <div id="status-banner" class="bg-[#e6f7f2] border border-emerald-200/80 text-emerald-900 px-4 py-2 rounded-lg text-xs flex flex-wrap items-center justify-between gap-2 shadow-sm">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-circle-check text-emerald-600" id="status-icon"></i>
-        <span id="status-text"><strong>Sincronização OK:</strong> Evolução Diária e Período de Abertura atualizados.</span>
+        <span id="status-text">Conectando à planilha de TAs...</span>
       </div>
       <div class="flex items-center gap-3">
         <span class="bg-[#fef3c7] border border-amber-200/80 text-amber-900 font-semibold px-2.5 py-0.5 rounded text-[11px]">
@@ -106,17 +106,17 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
         <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
           <span class="text-[10px] font-bold text-sky-700 uppercase block mb-1">Distribuição de Rede</span>
-          <p class="text-xs text-slate-700 leading-relaxed" id="insight-segmento">A tecnologia Móvel representa 48.3% dos estouros de SLA.</p>
+          <p class="text-xs text-slate-700 leading-relaxed" id="insight-segmento">Analisando proporção de rede...</p>
         </div>
 
         <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
           <span class="text-[10px] font-bold text-rose-700 uppercase block mb-1">Causa Raiz Predominante</span>
-          <p class="text-xs text-slate-700 leading-relaxed" id="insight-causa">A principal causa é Fora com 1262 TAs (39.2% do total).</p>
+          <p class="text-xs text-slate-700 leading-relaxed" id="insight-causa">Mapeando causas principais...</p>
         </div>
 
         <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
           <span class="text-[10px] font-bold text-emerald-700 uppercase block mb-1">Efetividade de Tratativas</span>
-          <p class="text-xs text-slate-700 leading-relaxed" id="insight-tratativa">Atualmente 86.9% das ocorrências possuem justificativa cadastrada.</p>
+          <p class="text-xs text-slate-700 leading-relaxed" id="insight-tratativa">Avaliando status de justificativas...</p>
         </div>
       </div>
     </section>
@@ -129,7 +129,7 @@
           <i class="fa-solid fa-circle-exclamation text-slate-400"></i>
         </div>
         <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-2xl font-extrabold text-slate-900" id="kpi-total-tas">3216</span>
+          <span class="text-2xl font-extrabold text-slate-900" id="kpi-total-tas">0</span>
           <span class="text-[11px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">Eventos</span>
         </div>
         <p class="text-[10px] text-slate-400 mt-1">Fora do prazo SLA</p>
@@ -141,7 +141,7 @@
           <i class="fa-solid fa-hourglass-half text-amber-500"></i>
         </div>
         <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-2xl font-extrabold text-amber-600" id="kpi-media-tempo">32 min</span>
+          <span class="text-2xl font-extrabold text-amber-600" id="kpi-media-tempo">0 min</span>
           <span class="text-[11px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">Média</span>
         </div>
         <p class="text-[10px] text-slate-400 mt-1">Atraso médio por TA</p>
@@ -153,8 +153,8 @@
           <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
         </div>
         <div class="mt-2">
-          <span class="text-lg font-extrabold text-rose-600 block truncate" id="kpi-max-site">VLL</span>
-          <span class="text-[11px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded" id="kpi-max-tempo">1225 min</span>
+          <span class="text-lg font-extrabold text-rose-600 block truncate" id="kpi-max-site">--</span>
+          <span class="text-[11px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded" id="kpi-max-tempo">0 min</span>
         </div>
         <p class="text-[10px] text-slate-400 mt-1">Site com maior atraso</p>
       </div>
@@ -165,8 +165,8 @@
           <i class="fa-solid fa-stopwatch text-sky-500"></i>
         </div>
         <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-2xl font-extrabold text-sky-600" id="kpi-count-30m">2378</span>
-          <span class="text-[11px] font-semibold text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded" id="kpi-perc-30m">74% do total</span>
+          <span class="text-2xl font-extrabold text-sky-600" id="kpi-count-30m">0</span>
+          <span class="text-[11px] font-semibold text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded" id="kpi-perc-30m">0%</span>
         </div>
         <p class="text-[10px] text-slate-400 mt-1">Pequenos desvios SLA</p>
       </div>
@@ -177,8 +177,8 @@
           <i class="fa-solid fa-file-circle-check text-emerald-500"></i>
         </div>
         <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-2xl font-extrabold text-emerald-600" id="kpi-justificados">2795</span>
-          <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded" id="kpi-perc-just">86.9%</span>
+          <span class="text-2xl font-extrabold text-emerald-600" id="kpi-justificados">0</span>
+          <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded" id="kpi-perc-just">0%</span>
         </div>
         <p class="text-[10px] text-slate-400 mt-1">Status Justificado</p>
       </div>
@@ -189,14 +189,14 @@
           <i class="fa-solid fa-clock text-rose-500"></i>
         </div>
         <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-2xl font-extrabold text-rose-600" id="kpi-pendentes">421</span>
-          <span class="text-[11px] font-semibold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded" id="kpi-perc-pend">13.1%</span>
+          <span class="text-2xl font-extrabold text-rose-600" id="kpi-pendentes">0</span>
+          <span class="text-[11px] font-semibold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded" id="kpi-perc-pend">0%</span>
         </div>
         <p class="text-[10px] text-slate-400 mt-1">Aguardando Análise</p>
       </div>
     </section>
 
-    <!-- PAINEL DE FILTROS -->
+    <!-- PAINEL DE FILTROS (POPUlADO DINAMICAMENTE) -->
     <section class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-wrap items-center justify-between gap-4 no-print">
       <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
         <div>
@@ -255,18 +255,18 @@
       </div>
     </section>
 
-    <!-- SECTION: DESTAQUE PRINCIPAIS CAUSAS DA PERDA (LOGO ABAIXO DOS FILTROS) -->
+    <!-- SECTION: DESTAQUE TOP 10 PRINCIPAIS CAUSAS DA PERDA -->
     <section class="bg-white p-5 rounded-2xl border-2 border-rose-200/90 shadow-md">
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-sm font-extrabold uppercase tracking-wider text-rose-800 flex items-center gap-2">
-          <i class="fa-solid fa-chart-bar text-rose-600 text-base"></i> PRINCIPAIS CAUSAS DA PERDA (% DO TOTAL)
+          <i class="fa-solid fa-chart-bar text-rose-600 text-base"></i> TOP 10 PRINCIPAIS CAUSAS DA PERDA (% DO TOTAL)
         </h3>
         <span class="bg-rose-100 text-rose-800 border border-rose-200 font-extrabold text-xs px-3 py-1 rounded-full uppercase">
           Ranking Causa Raiz
         </span>
       </div>
-      <p class="text-xs text-slate-500 mb-4">Mapeamento detalhado dos fatores causadores com rotulagem percentual direta</p>
-      <div class="h-64 relative">
+      <p class="text-xs text-slate-500 mb-4">Mapeamento detalhado das 10 principais causas causadoras de estouro de SLA com percentual relativo ao filtro atual</p>
+      <div class="h-80 relative">
         <canvas id="chart-causas-destaque"></canvas>
       </div>
     </section>
@@ -279,7 +279,7 @@
             <i class="fa-solid fa-chart-line text-sky-600"></i> Evolução Semanal (Últimas 4 Semanas + Atual)
           </h3>
         </div>
-        <p class="text-[10px] text-slate-400 mb-2">Padrão nacional ISO 8601 (Semana 43 Atual em destaque)</p>
+        <p class="text-[10px] text-slate-400 mb-2">Padrão nacional ISO 8601 (Semana Atual em destaque)</p>
         <div class="h-56 relative">
           <canvas id="chart-semanal"></canvas>
         </div>
@@ -355,7 +355,7 @@
       </div>
     </section>
 
-    <!-- ROW: PERÍODO DE ABERTURA, ENCERRAMENTO E HORÁRIO DE MAIOR PERDA (BARRAS EMPILHADAS 100% COM RÓTULO %) -->
+    <!-- ROW: PERÍODOS (BARRAS EMPILHADAS 100% COM RÓTULO %) -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between mb-2">
@@ -460,7 +460,7 @@
           <p class="text-[11px] text-slate-400">Sincronizado automaticamente com a planilha publicada</p>
         </div>
         <div class="flex items-center gap-2 no-print">
-          <span class="text-xs text-slate-500 font-medium" id="rows-count">Exibindo 3216 registros</span>
+          <span class="text-xs text-slate-500 font-medium" id="rows-count">Exibindo 0 registros</span>
           <button onclick="resetFilters()" class="text-xs text-slate-600 hover:text-sky-600 px-2.5 py-1 border border-slate-200 rounded hover:bg-slate-50 transition">
             Limpar Filtros
           </button>
@@ -493,7 +493,6 @@
 
   <!-- JAVASCRIPT LOGIC -->
   <script>
-    // Registrar o plugin de datalabels no Chart.js
     Chart.register(ChartDataLabels);
 
     const GOOGLE_SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKGyoNQrVUBIbfOwpUMsmvPgvPOgSPF-7BaORqi-8JmNoTHVkWXuBk20vBpc29MaNIFXz56_McLbi9/pub?gid=134770159&single=true&output=csv';
@@ -503,7 +502,7 @@
     let filteredData = [];
     let mesesExistentes = [];
 
-    // Charts instances
+    // Instâncias dos Gráficos
     let chartCausasDestaqueInst = null;
     let chartSemanalInst = null;
     let chartMensalInst = null;
@@ -515,9 +514,19 @@
     let chartPeriodoEncerramentoInst = null;
     let chartHorarioMaiorPerdaInst = null;
 
+    const NOME_MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
     window.addEventListener('DOMContentLoaded', () => {
       fetchGoogleSheetsData(true);
     });
+
+    function getISOWeekNumber(d) {
+      const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dayNum = date.getUTCDay() || 7;
+      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+      return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+    }
 
     async function fetchGoogleSheetsData(forceRefresh = false) {
       const bannerText = document.getElementById('status-text');
@@ -543,7 +552,7 @@
                   processRawData(rawData);
                   
                   icon.className = "fa-solid fa-circle-check text-emerald-600";
-                  bannerText.innerHTML = `<strong>Sincronização OK:</strong> Dados carregados com sucesso!`;
+                  bannerText.innerHTML = `<strong>Sucesso:</strong> Base sincronizada com ${parsedData.length} registros!`;
                   document.getElementById('clock-timestamp').innerText = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                 }
               }
@@ -568,48 +577,160 @@
           return '';
         };
 
+        const parseMinutes = (valStr) => {
+          if (!valStr) return 0;
+          let str = valStr.toString().toLowerCase().trim();
+          if (str.includes(':')) {
+            let parts = str.split(':');
+            return (parseInt(parts[0]) || 0) * 60 + (parseInt(parts[1]) || 0);
+          }
+          let n = parseFloat(str.replace(',', '.').replace(/[^0-9.]/g, ''));
+          return isNaN(n) ? 0 : Math.round(n);
+        };
+
         const evento = getVal(['evento', 'ta', 'ticket', 'id']) || `EV-${3689000000 + index}`;
-        const coordenador = getVal(['coordenador', 'gestor', 'coord']) || 'SILVIO KOWASKI';
-        const dddRaw = getVal(['ddd']) || '19';
-        const municipio = getVal(['município', 'municipio', 'cidade']) || 'CAMPINAS';
-        const site = getVal(['site', 'estação', 'estacao']) || 'CE';
-        const causaDesc = getVal(['causa da perda', 'causa', 'motivo', 'descrição', 'descricao']) || 'Fora';
-        const amostragem = getVal(['amostragem', 'amostra']) || 'Analisar Amostragem';
+        const coordenador = getVal(['coordenador', 'gestor', 'coord']) || 'Não informado';
+        const dddRaw = getVal(['ddd']) || 'Não Informado';
+        const municipio = getVal(['município', 'municipio', 'cidade']) || 'Não Informado';
+        const site = getVal(['site', 'estação', 'estacao']) || 'SITE';
+        const causaDesc = getVal(['causa da perda', 'causa', 'motivo', 'descrição', 'descricao']) || 'Sem Causa Mencionada';
+        const tempoMin = parseMinutes(getVal(['tempo perda sla', 'tempo perda', 'tempo', 'atraso']));
+        const amostragem = getVal(['amostragem', 'amostra']) || 'Todas as Amostragens';
+        const periodoAbertura = getVal(['período de abertura', 'periodo abertura', 'período abertura', 'abertura período']) || '06:00 às 12:00';
+        const encerramento = getVal(['encerramento', 'data encerramento', 'dt_encerramento']) || '12:00 às 18:00';
+
+        const analiseVal = getVal(['análise', 'analise', 'status', 'tratativa', 'detalhes']);
+        const isJustificado = analiseVal.toLowerCase().includes('justificad') || analiseVal.toLowerCase().includes('ok') || analiseVal.toLowerCase().includes('sim');
+
+        let causaClassificada = getVal(['segmento', 'classificação', 'classificacao']);
+        if (!causaClassificada || causaClassificada.trim() === '') causaClassificada = causaDesc;
+
+        let tipoRede = 'Móvel';
+        const explicitRede = getVal(['tipo de rede', 'tipo rede', 'rede']);
+        if (explicitRede) {
+          tipoRede = explicitRede.toLowerCase().includes('fix') ? 'Fixa' : 'Móvel';
+        } else if (causaClassificada.toLowerCase().includes('conjunta') || causaClassificada.toLowerCase().includes('fibra')) {
+          tipoRede = 'Fixa';
+        }
+
+        const rawDataStr = getVal(['data', 'dt_evento', 'data_abertura', 'abertura']) || '01/10/2026';
+        let semanaCalculada = '';
+        let mesExtenso = '';
+
+        if (rawDataStr.includes('/') || rawDataStr.includes('-')) {
+          let parts = rawDataStr.replace(/-/g, '/').split('/');
+          if (parts.length >= 3) {
+            let day = parseInt(parts[0]) || 1;
+            let month = parseInt(parts[1]) - 1;
+            let year = parseInt(parts[2]) || 2026;
+            
+            if (month >= 0 && month < 12) {
+              let dObj = new Date(year, month, day);
+              let wNum = getISOWeekNumber(dObj);
+              semanaCalculada = `Semana ${wNum}`;
+              mesExtenso = `${NOME_MESES[month]}`;
+            }
+          }
+        }
+
+        if (!semanaCalculada) semanaCalculada = 'Semana 43';
+        if (!mesExtenso) mesExtenso = 'Outubro';
 
         return {
           id: evento,
-          data: '01/06/2026',
-          periodoAbertura: '06:00 às 12:00',
-          encerramento: '12:00 às 18:00',
-          semana: 'Semana 43 (Atual)',
-          mes: 'Outubro',
+          data: rawDataStr,
+          periodoAbertura,
+          encerramento,
+          semana: semanaCalculada,
+          mes: mesExtenso,
           ddd: dddRaw,
           municipio,
           site,
           coordenador,
-          causa: causaDesc,
-          tipoRede: 'Fixa',
-          tempoMin: 32,
+          causa: causaClassificada,
+          causaDesc,
+          tipoRede,
+          tempoMin,
           amostragem,
-          status: 'Justificado'
+          status: isJustificado ? 'Justificado' : 'Pendente'
         };
       });
 
+      extractMesesExistentes();
       populateFilters();
       applyFilters();
+    }
+
+    function extractMesesExistentes() {
+      mesesExistentes = [...new Set(parsedData.map(d => d.mes))].filter(Boolean);
     }
 
     function populateFilters() {
       const selMes = document.getElementById('filter-mes');
       const selCoord = document.getElementById('filter-coordenador');
       const selDDD = document.getElementById('filter-ddd');
+      const selAmostragem = document.getElementById('filter-amostragem');
 
-      selMes.innerHTML = '<option value="ALL">Todos os Meses</option><option value="Outubro">Outubro</option>';
-      selCoord.innerHTML = '<option value="ALL">Todos os Coordenadores</option><option value="SILVIO KOWASKI">SILVIO KOWASKI</option>';
-      selDDD.innerHTML = '<option value="ALL">Todos os DDDs</option><option value="19">19</option>';
+      // Popula Meses
+      selMes.innerHTML = '<option value="ALL">Todos os Meses</option>';
+      mesesExistentes.forEach(m => {
+        selMes.innerHTML += `<option value="${m}">${m}</option>`;
+      });
+
+      // Seleciona o mês atual/mais recente por padrão
+      const mesAtualHoje = NOME_MESES[new Date().getMonth()];
+      if (mesesExistentes.includes(mesAtualHoje)) {
+        selMes.value = mesAtualHoje;
+      } else if (mesesExistentes.length > 0) {
+        selMes.value = mesesExistentes[mesesExistentes.length - 1];
+      } else {
+        selMes.value = "ALL";
+      }
+
+      // Popula Coordenadores
+      const coords = [...new Set(parsedData.map(d => d.coordenador))].filter(Boolean).sort();
+      selCoord.innerHTML = '<option value="ALL">Todos os Coordenadores</option>';
+      coords.forEach(c => selCoord.innerHTML += `<option value="${c}">${c}</option>`);
+
+      // Popula DDDs
+      const ddds = [...new Set(parsedData.map(d => d.ddd))].filter(Boolean).sort();
+      selDDD.innerHTML = '<option value="ALL">Todos os DDDs</option>';
+      ddds.forEach(d => selDDD.innerHTML += `<option value="${d}">${d}</option>`);
+
+      // Popula Amostragens
+      if (selAmostragem) {
+        const amostras = [...new Set(parsedData.map(d => d.amostragem))].filter(Boolean).sort();
+        selAmostragem.innerHTML = '<option value="ALL">Todas as Amostragens</option>';
+        amostras.forEach(a => selAmostragem.innerHTML += `<option value="${a}">${a}</option>`);
+      }
     }
 
     function applyFilters() {
+      const mesVal = document.getElementById('filter-mes').value;
+      const tipoRedeVal = document.getElementById('filter-tipo-rede').value;
+      const coordVal = document.getElementById('filter-coordenador').value;
+      const dddVal = document.getElementById('filter-ddd').value;
+      const statusVal = document.getElementById('filter-status').value;
+      const amostragemElem = document.getElementById('filter-amostragem');
+      const amostragemVal = amostragemElem ? amostragemElem.value : 'ALL';
+      const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+
+      filteredData = parsedData.filter(item => {
+        const matchMes = mesVal === "ALL" || item.mes === mesVal;
+        const matchRede = tipoRedeVal === "ALL" || item.tipoRede === tipoRedeVal;
+        const matchCoord = coordVal === "ALL" || item.coordenador === coordVal;
+        const matchDDD = dddVal === "ALL" || item.ddd === dddVal;
+        const matchStatus = statusVal === "ALL" || item.status === statusVal;
+        const matchAmostragem = amostragemVal === "ALL" || item.amostragem === amostragemVal;
+        const matchSearch = searchVal === "" ||
+          item.id.toLowerCase().includes(searchVal) ||
+          item.site.toLowerCase().includes(searchVal) ||
+          item.causa.toLowerCase().includes(searchVal) ||
+          item.coordenador.toLowerCase().includes(searchVal);
+
+        return matchMes && matchRede && matchCoord && matchDDD && matchStatus && matchAmostragem && matchSearch;
+      });
+
       updateKPIs();
       renderInsights();
       renderCharts();
@@ -619,48 +740,104 @@
     }
 
     function resetFilters() {
-      document.getElementById('filter-mes').value = "ALL";
+      const mesAtualHoje = NOME_MESES[new Date().getMonth()];
+      document.getElementById('filter-mes').value = mesesExistentes.includes(mesAtualHoje) ? mesAtualHoje : "ALL";
       document.getElementById('filter-tipo-rede').value = "ALL";
       document.getElementById('filter-coordenador').value = "ALL";
       document.getElementById('filter-ddd').value = "ALL";
       document.getElementById('filter-status').value = "ALL";
+      const amostragemElem = document.getElementById('filter-amostragem');
+      if (amostragemElem) amostragemElem.value = "ALL";
       document.getElementById('search-input').value = "";
       applyFilters();
     }
 
     function updateKPIs() {
-      document.getElementById('kpi-total-tas').innerText = "3216";
-      document.getElementById('kpi-media-tempo').innerText = `32 min`;
-      document.getElementById('kpi-max-site').innerText = `VLL`;
-      document.getElementById('kpi-max-tempo').innerText = `1225 min`;
-      document.getElementById('kpi-count-30m').innerText = `2378`;
-      document.getElementById('kpi-perc-30m').innerText = `74% do total`;
-      document.getElementById('kpi-justificados').innerText = `2795`;
-      document.getElementById('kpi-pendentes').innerText = `421`;
+      const total = filteredData.length;
+      document.getElementById('kpi-total-tas').innerText = total;
+
+      const totalTempo = filteredData.reduce((acc, curr) => acc + curr.tempoMin, 0);
+      const mediaTempo = total > 0 ? Math.round(totalTempo / total) : 0;
+      document.getElementById('kpi-media-tempo').innerText = `${mediaTempo} min`;
+
+      if (filteredData.length > 0) {
+        const sortedTempo = [...filteredData].sort((a,b) => b.tempoMin - a.tempoMin);
+        document.getElementById('kpi-max-site').innerText = sortedTempo[0].site;
+        document.getElementById('kpi-max-tempo').innerText = `${sortedTempo[0].tempoMin} min`;
+      } else {
+        document.getElementById('kpi-max-site').innerText = '--';
+        document.getElementById('kpi-max-tempo').innerText = '0 min';
+      }
+
+      const count30m = filteredData.filter(d => d.tempoMin < 30).length;
+      document.getElementById('kpi-count-30m').innerText = count30m;
+      document.getElementById('kpi-perc-30m').innerText = total > 0 ? `${((count30m / total)*100).toFixed(1)}%` : '0%';
+
+      const justCount = filteredData.filter(d => d.status === 'Justificado').length;
+      const pendCount = total - justCount;
+
+      document.getElementById('kpi-justificados').innerText = justCount;
+      document.getElementById('kpi-perc-just').innerText = total > 0 ? `${((justCount / total)*100).toFixed(1)}%` : '0%';
+
+      document.getElementById('kpi-pendentes').innerText = pendCount;
+      document.getElementById('kpi-perc-pend').innerText = total > 0 ? `${((pendCount / total)*100).toFixed(1)}%` : '0%';
     }
 
     function renderInsights() {
-      document.getElementById('insight-segmento').innerHTML = `A tecnologia <strong>Móvel</strong> representa <strong>48.3%</strong> dos estouros de SLA.`;
-      document.getElementById('insight-causa').innerHTML = `A principal causa é <strong>Fora</strong> com <strong>1262 TAs (39.2%)</strong>.`;
-      document.getElementById('insight-tratativa').innerHTML = `Atualmente <strong>86.9%</strong> das ocorrências possuem justificativa cadastrada.`;
+      if (filteredData.length === 0) {
+        document.getElementById('insight-segmento').innerHTML = "Sem dados no período selecionado.";
+        document.getElementById('insight-causa').innerHTML = "Sem dados no período selecionado.";
+        document.getElementById('insight-tratativa').innerHTML = "Sem dados no período selecionado.";
+        return;
+      }
+
+      const movelCount = filteredData.filter(d => d.tipoRede === 'Móvel').length;
+      const movelPerc = ((movelCount / filteredData.length)*100).toFixed(1);
+
+      document.getElementById('insight-segmento').innerHTML = 
+        `A tecnologia <strong>Móvel</strong> representa <strong>${movelPerc}%</strong> dos estouros de SLA (${movelCount} TAs).`;
+
+      const causaCounts = {};
+      filteredData.forEach(d => causaCounts[d.causa] = (causaCounts[d.causa] || 0) + 1);
+      const topCausa = Object.entries(causaCounts).sort((a,b) => b[1] - a[1])[0];
+      const topCausaPerc = topCausa ? ((topCausa[1] / filteredData.length)*100).toFixed(1) : 0;
+
+      document.getElementById('insight-causa').innerHTML = 
+        `A principal causa é <strong>"${topCausa ? topCausa[0] : 'N/A'}"</strong> com <strong>${topCausa ? topCausa[1] : 0} TAs (${topCausaPerc}%)</strong>.`;
+
+      const justCount = filteredData.filter(d => d.status === 'Justificado').length;
+      const justPerc = ((justCount / filteredData.length)*100).toFixed(1);
+
+      document.getElementById('insight-tratativa').innerHTML = 
+        `Atualmente <strong>${justPerc}%</strong> das ocorrências (${justCount} TAs) possuem justificativa cadastrada.`;
     }
 
     function renderCharts() {
-      // --- CHART 0: DESTAQUE PRINCIPAIS CAUSAS DA PERDA (COM RÓTULOS DE %) ---
+      const totalTAsAtual = filteredData.length || 1;
+
+      // --- CHART 0: DESTAQUE TOP 10 PRINCIPAIS CAUSAS DA PERDA ---
+      const causaCounts = {};
+      filteredData.forEach(d => causaCounts[d.causa] = (causaCounts[d.causa] || 0) + 1);
+      
+      // Ordena e pega as TOP 10 causas
+      const sortedCausas = Object.entries(causaCounts)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0, 10);
+
+      const causaLabels = sortedCausas.map(c => c[0]);
+      const causaValues = sortedCausas.map(c => c[1]);
+
       const causaDestCtx = document.getElementById('chart-causas-destaque').getContext('2d');
       if (chartCausasDestaqueInst) chartCausasDestaqueInst.destroy();
-      
-      const totalTAsCausas = 3216;
-      const causasData = [1262, 450, 380, 290, 180];
       
       chartCausasDestaqueInst = new Chart(causaDestCtx, {
         type: 'bar',
         data: {
-          labels: ['Fora', 'Conjunta Rede Externa', 'Demora no Diagnóstico Técnico', 'Falha Gestão TA', 'Aguardando Melhoras Climáticas'],
+          labels: causaLabels.length > 0 ? causaLabels : ['Sem dados'],
           datasets: [{
             label: 'Qtd TAs',
-            data: causasData,
-            backgroundColor: ['#e11d48', '#f97316', '#0284c7', '#10b981', '#6366f1'],
+            data: causaValues.length > 0 ? causaValues : [0],
+            backgroundColor: ['#e11d48', '#f97316', '#0284c7', '#10b981', '#6366f1', '#8b5cf6', '#ec4899', '#14b8a6', '#f59e0b', '#64748b'],
             borderRadius: 6
           }]
         },
@@ -676,74 +853,94 @@
               color: '#334155',
               font: { weight: 'bold', size: 11 },
               formatter: (value) => {
-                const perc = ((value / totalTAsCausas) * 100).toFixed(1);
+                if (value === 0) return '';
+                const perc = ((value / totalTAsAtual) * 100).toFixed(1);
                 return `${value} TAs (${perc}%)`;
               }
             }
           },
           scales: {
-            x: { max: 1600, grid: { color: '#f1f5f9' } },
+            x: { 
+              grid: { color: '#f1f5f9' },
+              suggestedMax: Math.max(...causaValues, 10) * 1.25
+            },
             y: { grid: { display: false } }
           }
         }
       });
 
       // --- CHART 1: SEMANAL ---
+      const semanasUnicas = [...new Set(filteredData.map(d => d.semana))].filter(Boolean);
+      const semCounts = {};
+      semanasUnicas.forEach(s => semCounts[s] = 0);
+      filteredData.forEach(d => { if (semCounts[d.semana] !== undefined) semCounts[d.semana]++; });
+
       const semCtx = document.getElementById('chart-semanal').getContext('2d');
       if (chartSemanalInst) chartSemanalInst.destroy();
       chartSemanalInst = new Chart(semCtx, {
         type: 'bar',
         data: {
-          labels: ['Semana 40', 'Semana 41', 'Semana 42', 'Semana 43 (Atual)'],
-          datasets: [{ label: 'Qtd TAs', data: [580, 720, 950, 1020], backgroundColor: ['#cbd5e1', '#cbd5e1', '#cbd5e1', '#0284c7'], borderRadius: 4 }]
+          labels: Object.keys(semCounts).length > 0 ? Object.keys(semCounts) : ['Sem dados'],
+          datasets: [{ label: 'Qtd TAs', data: Object.values(semCounts), backgroundColor: '#0284c7', borderRadius: 4 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
       // --- CHART 2: MENSAL ---
+      const mesCounts = {};
+      parsedData.forEach(d => mesCounts[d.mes] = (mesCounts[d.mes] || 0) + 1);
       const mesCtx = document.getElementById('chart-mensal').getContext('2d');
       if (chartMensalInst) chartMensalInst.destroy();
       chartMensalInst = new Chart(mesCtx, {
         type: 'line',
         data: {
-          labels: ['Julho', 'Agosto', 'Setembro', 'Outubro'],
-          datasets: [{ label: 'Qtd TAs', data: [2200, 2600, 2800, 3216], borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true, tension: 0.3 }]
+          labels: Object.keys(mesCounts),
+          datasets: [{ label: 'Qtd TAs', data: Object.values(mesCounts), borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true, tension: 0.3 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
       // --- CHART 3: DDD ---
+      const dddCounts = {};
+      filteredData.forEach(d => dddCounts[d.ddd] = (dddCounts[d.ddd] || 0) + 1);
       const dddCtx = document.getElementById('chart-ddd').getContext('2d');
       if (chartDDDInst) chartDDDInst.destroy();
       chartDDDInst = new Chart(dddCtx, {
         type: 'bar',
         data: {
-          labels: ['19', '16', '18', '14', '15', '17'],
-          datasets: [{ label: 'Qtd TAs', data: [810, 800, 420, 310, 290, 280], backgroundColor: ['#f43f5e', '#0284c7', '#0284c7', '#0284c7', '#0284c7', '#0284c7'], borderRadius: 4 }]
+          labels: Object.keys(dddCounts),
+          datasets: [{ label: 'Qtd TAs', data: Object.values(dddCounts), backgroundColor: '#0284c7', borderRadius: 4 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
       // --- CHART 4: MUNICÍPIO ---
+      const munCounts = {};
+      filteredData.forEach(d => munCounts[d.municipio] = (munCounts[d.municipio] || 0) + 1);
+      const sortedMuns = Object.entries(munCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
+
       const munCtx = document.getElementById('chart-municipio').getContext('2d');
       if (chartMunicipioInst) chartMunicipioInst.destroy();
       chartMunicipioInst = new Chart(munCtx, {
         type: 'bar',
         data: {
-          labels: ['CAMPINAS', 'RIBEIRÃO PRETO', 'SOROCABA', 'ARARAQUARA', 'BAURU'],
-          datasets: [{ label: 'Qtd TAs', data: [280, 240, 110, 90, 55], backgroundColor: '#6366f1', borderRadius: 4 }]
+          labels: sortedMuns.map(m => m[0]),
+          datasets: [{ label: 'Qtd TAs', data: sortedMuns.map(m => m[1]), backgroundColor: '#6366f1', borderRadius: 4 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
       // --- CHART 5: TIPO DE REDE ---
+      const movelCount = filteredData.filter(d => d.tipoRede === 'Móvel').length;
+      const fixaCount = filteredData.filter(d => d.tipoRede === 'Fixa').length;
+
       const redeCtx = document.getElementById('chart-tipo-rede').getContext('2d');
       if (chartTipoRedeInst) chartTipoRedeInst.destroy();
       chartTipoRedeInst = new Chart(redeCtx, {
         type: 'doughnut',
         data: {
-          labels: ['Fixa', 'Fixa V2', 'Móvel'],
-          datasets: [{ data: [35, 16.7, 48.3], backgroundColor: ['#3b82f6', '#0284c7', '#8b5cf6'] }]
+          labels: ['Fixa', 'Móvel'],
+          datasets: [{ data: [fixaCount, movelCount], backgroundColor: ['#0284c7', '#8b5cf6'] }]
         },
         options: {
           responsive: true,
@@ -752,53 +949,43 @@
           plugins: {
             datalabels: {
               color: '#ffffff',
-              font: { weight: 'bold', size: 10 },
-              formatter: (val) => `${val}%`
+              font: { weight: 'bold', size: 11 },
+              formatter: (val) => totalTAsAtual > 0 ? `${((val / totalTAsAtual) * 100).toFixed(1)}%` : '0%'
             }
           }
         }
       });
 
       // --- CHART 6: ENCERRAMENTO DIÁRIO ---
+      const dataCounts = {};
+      filteredData.forEach(d => dataCounts[d.data] = (dataCounts[d.data] || 0) + 1);
+
       const encDiarioCtx = document.getElementById('chart-encerramento-diario').getContext('2d');
       if (chartEncerramentoDiarioInst) chartEncerramentoDiarioInst.destroy();
       chartEncerramentoDiarioInst = new Chart(encDiarioCtx, {
         type: 'line',
         data: {
-          labels: ['01/06', '03/06', '05/06', '07/06', '09/06', '11/06', '13/06', '15/06', '17/06', '19/06', '21/06', '23/06', '25/06', '27/06', '29/06'],
+          labels: Object.keys(dataCounts),
           datasets: [
-            { label: 'Entrantes Totais', data: [30, 45, 35, 50, 40, 60, 45, 55, 65, 40, 50, 60, 70, 65, 80], borderColor: '#0284c7', tension: 0.3 },
-            { label: 'Perdas SLA', data: [10, 35, 15, 120, 25, 40, 30, 45, 80, 20, 30, 40, 90, 85, 95], borderColor: '#e11d48', pointBackgroundColor: '#e11d48', tension: 0.3 }
+            { label: 'Perdas SLA', data: Object.values(dataCounts), borderColor: '#e11d48', pointBackgroundColor: '#e11d48', tension: 0.3 }
           ]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } } }
       });
 
-      // --- HELPER PARA GRÁFICOS BARRAS EMPILHADAS 100% COM RÓTULO % ---
-      const createStacked100Chart = (elemId, rawMatrix) => {
+      // --- HELPER BARRAS EMPILHADAS 100% COM RÓTULO % ---
+      const createStacked100Chart = (elemId) => {
         const ctx = document.getElementById(elemId).getContext('2d');
         
-        // Converter matriz para porcentagem 100% empilhada
-        const categoriesCount = rawMatrix[0].length; // 3 redes (Fixa V2, Fixa, Móvel)
-        const stacked100Data = [[], [], [], []]; // 4 turnos (00-06, 06-12, 12-18, 18-00)
-
-        for (let c = 0; c < categoriesCount; c++) {
-          const totalForCategory = rawMatrix.reduce((sum, turno) => sum + turno[c], 0);
-          for (let t = 0; t < 4; t++) {
-            const perc = totalForCategory > 0 ? ((rawMatrix[t][c] / totalForCategory) * 100) : 0;
-            stacked100Data[t].push(parseFloat(perc.toFixed(1)));
-          }
-        }
-
         return new Chart(ctx, {
           type: 'bar',
           data: {
-            labels: ['Fixa V2', 'Fixa', 'Móvel'],
+            labels: ['Fixa', 'Móvel'],
             datasets: [
-              { label: '00h-06h', data: stacked100Data[0], backgroundColor: '#10b981' },
-              { label: '06h-12h', data: stacked100Data[1], backgroundColor: '#0284c7' },
-              { label: '12h-18h', data: stacked100Data[2], backgroundColor: '#f59e0b' },
-              { label: '18h-00h', data: stacked100Data[3], backgroundColor: '#6366f1' }
+              { label: '00h-06h', data: [15, 20], backgroundColor: '#10b981' },
+              { label: '06h-12h', data: [40, 35], backgroundColor: '#0284c7' },
+              { label: '12h-18h', data: [30, 30], backgroundColor: '#f59e0b' },
+              { label: '18h-00h', data: [15, 15], backgroundColor: '#6366f1' }
             ]
           },
           options: {
@@ -821,91 +1008,83 @@
         });
       };
 
-      // Dados para as 3 categorias [Turno][FixaV2, Fixa, Móvel]
-      const aberturaData = [
-        [15, 15, 15],  // 00h-06h
-        [35, 40, 38],  // 06h-12h
-        [30, 30, 32],  // 12h-18h
-        [20, 15, 15]   // 18h-00h
-      ];
-
-      const encerramentoData = [
-        [18, 18, 16],  // 00h-06h
-        [32, 38, 36],  // 06h-12h
-        [30, 28, 30],  // 12h-18h
-        [20, 16, 18]   // 18h-00h
-      ];
-
-      const maiorPerdaData = [
-        [16, 16, 17],  // 00h-06h
-        [34, 39, 37],  // 06h-12h
-        [30, 29, 29],  // 12h-18h
-        [20, 16, 17]   // 18h-00h
-      ];
-
       if (chartPeriodoAberturaInst) chartPeriodoAberturaInst.destroy();
-      chartPeriodoAberturaInst = createStacked100Chart('chart-periodo-abertura', aberturaData);
+      chartPeriodoAberturaInst = createStacked100Chart('chart-periodo-abertura');
 
       if (chartPeriodoEncerramentoInst) chartPeriodoEncerramentoInst.destroy();
-      chartPeriodoEncerramentoInst = createStacked100Chart('chart-periodo-encerramento', encerramentoData);
+      chartPeriodoEncerramentoInst = createStacked100Chart('chart-periodo-encerramento');
 
       if (chartHorarioMaiorPerdaInst) chartHorarioMaiorPerdaInst.destroy();
-      chartHorarioMaiorPerdaInst = createStacked100Chart('chart-horario-maior-perda', maiorPerdaData);
+      chartHorarioMaiorPerdaInst = createStacked100Chart('chart-horario-maior-perda');
     }
 
     function renderTopSites() {
-      const topSites = [
-        { pos: "1º", site: "CE", dddMun: "19 / CAMPINAS", tas: "53", tempo: "2133 min" },
-        { pos: "2º", site: "CS", dddMun: "16 / SERTÃOZINHO", tas: "46", tempo: "792 min" },
-        { pos: "3º", site: "GVB", dddMun: "19 / CAMPINAS", tas: "39", tempo: "2153 min" },
-        { pos: "4º", site: "FI", dddMun: "16 / ARARAQUARA", tas: "37", tempo: "1859 min" },
-        { pos: "5º", site: "MP", dddMun: "15 / ITAPEVA", tas: "36", tempo: "1047 min" },
-        { pos: "6º", site: "RB", dddMun: "17 / CATANDUVA", tas: "35", tempo: "1310 min" },
-        { pos: "7º", site: "AD", dddMun: "19 / RIO CLARO", tas: "31", tempo: "1336 min" },
-        { pos: "8º", site: "VS", dddMun: "17 / SÃO JOSÉ DO RIO PRETO", tas: "29", tempo: "1070 min" },
-        { pos: "9º", site: "RD", dddMun: "17 / NOVA GRANADA", tas: "29", tempo: "913 min" },
-        { pos: "10º", site: "JA", dddMun: "14 / MARÍLIA", tas: "29", tempo: "909 min" }
-      ];
+      const siteMap = {};
+      filteredData.forEach(d => {
+        if (!siteMap[d.site]) {
+          siteMap[d.site] = { site: d.site, dddMun: `${d.ddd} / ${d.municipio}`, count: 0, totalTempo: 0 };
+        }
+        siteMap[d.site].count++;
+        siteMap[d.site].totalTempo += d.tempoMin;
+      });
 
+      const sortedSites = Object.values(siteMap).sort((a,b) => b.count - a.count).slice(0, 10);
       const tbody = document.getElementById('tbody-top-sites');
       tbody.innerHTML = '';
 
-      topSites.forEach(s => {
+      if (sortedSites.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Nenhum registro encontrado.</td></tr>`;
+        return;
+      }
+
+      sortedSites.forEach((s, idx) => {
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50 border-b border-slate-100";
         tr.innerHTML = `
-          <td class="p-2 font-bold text-slate-800">${s.pos}</td>
+          <td class="p-2 font-bold text-slate-800">${idx + 1}º</td>
           <td class="p-2 font-bold text-sky-700">${s.site}</td>
           <td class="p-2 text-slate-600">${s.dddMun}</td>
-          <td class="p-2 text-center font-extrabold text-rose-600">${s.tas}</td>
-          <td class="p-2 text-right font-bold text-slate-800">${s.tempo}</td>
+          <td class="p-2 text-center font-extrabold text-rose-600">${s.count}</td>
+          <td class="p-2 text-right font-bold text-slate-800">${s.totalTempo} min</td>
         `;
         tbody.appendChild(tr);
       });
     }
 
     function renderResumoCoordenadores() {
-      const coords = [
-        { rank: "1", nome: "SILVIO KOWASKI", tas: "1105", media: "31 min", perc: "89%", status: "status-green" },
-        { rank: "2", nome: "MATHEUS MELLO", tas: "771", media: "23 min", perc: "76%", status: "status-yellow" },
-        { rank: "3", nome: "ROBERTO SOUZA", tas: "523", media: "30 min", perc: "92%", status: "status-green" },
-        { rank: "4", nome: "FABIO TOSHIO SUTO", tas: "494", media: "47 min", perc: "88%", status: "status-green" },
-        { rank: "5", nome: "MARCIO FORTES", tas: "323", media: "38 min", perc: "95%", status: "status-green" }
-      ];
+      const coordMap = {};
+      filteredData.forEach(d => {
+        if (!coordMap[d.coordenador]) {
+          coordMap[d.coordenador] = { coord: d.coordenador, count: 0, totalTempo: 0, justificados: 0 };
+        }
+        coordMap[d.coordenador].count++;
+        coordMap[d.coordenador].totalTempo += d.tempoMin;
+        if (d.status === 'Justificado') coordMap[d.coordenador].justificados++;
+      });
 
+      const listCoord = Object.values(coordMap).sort((a,b) => b.count - a.count);
       const tbody = document.getElementById('tbody-coordenadores');
       tbody.innerHTML = '';
 
-      coords.forEach(c => {
+      if (listCoord.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Nenhum coordenador encontrado.</td></tr>`;
+        return;
+      }
+
+      listCoord.forEach((c, idx) => {
+        const media = Math.round(c.totalTempo / c.count);
+        const percJust = Math.round((c.justificados / c.count) * 100);
+        let statusClass = percJust >= 80 ? 'status-green' : (percJust >= 50 ? 'status-yellow' : 'status-red');
+
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50 border-b border-slate-100";
         tr.innerHTML = `
-          <td class="p-2 text-center font-extrabold text-amber-500">${c.rank}</td>
-          <td class="p-2 font-bold text-slate-800">${c.nome}</td>
-          <td class="p-2 text-center font-extrabold text-sky-700">${c.tas}</td>
-          <td class="p-2 text-center font-medium text-amber-600">${c.media}</td>
-          <td class="p-2 text-center font-bold text-emerald-600">${c.perc}</td>
-          <td class="p-2 text-center"><span class="status-pill ${c.status}"></span></td>
+          <td class="p-2 text-center font-extrabold text-amber-500">${idx + 1}º</td>
+          <td class="p-2 font-bold text-slate-800">${c.coord}</td>
+          <td class="p-2 text-center font-extrabold text-sky-700">${c.count}</td>
+          <td class="p-2 text-center font-medium text-amber-600">${media} min</td>
+          <td class="p-2 text-center font-bold text-emerald-600">${percJust}%</td>
+          <td class="p-2 text-center"><span class="status-pill ${statusClass}"></span></td>
         `;
         tbody.appendChild(tr);
       });
@@ -915,29 +1094,27 @@
       const tbody = document.getElementById('table-body');
       tbody.innerHTML = '';
 
-      const sampleRows = [
-        { abertura: "01/06/2026", pAbertura: "06:00 às 12:00", encerramento: "12:00 às 18:00", ddd: "17", mun: "SANTA ADÉLIA", site: "SA", rede: "Fixa", coord: "SILVIO KOWASKI", tempo: "116 min", amostra: "Analisar Amostragem" },
-        { abertura: "01/06/2026", pAbertura: "12:00 às 18:00", encerramento: "18:00 às 00:00", ddd: "15", mun: "PILAR DO SUL", site: "JM", rede: "Fixa", coord: "ROBERTO SOUZA", tempo: "128 min", amostra: "Analisar Amostragem" },
-        { abertura: "01/06/2026", pAbertura: "00:00 às 06:00", encerramento: "06:00 às 12:00", ddd: "19", mun: "RIO CLARO", site: "AD", rede: "Fixa", coord: "MARCIO FORTES", tempo: "96 min", amostra: "Analisar Amostragem" },
-        { abertura: "01/06/2026", pAbertura: "18:00 às 00:00", encerramento: "00:00 às 06:00", ddd: "16", mun: "RIBEIRÃO PRETO", site: "LE", rede: "Fixa", coord: "SILVIO KOWASKI", tempo: "35 min", amostra: "Analisar Amostragem" },
-        { abertura: "01/06/2026", pAbertura: "00:00 às 06:00", encerramento: "06:00 às 12:00", ddd: "14", mun: "BOTUCATU", site: "JP", rede: "Fixa", coord: "MATHEUS MELLO", tempo: "156 min", amostra: "Analisar Amostragem" },
-        { abertura: "01/06/2026", pAbertura: "18:00 às 00:00", encerramento: "00:00 às 06:00", ddd: "17", mun: "VALENTIM GENTIL", site: "EV", rede: "Fixa", coord: "SILVIO KOWASKI", tempo: "133 min", amostra: "Analisar Amostragem" }
-      ];
+      document.getElementById('rows-count').innerText = `Exibindo ${filteredData.length} registros`;
 
-      sampleRows.forEach(row => {
+      if (filteredData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" class="p-8 text-center text-slate-400">Nenhum registro encontrado para os filtros selecionados.</td></tr>`;
+        return;
+      }
+
+      filteredData.slice(0, 100).forEach(row => {
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
         tr.innerHTML = `
-          <td class="p-3 font-bold text-slate-900">${row.abertura}</td>
-          <td class="p-3 font-medium text-slate-700">${row.pAbertura}</td>
+          <td class="p-3 font-bold text-slate-900">${row.data}</td>
+          <td class="p-3 font-medium text-slate-700">${row.periodoAbertura}</td>
           <td class="p-3 font-medium text-slate-700">${row.encerramento}</td>
           <td class="p-3 font-semibold text-slate-800">${row.ddd}</td>
-          <td class="p-3 font-semibold text-slate-800">${row.mun}</td>
+          <td class="p-3 font-semibold text-slate-800">${row.municipio}</td>
           <td class="p-3 font-bold text-sky-700">${row.site}</td>
-          <td class="p-3 font-medium text-slate-700">${row.rede}</td>
-          <td class="p-3 font-medium text-slate-700">${row.coord}</td>
-          <td class="p-3 text-center font-extrabold text-rose-600">${row.tempo}</td>
-          <td class="p-3 text-center font-medium text-slate-600">${row.amostra}</td>
+          <td class="p-3 font-medium text-slate-700">${row.tipoRede}</td>
+          <td class="p-3 font-medium text-slate-700">${row.coordenador}</td>
+          <td class="p-3 text-center font-extrabold text-rose-600">${row.tempoMin} min</td>
+          <td class="p-3 text-center font-medium text-slate-600">${row.amostragem}</td>
           <td class="p-3 text-center no-print">
             <button class="px-2 py-1 text-[11px] font-bold text-sky-700 bg-sky-50 rounded hover:bg-sky-100 transition">VER</button>
           </td>
@@ -947,7 +1124,18 @@
     }
 
     function exportCSV() {
-      alert("Exportação da base iniciada!");
+      let csv = "ID;Data;PeriodoAbertura;Encerramento;DDD;Municipio;Site;TipoRede;Coordenador;Causa;TempoMin;Amostragem;Status\n";
+      filteredData.forEach(r => {
+        csv += `${r.id};${r.data};"${r.periodoAbertura}";"${r.encerramento}";"${r.ddd}";"${r.municipio}";"${r.site}";"${r.tipoRede}";"${r.coordenador}";"${r.causa}";${r.tempoMin};"${r.amostragem}";"${r.status}"\n`;
+      });
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Base_TAs_SLA_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   </script>
 </body>
