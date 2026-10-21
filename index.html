@@ -303,7 +303,7 @@
         <div class="h-56 relative">
           <canvas id="chart-mensal"></canvas>
         </div>
-        <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo acumulado dos meses do trimestre</span>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo acumulado dos meses com registros</span>
       </div>
     </section>
 
@@ -625,7 +625,7 @@
         // TIPO_ALARME da COLUNA O (Índice 14)
         const tipoAlarme = getValByKey(['TIPO_ALARME', 'TIPO ALARME', 'ALARME'], 14) || 'Não Informado';
 
-        // CAUSA RAIZ PREDOMINANTE da COLUNA E (Índice 4)
+        // CAUSA RAIZ PREDOMINANTE ESTRITAMENTE DA COLUNA E (Índice 4)
         let causaE = getValByKey(['SEGMENTO', 'CAUSA DA PERDA', 'CAUSA'], 4);
         if (!causaE || causaE.trim() === '') causaE = 'Não Informado';
 
@@ -675,7 +675,6 @@
         }
         if (!semanaCalculada) semanaCalculada = 'Semana 43';
 
-        // Busca o Mês a partir da Coluna AY ou Encerramento
         let mesExtenso = getValByKey(['MES_ENCERRAMENTO', 'MES ENCERRAMENTO', 'MÊS ENCERRAMENTO'], 50);
         if (!mesExtenso && (dataEncerramentoStr.includes('/') || dataEncerramentoStr.includes('-'))) {
           let partsEnc = dataEncerramentoStr.replace(/-/g, '/').split('/');
