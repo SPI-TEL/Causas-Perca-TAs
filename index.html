@@ -303,7 +303,7 @@
         <div class="h-56 relative">
           <canvas id="chart-mensal"></canvas>
         </div>
-        <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo anual acumulado de todos os meses</span>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo acumulado dos meses do ano</span>
       </div>
     </section>
 
@@ -620,15 +620,15 @@
 
         const evento = getValByKey(['EVENTO', 'TA', 'TICKET', 'ID']) || `EV-${3689000000 + index}`;
         
-        // COORDENADOR (COLUNA AU / Índice 46)
+        // COORDENADOR da COLUNA AU (Índice 46)
         const coordenador = getValByKey(['COORDENADOR', 'CADOR'], 46) || 'Não informado';
         const dddRaw = getValByKey(['DDD']) || 'Não Informado';
         const municipio = getValByKey(['MUNICÍPIO', 'MUNICIPIO', 'CIDADE']) || 'Não Informado';
 
-        // TIPO_ALARME (COLUNA O / Índice 14)
+        // TIPO_ALARME da COLUNA O (Índice 14)
         const tipoAlarme = getValByKey(['TIPO_ALARME', 'TIPO ALARME', 'ALARME'], 14) || 'Não Informado';
 
-        // CAUSA RAIZ PREDOMINANTE (COLUNA E / Índice 4)
+        // CAUSA RAIZ PREDOMINANTE da COLUNA E (Índice 4)
         let causaE = getValByKey(['SEGMENTO', 'CAUSA DA PERDA', 'CAUSA'], 4);
         if (!causaE || causaE.trim() === '') causaE = 'Não Informado';
 
@@ -643,10 +643,10 @@
         const tempoMin = parseMinutes(getValByKey(['TEMPO PERDA SLA', 'TEMPO PERDA', 'TEMPO', 'ATRASO']));
         const amostragem = getValByKey(['AMOSTRAGEM', 'AMOSTRA']) || 'Todas as Amostragens';
 
-        // PERÍODO DE ABERTURA (COLUNA BB / Índice 53)
+        // PERÍODO DE ABERTURA da COLUNA BB (Índice 53)
         const periodoAbertura = parseTurnoString(getValByKey(['PERÍODO DE ABERTURA', 'PERIODO ABERTURA', 'PERIODO_ABERTURA'], 53));
         
-        // PERÍODO DE ENCERRAMENTO (COLUNA BC / Índice 54)
+        // PERÍODO DE ENCERRAMENTO da COLUNA BC (Índice 54)
         const encerramento = parseTurnoString(getValByKey(['PERIODO ENCERRAMENTO', 'PERÍODO ENCERRAMENTO', 'PERIODO_ENCERRAMENTO'], 54));
 
         // LEITURA OBRIGATÓRIA DA COLUNA BJ (Índice 61) PARA O HORÁRIO DE MAIOR PERDA
@@ -658,7 +658,7 @@
         const cleanC = analiseValC.toLowerCase();
         const isJustificado = cleanC.includes('validad') || cleanC.includes('justificad') || cleanC.includes('ok') || cleanC.includes('sim');
 
-        // DATA DE ABERTURA (COLUNA A)
+        // DATA DE ABERTURA (COLUNA A / Índice 0)
         const dataAberturaStr = getValByKey(['DATA_CRIACAO', 'DATA_CRIA', 'DATA_ABERTURA', 'ABERTURA'], 0) || '01/10/2026';
 
         // DATA DE ENCERRAMENTO (COLUNA Q / AY)
@@ -944,11 +944,11 @@
         }
       });
 
-      // --- CHART 1: SEMANAL (COLUNA A / ISO 8601) ---
+      // --- CHART 1: SEMANAL (COLUNA A) ---
+      const semanasUnicas = [...new Set(filteredData.map(d => d.semana))].filter(Boolean);
       const semCounts = {};
-      filteredData.forEach(d => {
-        if (d.semana) semCounts[d.semana] = (semCounts[d.semana] || 0) + 1;
-      });
+      semanasUnicas.forEach(s => semCounts[s] = 0);
+      filteredData.forEach(d => { if (semCounts[d.semana] !== undefined) semCounts[d.semana]++; });
 
       const semCtx = document.getElementById('chart-semanal').getContext('2d');
       if (chartSemanalInst) chartSemanalInst.destroy();
@@ -961,11 +961,10 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART 2: EVOLUÇÃO MENSAL (MANTER TODOS OS 12 MESES DO ANO) ---
+      // --- CHART 2: EVOLUÇÃO MENSAL (TODOS OS 12 MESES INDEPENDENTE DO FILTRO) ---
       const mesCountsAnual = {};
       NOME_MESES.forEach(m => mesCountsAnual[m] = 0);
 
-      // Usar a base geral parsedData para manter a visão do ano independente do filtro aplicado
       parsedData.forEach(d => {
         if (d.mes && mesCountsAnual[d.mes] !== undefined) {
           mesCountsAnual[d.mes]++;
