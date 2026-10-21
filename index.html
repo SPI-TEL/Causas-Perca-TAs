@@ -3,285 +3,1289 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Diário — P1 por DDD</title>
-
+  <title>Portal Gerencial - Análise de Causas de TAs Fora do Prazo (SLA)</title>
+  
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js Datalabels Plugin CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <!-- PapaParse CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+  
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #334155; }
+    .status-pill { display: inline-flex; align-items: center; justify-content: center; width: 10px; height: 10px; border-radius: 50%; }
+    .status-green { background-color: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.4); }
+    .status-yellow { background-color: #f59e0b; box-shadow: 0 0 6px rgba(245, 158, 11, 0.4); }
+    .status-red { background-color: #f43f5e; box-shadow: 0 0 6px rgba(244, 63, 94, 0.4); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #e2e8f0; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    
+    @media print {
+      button, .no-print { display: none !important; }
+      body { padding: 0; background-color: #ffffff; }
+      .page-break { page-break-before: always; }
+    }
   </style>
 </head>
-<body class="p-4 md:p-8 min-h-screen flex justify-center items-start">
+<body class="min-h-screen flex flex-col p-3 md:p-5 gap-4">
 
-  <main class="max-w-6xl w-full bg-white rounded-2xl border border-slate-200 shadow-xl p-6 md:p-8 space-y-6">
+  <!-- APP ROOT CONTAINER -->
+  <main class="flex flex-col gap-4 max-w-[1600px] mx-auto w-full">
 
-    <!-- CABEÇALHO DO PAINEL DIÁRIO -->
-    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-5">
-      <div>
-        <h1 class="text-2xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
-          Painel diário — P1 por DDD
-        </h1>
-        <p class="text-xs text-slate-500 mt-1" id="lbl-subtitulo">
-          Cálculos em tempo real baseados na data de acesso atual ao portal.
-        </p>
+    <!-- TOP HEADER -->
+    <header class="bg-[#0f172a] text-white rounded-xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-md">
+      <div class="flex items-center gap-3">
+        <div class="bg-sky-500 text-white p-2.5 rounded-lg shadow-sm flex items-center justify-center">
+          <i class="fa-solid fa-clock-rotate-left text-2xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg font-bold tracking-tight text-white">ANÁLISE DE CAUSAS DE TAs FORA DO PRAZO (SLA)</h1>
+            <span class="bg-sky-500/20 text-sky-300 text-xs px-2.5 py-0.5 rounded font-medium border border-sky-500/30">Google Sheets Live • Aba Analítico</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">Contrato Vivo • Gestão de SLA Operacional • Planta Interna & Rede de Acesso</p>
+        </div>
       </div>
 
-      <!-- BADGE DE DATA DE ACESSO ATUAL -->
-      <div class="bg-slate-100 border border-slate-200 rounded-xl px-4 py-2 text-right">
-        <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Data de Acesso Atual</span>
-        <span class="text-sm font-extrabold text-indigo-900 flex items-center gap-1.5" id="lbl-data-hoje">
-          <i class="fa-regular fa-calendar-days text-indigo-600"></i> --/--/----
+      <!-- Actions -->
+      <div class="flex items-center gap-3 no-print">
+        <div class="text-right hidden sm:block">
+          <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Última sincronização</p>
+          <p class="text-xs font-bold text-slate-200" id="clock-timestamp">--:--:--</p>
+        </div>
+
+        <button onclick="fetchGoogleSheetsData(true)" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-rotate text-xs"></i> Sincronizar
+        </button>
+        <button onclick="window.print()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-print"></i> Relatório / PDF
+        </button>
+        <button onclick="exportCSV()" class="px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-file-excel"></i> Exportar Base
+        </button>
+      </div>
+    </header>
+
+    <!-- BANNER DE STATUS -->
+    <div id="status-banner" class="bg-[#e6f7f2] border border-emerald-200/80 text-emerald-900 px-4 py-2 rounded-lg text-xs flex flex-wrap items-center justify-between gap-2 shadow-sm">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-emerald-600" id="status-icon"></i>
+        <span id="status-text">Conectando à aba Analítico da planilha Google Sheets...</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="bg-[#fef3c7] border border-amber-200/80 text-amber-900 font-semibold px-2.5 py-0.5 rounded text-[11px]">
+          Objetivo: Redução de Estouro de SLA & Tratativa de Justificativas
         </span>
       </div>
     </div>
 
-    <!-- MENSAGEM DE CARREGAMENTO -->
-    <div id="loading-state" class="flex items-center justify-center p-12 text-indigo-600 font-semibold gap-3">
-      <i class="fa-solid fa-circle-notch fa-spin text-2xl"></i>
-      <span>A calcular indicadores com base na data atual...</span>
-    </div>
+    <!-- QUADRO DE INSIGHTS E DESTAQUES DA ANÁLISE -->
+    <section class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm space-y-3">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="bg-indigo-100 text-indigo-700 p-2 rounded-lg">
+            <i class="fa-solid fa-lightbulb text-base"></i>
+          </div>
+          <div>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800">Quadro de Insights & Destaques da Análise</h2>
+            <p class="text-[11px] text-slate-400">Resumo executivo gerado automaticamente conforme os filtros aplicados</p>
+          </div>
+        </div>
+        <span class="bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">
+          Diagnóstico em Tempo Real
+        </span>
+      </div>
 
-    <!-- TABELA DINÂMICA D-1 -->
-    <div id="content-table" class="overflow-x-auto hidden">
-      <table class="w-full text-left border-collapse text-sm">
-        <thead>
-          <tr class="border-b border-slate-200 text-slate-600 uppercase text-[11px] tracking-wider font-bold bg-slate-50/50">
-            <th class="py-3 px-4">DDD</th>
-            <th class="py-3 px-4 text-center">
-              Média entrante
-              <i class="fa-solid fa-circle-info text-slate-400 text-[10px] ml-0.5" title="Média diária de TAs do DDD"></i>
-            </th>
-            <th class="py-3 px-4 text-center">
-              Entrante ontem (<span id="th-data-ontem">--/--</span>)
-              <i class="fa-solid fa-circle-info text-slate-400 text-[10px] ml-0.5" title="TAs abertas na data de ontem"></i>
-            </th>
-            <th class="py-3 px-4 text-center">Δ Volume</th>
-            <th class="py-3 px-4 text-center">P1 ontem</th>
-            <th class="py-3 px-4 text-center">Acum. anterior</th>
-            <th class="py-3 px-4 text-center">Acum. atual</th>
-            <th class="py-3 px-4 text-center">Δ Acum.</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-painel" class="divide-y divide-slate-100 font-medium text-slate-800">
-          <!-- Injetado dinamicamente via JS -->
-        </tbody>
-      </table>
-    </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
+          <span class="text-[10px] font-bold text-sky-700 uppercase block mb-1">Distribuição de Rede</span>
+          <p class="text-xs text-slate-700 leading-relaxed" id="insight-segmento">Analisando proporção de rede...</p>
+        </div>
 
-    <!-- RODAPÉ INFORMATIVO -->
-    <div class="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
-      <span id="lbl-rodape-info">*Cálculos baseados na data de acesso atual em relação a D-1 e dados acumulados históricos*</span>
-      <button onclick="carregarDadosECalcular()" class="text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1">
-        <i class="fa-solid fa-rotate text-xs"></i> Recalcular
-      </button>
-    </div>
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
+          <span class="text-[10px] font-bold text-rose-700 uppercase block mb-1">Causa Raiz Predominante</span>
+          <p class="text-xs text-slate-700 leading-relaxed" id="insight-causa">Mapeando causas principais...</p>
+        </div>
+
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
+          <span class="text-[10px] font-bold text-emerald-700 uppercase block mb-1">Efetividade de Tratativas</span>
+          <p class="text-xs text-slate-700 leading-relaxed" id="insight-tratativa">Avaliando status de justificativas...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPI CARDS -->
+    <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium uppercase tracking-wider">Total TAs SLA</span>
+          <i class="fa-solid fa-circle-exclamation text-slate-400"></i>
+        </div>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="text-2xl font-extrabold text-slate-900" id="kpi-total-tas">0</span>
+          <span class="text-[11px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">Eventos</span>
+        </div>
+        <p class="text-[10px] text-slate-400 mt-1">Fora do prazo SLA</p>
+      </div>
+
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium uppercase tracking-wider">Média Perda SLA</span>
+          <i class="fa-solid fa-hourglass-half text-amber-500"></i>
+        </div>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="text-2xl font-extrabold text-amber-600" id="kpi-media-tempo">0 min</span>
+          <span class="text-[11px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">Média</span>
+        </div>
+        <p class="text-[10px] text-slate-400 mt-1">Atraso médio por TA</p>
+      </div>
+
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium uppercase tracking-wider">Maior Perda</span>
+          <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
+        </div>
+        <div class="mt-2">
+          <span class="text-lg font-extrabold text-rose-600 block truncate" id="kpi-max-site">--</span>
+          <span class="text-[11px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded" id="kpi-max-tempo">0 min</span>
+        </div>
+        <p class="text-[10px] text-slate-400 mt-1">Site com maior atraso</p>
+      </div>
+
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium uppercase tracking-wider">Perda &lt; 30min</span>
+          <i class="fa-solid fa-stopwatch text-sky-500"></i>
+        </div>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="text-2xl font-extrabold text-sky-600" id="kpi-count-30m">0</span>
+          <span class="text-[11px] font-semibold text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded" id="kpi-perc-30m">0%</span>
+        </div>
+        <p class="text-[10px] text-slate-400 mt-1">Pequenos desvios SLA</p>
+      </div>
+
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium uppercase tracking-wider">Analisados</span>
+          <i class="fa-solid fa-file-circle-check text-emerald-500"></i>
+        </div>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="text-2xl font-extrabold text-emerald-600" id="kpi-justificados">0</span>
+          <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded" id="kpi-perc-just">0%</span>
+        </div>
+      </div>
+
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium uppercase tracking-wider">Pendentes</span>
+          <i class="fa-solid fa-clock text-rose-500"></i>
+        </div>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="text-2xl font-extrabold text-rose-600" id="kpi-pendentes">0</span>
+          <span class="text-[11px] font-semibold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded" id="kpi-perc-pend">0%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAINEL DE FILTROS -->
+    <section class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-wrap items-center justify-between gap-4 no-print">
+      <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
+        <div>
+          <label class="block text-[11px] font-bold text-sky-800 uppercase tracking-wider mb-1">Mês de Referência</label>
+          <select id="filter-mes" onchange="applyFilters()" class="text-xs bg-sky-50 border border-sky-300 rounded-lg p-2 font-bold text-sky-900 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <option value="ALL">Todos os Meses</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Tipo de Rede</label>
+          <select id="filter-tipo-rede" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <option value="ALL">Todas as Redes</option>
+            <option value="Fixa">Rede Fixa</option>
+            <option value="Móvel">Rede Móvel</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Filtrar Coordenador</label>
+          <select id="filter-coordenador" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <option value="ALL">Todos os Coordenadores</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Filtrar DDD</label>
+          <select id="filter-ddd" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <option value="ALL">Todos os DDDs</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Status Análise</label>
+          <select id="filter-status" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <option value="ALL">Todos os Status</option>
+            <option value="Justificado">Analisados / Validados</option>
+            <option value="Pendente">Pendentes</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Tempo Perda SLA</label>
+          <select id="filter-tempo" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <option value="ALL">Todos os Tempos</option>
+            <option value="LT30">&lt; 30 Minutos</option>
+            <option value="GTE30">&gt;= 30 Minutos</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Amostragem</label>
+          <select id="filter-amostragem" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <option value="ALL">Todas as Amostragens</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="w-full lg:w-64">
+        <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Busca Site / TA / Causa / Alarme</label>
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+          <input type="text" id="search-input" onkeyup="applyFilters()" placeholder="Ex: CPS-001, TA-1002, Energia..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: DESTAQUE TOP 10 PRINCIPAIS CAUSAS DA PERDA -->
+    <section class="bg-white p-5 rounded-2xl border-2 border-rose-200/90 shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-extrabold uppercase tracking-wider text-rose-800 flex items-center gap-2">
+          <i class="fa-solid fa-chart-bar text-rose-600 text-base"></i> TOP 10 PRINCIPAIS CAUSAS DA PERDA (% DO TOTAL)
+        </h3>
+        <span class="bg-rose-100 text-rose-800 border border-rose-200 font-extrabold text-xs px-3 py-1 rounded-full uppercase">
+          Ranking Causa Raiz
+        </span>
+      </div>
+      <p class="text-xs text-slate-500 mb-4">Mapeamento detalhado das 10 principais causas causadoras de estouro de SLA com percentual relativo ao filtro atual</p>
+      <div class="h-80 relative">
+        <canvas id="chart-causas-destaque"></canvas>
+      </div>
+    </section>
+
+    <!-- CHARTS ROW 1: EVOLUÇÃO SEMANAL E MENSAL -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <i class="fa-solid fa-chart-line text-sky-600"></i> Evolução Semanal (Últimas 4 Semanas + Atual)
+          </h3>
+        </div>
+        <p class="text-[10px] text-slate-400 mb-2">Padrão nacional ISO 8601 (Semana Atual em destaque)</p>
+        <div class="h-56 relative">
+          <canvas id="chart-semanal"></canvas>
+        </div>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Acompanhamento semanal contínuo</span>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <i class="fa-solid fa-chart-column text-indigo-600"></i> Evolução Mensal
+          </h3>
+        </div>
+        <p class="text-[10px] text-slate-400 mb-2">Histórico acumulado de volume por mês</p>
+        <div class="h-56 relative">
+          <canvas id="chart-mensal"></canvas>
+        </div>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo acumulado de todos os meses do ano</span>
+      </div>
+    </section>
+
+    <!-- SECTION: EVOLUÇÃO DE ENCERRAMENTO DIÁRIO & PERDAS SLA -->
+    <section class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+          <i class="fa-solid fa-wave-square text-sky-600"></i> Evolução de Encerramento Diário & Perdas SLA
+        </h3>
+        <span class="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Picos críticos de perdas SLA</span>
+      </div>
+      <p class="text-[10px] text-slate-400 mb-2">Linha contínua por data de abertura do evento (picos de desvios destacados em vermelho)</p>
+      <div class="h-48 relative">
+        <canvas id="chart-encerramento-diario"></canvas>
+      </div>
+    </section>
+
+    <!-- CHARTS ROW 2: DDD, TOP 10 TIPOS DE ALARME E TIPO DE REDE -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <i class="fa-solid fa-map-pin text-emerald-600"></i> Ocorrências por DDD
+          </h3>
+        </div>
+        <p class="text-[10px] text-slate-400 mb-2">Destaque em vermelho para os 2 maiores ofensores</p>
+        <div class="h-64 relative">
+          <canvas id="chart-ddd"></canvas>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <i class="fa-solid fa-bell text-indigo-600"></i> Top 10 Tipos de Alarme
+          </h3>
+        </div>
+        <p class="text-[10px] text-slate-400 mb-2">Ranking dos 10 tipos de alarmes com maior volume de perdas</p>
+        <div class="h-64 relative">
+          <canvas id="chart-alarme"></canvas>
+        </div>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Mapeado diretamente da aba Analítico</span>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <i class="fa-solid fa-network-wired text-purple-600"></i> Tipo de Rede
+          </h3>
+        </div>
+        <p class="text-[10px] text-slate-400 mb-2">Quantidade e % por tecnologia de rede</p>
+        <div class="h-64 relative">
+          <canvas id="chart-tipo-rede"></canvas>
+        </div>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Proporção de impactados por tipo de rede</span>
+      </div>
+    </section>
+
+    <!-- ROW: PERÍODOS (BARRAS EMPILHADAS 100% COM RÓTULO %) -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <i class="fa-solid fa-clock-rotate-left text-sky-600"></i> PERÍODO DE ABERTURA
+          </h3>
+          <span class="text-[10px] text-slate-400 font-bold">% por Rede (100% Empilhado)</span>
+        </div>
+        <div class="h-52 relative">
+          <canvas id="chart-periodo-abertura"></canvas>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <i class="fa-solid fa-regular fa-clock text-amber-600"></i> PERÍODO DE ENCERRAMENTO
+          </h3>
+          <span class="text-[10px] text-slate-400 font-bold">% por Rede (100% Empilhado)</span>
+        </div>
+        <div class="h-52 relative">
+          <canvas id="chart-periodo-encerramento"></canvas>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> HORÁRIO DE MAIOR PERDA (+4H)
+          </h3>
+          <span class="text-[10px] text-slate-400 font-bold">Abertura + 4 hrs (100% Empilhado)</span>
+        </div>
+        <div class="h-52 relative">
+          <canvas id="chart-horario-maior-perda"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: RANKINGS -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+              <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> Top 10 Sites Ofensores
+            </h3>
+            <p class="text-[10px] text-slate-400 mt-0.5">Ordenado por mais TAs e depois por Tempo de atraso</p>
+          </div>
+          <span class="text-[10px] font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Ranking Crítico</span>
+        </div>
+        <div class="overflow-x-auto mt-3 flex-1">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 font-semibold uppercase text-[10px] border-b border-slate-200">
+                <th class="p-2">Pos.</th>
+                <th class="p-2">Código / Site</th>
+                <th class="p-2">DDD / Município</th>
+                <th class="p-2 text-center font-bold text-rose-700">Qtd TAs</th>
+                <th class="p-2 text-right">Tempo Acumulado</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-top-sites" class="divide-y divide-slate-100 text-slate-700"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+              <i class="fa-solid fa-user-tie text-sky-600"></i> Acompanhamento por Coordenador
+            </h3>
+            <p class="text-[10px] text-slate-400 mt-0.5">Ranking ordenado por quantidade de TAs com estouro de SLA</p>
+          </div>
+          <span class="text-[10px] font-semibold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">Gestão SPI</span>
+        </div>
+        <div class="overflow-x-auto mt-3 flex-1">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 font-semibold uppercase text-[10px] border-b border-slate-200">
+                <th class="p-2 text-center">Rank</th>
+                <th class="p-2">Coordenador</th>
+                <th class="p-2 text-center font-bold text-sky-700">Qtd TAs</th>
+                <th class="p-2 text-center">Média Atraso</th>
+                <th class="p-2 text-center">% Justificados</th>
+                <th class="p-2 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-coordenadores" class="divide-y divide-slate-100 text-slate-700"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TABELA DETALHADA BASE -->
+    <section class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden p-5 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-slate-100">
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+            <i class="fa-solid fa-table-list text-sky-600"></i> Base Detalhada de TAs Fora do Prazo (Aba Analítico)
+          </h2>
+          <p class="text-[11px] text-slate-400">Sincronizado automaticamente com a planilha publicada</p>
+        </div>
+        <div class="flex items-center gap-2 no-print">
+          <span class="text-xs text-slate-500 font-medium" id="rows-count">Exibindo 0 registros</span>
+          <button onclick="resetFilters()" class="text-xs text-slate-600 hover:text-sky-600 px-2.5 py-1 border border-slate-200 rounded hover:bg-slate-50 transition">
+            Limpar Filtros
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto max-h-[450px]">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead class="bg-slate-50 text-slate-600 uppercase text-[10px] tracking-wider font-semibold sticky top-0 z-10 border-b border-slate-200">
+            <tr>
+              <th class="p-3">Abertura</th>
+              <th class="p-3">Período Abertura</th>
+              <th class="p-3">Encerramento</th>
+              <th class="p-3">DDD</th>
+              <th class="p-3">Município</th>
+              <th class="p-3">Tipo Alarme</th>
+              <th class="p-3">Site/Localidade</th>
+              <th class="p-3">Rede (Planta)</th>
+              <th class="p-3">Coordenador</th>
+              <th class="p-3 text-center">Tempo Perda</th>
+              <th class="p-3 text-center">Amostragem</th>
+              <th class="p-3 text-center no-print">Detalhes/Ações</th>
+            </tr>
+          </thead>
+          <tbody id="table-body" class="divide-y divide-slate-100 font-normal text-slate-700"></tbody>
+        </table>
+      </div>
+    </section>
 
   </main>
 
+  <!-- JAVASCRIPT LOGIC -->
   <script>
-    // Planilha de Dados fornecida
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRpc4PblBWR5fHj-ze7NhqA24LE0jw7dYzQXfm8paWKnhGsSfVkbHjBSzDPB33pGg/pub?gid=1777469873&single=true&output=csv';
+    Chart.register(ChartDataLabels);
+
+    const GOOGLE_SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKGyoNQrVUBIbfOwpUMsmvPgvPOgSPF-7BaORqi-8JmNoTHVkWXuBk20vBpc29MaNIFXz56_McLbi9/pub?output=csv';
+
+    let rawData = [];
+    let parsedData = [];
+    let filteredData = [];
+    let mesesExistentes = [];
+
+    // Instâncias dos Gráficos
+    let chartCausasDestaqueInst = null;
+    let chartSemanalInst = null;
+    let chartMensalInst = null;
+    let chartDDDInst = null;
+    let chartAlarmeInst = null;
+    let chartTipoRedeInst = null;
+    let chartEncerramentoDiarioInst = null;
+    let chartPeriodoAberturaInst = null;
+    let chartPeriodoEncerramentoInst = null;
+    let chartHorarioMaiorPerdaInst = null;
+
+    const NOME_MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
     window.addEventListener('DOMContentLoaded', () => {
-      carregarDadosECalcular();
+      fetchGoogleSheetsData(true);
     });
 
-    async function carregarDadosECalcular() {
-      document.getElementById('loading-state').classList.remove('hidden');
-      document.getElementById('content-table').classList.add('hidden');
+    function getISOWeekNumber(d) {
+      const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dayNum = date.getUTCDay() || 7;
+      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+      return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+    }
 
-      // 1. Obter a data atual de acesso do portal
-      const dataHoje = new Date();
+    // NORMALIZADOR FLEXÍVEL DE STRINGS DE PERÍODO (Ex: "18:00 às 00:00" -> "18h-00h")
+    function parseTurnoString(str) {
+      if (!str) return '06h-12h';
+      let clean = str.toString().toLowerCase().trim();
+      if (clean.includes('00') && clean.includes('06')) return '00h-06h';
+      if (clean.includes('06') && clean.includes('12')) return '06h-12h';
+      if (clean.includes('12') && clean.includes('18')) return '12h-18h';
+      if (clean.includes('18') && (clean.includes('00') || clean.includes('24'))) return '18h-00h';
+      return '06h-12h';
+    }
+
+    async function fetchGoogleSheetsData(forceRefresh = false) {
+      const bannerText = document.getElementById('status-text');
+      const icon = document.getElementById('status-icon');
       
-      // Data Ontem (D-1)
-      const dataOntem = new Date(dataHoje);
-      dataOntem.setDate(dataHoje.getDate() - 1);
+      icon.className = "fa-solid fa-circle-notch fa-spin text-emerald-600";
+      bannerText.innerText = "Sincronizando com a Aba Analítico da Planilha Google Sheets...";
 
-      // Formatação de datas para exibição
-      const hojeStr = formatDate(dataHoje);
-      const ontemStr = formatDate(dataOntem);
-      const ontemCurtoStr = `${dataOntem.getDate().toString().padStart(2, '0')}/${(dataOntem.getMonth() + 1).toString().padStart(2, '0')}`;
-
-      document.getElementById('lbl-data-hoje').innerHTML = `<i class="fa-regular fa-calendar-days text-indigo-600"></i> ${hojeStr} (Ontem D-1: ${ontemStr})`;
-      document.getElementById('th-data-ontem').innerText = ontemCurtoStr;
-      document.getElementById('lbl-rodape-info').innerText = `*Cálculos baseados na data de acesso atual (${hojeStr}) em relação a D-1 (${ontemStr}) e dados acumulados históricos*`;
+      const cacheBuster = forceRefresh ? `&_t=${Date.now()}` : '';
+      const baseTarget = GOOGLE_SHEETS_CSV_URL + cacheBuster;
 
       try {
-        const response = await fetch(SHEET_URL + `&_t=${Date.now()}`, { cache: 'no-store' });
-        if (response.ok) {
-          const csvText = await response.text();
-          Papa.parse(csvText, {
-            header: true,
-            skipEmptyLines: true,
-            complete: function(results) {
-              if (results.data && results.data.length > 0) {
-                processarEExibirPainel(results.data, dataOntem);
+        const res = await fetch(baseTarget, { method: 'GET', cache: 'no-store' });
+        if (res.ok) {
+          const csvText = await res.text();
+          if (csvText && csvText.length > 100) {
+            Papa.parse(csvText, {
+              header: true,
+              skipEmptyLines: true,
+              complete: function(results) {
+                if (results.data && results.data.length > 0) {
+                  rawData = results.data;
+                  processRawData(rawData);
+                  
+                  icon.className = "fa-solid fa-circle-check text-emerald-600";
+                  bannerText.innerHTML = `<strong>Sucesso:</strong> Aba Analítico sincronizada com ${parsedData.length} registros!`;
+                  document.getElementById('clock-timestamp').innerText = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                }
               }
-            }
-          });
+            });
+          }
         }
       } catch (err) {
-        console.error("Erro ao carregar os dados:", err);
+        icon.className = "fa-solid fa-circle-exclamation text-rose-600";
+        bannerText.innerHTML = "<strong>Atenção:</strong> Falha de conexão. Verifique o acesso público da planilha.";
       }
     }
 
-    function processarEExibirPainel(rows, dataOntem) {
-      const dddMap = {};
+    function processRawData(rows) {
+      parsedData = rows.map((r, index) => {
+        const keys = Object.keys(r);
 
-      rows.forEach(r => {
-        const dddRaw = (r['DDD'] || 'Outros').toString().trim();
-        const ddd = dddRaw.length === 2 ? dddRaw : (dddRaw.includes('19') ? '19-CAS' : dddRaw);
-        const dataCriacaoStr = r['DATA_CRIACAO'] || '';
-        const indicador = (r['INDICADOR'] || '').toString().trim();
-        const statusIndicador = (r['STATUS_INDICADOR'] || '').toString().trim().toLowerCase();
-
-        if (!dddMap[ddd]) {
-          dddMap[ddd] = {
-            totalHistorico: 0,
-            diasComEventos: new Set(),
-            entranteOntem: 0,
-            p1OntemDentro: 0,
-            p1OntemTotal: 0,
-            acumAnteriorDentro: 0,
-            acumAnteriorTotal: 0,
-            acumAtualDentro: 0,
-            acumAtualTotal: 0
-          };
-        }
-
-        const item = dddMap[ddd];
-        item.totalHistorico++;
-
-        // Processamento de Data
-        const dObj = parseDataCriacao(dataCriacaoStr);
-        if (dObj) {
-          const keyDia = `${dObj.getFullYear()}-${dObj.getMonth()}-${dObj.getDate()}`;
-          item.diasComEventos.add(keyDia);
-
-          const isOntem = dObj.getFullYear() === dataOntem.getFullYear() &&
-                          dObj.getMonth() === dataOntem.getMonth() &&
-                          dObj.getDate() === dataOntem.getDate();
-
-          const isAnteriorAOntem = dObj < dataOntem;
-          const isDentro = statusIndicador.includes('dentro') || statusIndicador.includes('ok');
-
-          // Entrante Ontem
-          if (isOntem) {
-            item.entranteOntem++;
-            if (indicador.includes('P1') || indicador.includes('TA P1') || indicador.includes('SLA P1')) {
-              item.p1OntemTotal++;
-              if (isDentro) item.p1OntemDentro++;
+        const getValByKey = (exactKeys, targetColIndex = null) => {
+          if (targetColIndex !== null && keys[targetColIndex]) {
+            const val = r[keys[targetColIndex]];
+            if (val && val.toString().trim() !== '') return val.toString().trim();
+          }
+          for (let k of keys) {
+            let cleanK = k.toUpperCase().trim();
+            if (exactKeys.some(e => cleanK === e.toUpperCase())) {
+              return r[k] ? r[k].toString().trim() : '';
             }
           }
-
-          // Acumulado Anterior (até D-2)
-          if (isAnteriorAOntem) {
-            item.acumAnteriorTotal++;
-            if (isDentro) item.acumAnteriorDentro++;
+          for (let k of keys) {
+            let cleanK = k.toUpperCase().trim();
+            if (exactKeys.some(e => cleanK.includes(e.toUpperCase()))) {
+              return r[k] ? r[k].toString().trim() : '';
+            }
           }
+          return '';
+        };
 
-          // Acumulado Atual (até D-1)
-          if (isAnteriorAOntem || isOntem) {
-            item.acumAtualTotal++;
-            if (isDentro) item.acumAtualDentro++;
+        const parseMinutes = (valStr) => {
+          if (!valStr) return 0;
+          let str = valStr.toString().toLowerCase().trim();
+          if (str.includes(':')) {
+            let parts = str.split(':');
+            return (parseInt(parts[0]) || 0) * 60 + (parseInt(parts[1]) || 0);
+          }
+          let n = parseFloat(str.replace(',', '.').replace(/[^0-9.]/g, ''));
+          return isNaN(n) ? 0 : Math.round(n);
+        };
+
+        const evento = getValByKey(['EVENTO', 'TA', 'TICKET', 'ID']) || `EV-${3689000000 + index}`;
+        
+        // COORDENADOR da COLUNA AU (Índice 46)
+        const coordenador = getValByKey(['COORDENADOR', 'CADOR'], 46) || 'Não informado';
+        const dddRaw = getValByKey(['DDD']) || 'Não Informado';
+        const municipio = getValByKey(['MUNICÍPIO', 'MUNICIPIO', 'CIDADE']) || 'Não Informado';
+
+        // TIPO_ALARME da COLUNA O (Índice 14)
+        const tipoAlarme = getValByKey(['TIPO_ALARME', 'TIPO ALARME', 'ALARME'], 14) || 'Não Informado';
+
+        // CAUSA RAIZ PREDOMINANTE da COLUNA E (Índice 4)
+        let causaE = getValByKey(['SEGMENTO', 'CAUSA DA PERDA', 'CAUSA'], 4);
+        if (!causaE || causaE.trim() === '') causaE = 'Não Informado';
+
+        // TIPO DE REDE (PLANTA)
+        const explicitRede = getValByKey(['PLANTA', 'TIPO DE REDE', 'REDE']);
+        let tipoRede = 'Móvel';
+        if (explicitRede) {
+          tipoRede = explicitRede.toLowerCase().includes('fix') ? 'Fixa' : 'Móvel';
+        }
+
+        const site = getValByKey(['SITE', 'ESTAÇÃO', 'ESTACAO']) || 'SITE';
+        const tempoMin = parseMinutes(getValByKey(['TEMPO PERDA SLA', 'TEMPO PERDA', 'TEMPO', 'ATRASO']));
+        const amostragem = getValByKey(['AMOSTRAGEM', 'AMOSTRA']) || 'Todas as Amostragens';
+
+        // PERÍODO DE ABERTURA da COLUNA BB (Índice 53)
+        const periodoAbertura = parseTurnoString(getValByKey(['PERÍODO DE ABERTURA', 'PERIODO ABERTURA', 'PERIODO_ABERTURA'], 53));
+        
+        // PERÍODO DE ENCERRAMENTO da COLUNA BC (Índice 54)
+        const encerramento = parseTurnoString(getValByKey(['PERIODO ENCERRAMENTO', 'PERÍODO ENCERRAMENTO', 'PERIODO_ENCERRAMENTO'], 54));
+
+        // LEITURA OBRIGATÓRIA DA COLUNA BJ (Índice 61) PARA O HORÁRIO DE MAIOR PERDA
+        const rawTurnoBJ = getValByKey(['PERÍODO DE PERDA', 'PERIODO DE PERDA', 'PERIODO_PERDA', 'HORARIO_MAIOR_PERDA'], 61);
+        const turnoMaiorPerda = parseTurnoString(rawTurnoBJ);
+
+        // CONTABILIZAÇÃO DAS TRATATIVAS PELA COLUNA C (Índice 2)
+        const analiseValC = getValByKey(['VALIDAÇÃO', 'VALIDACAO', 'ANÁLISE', 'ANALISE', 'STATUS', 'JUSTIFICADO'], 2);
+        const cleanC = analiseValC.toLowerCase();
+        const isJustificado = cleanC.includes('validad') || cleanC.includes('justificad') || cleanC.includes('ok') || cleanC.includes('sim');
+
+        // DATA DE ABERTURA (COLUNA A / Índice 0)
+        const dataAberturaStr = getValByKey(['DATA_CRIACAO', 'DATA_CRIA', 'DATA_ABERTURA', 'ABERTURA'], 0) || '01/10/2026';
+
+        // DATA DE ENCERRAMENTO (COLUNA Q / AY)
+        const dataEncerramentoStr = getValByKey(['DATA_ENCERRAMENTO', 'DT_ENCERRAMENTO', 'DATA_ENC'], 16) || dataAberturaStr;
+
+        let semanaCalculada = '';
+        if (dataAberturaStr.includes('/') || dataAberturaStr.includes('-')) {
+          let parts = dataAberturaStr.replace(/-/g, '/').split('/');
+          if (parts.length >= 3) {
+            let day = parseInt(parts[0]) || 1;
+            let month = parseInt(parts[1]) - 1;
+            let year = parseInt(parts[2]) || 2026;
+            if (month >= 0 && month < 12) {
+              let dObj = new Date(year, month, day);
+              let wNum = getISOWeekNumber(dObj);
+              semanaCalculada = `Semana ${wNum}`;
+            }
+          }
+        }
+        if (!semanaCalculada) semanaCalculada = 'Semana 43';
+
+        let mesExtenso = getValByKey(['MES_ENCERRAMENTO', 'MES ENCERRAMENTO', 'MÊS ENCERRAMENTO'], 50);
+        if (!mesExtenso && (dataEncerramentoStr.includes('/') || dataEncerramentoStr.includes('-'))) {
+          let partsEnc = dataEncerramentoStr.replace(/-/g, '/').split('/');
+          if (partsEnc.length >= 2) {
+            let monthEnc = parseInt(partsEnc[1]) - 1;
+            if (monthEnc >= 0 && monthEnc < 12) {
+              mesExtenso = NOME_MESES[monthEnc];
+            }
+          }
+        }
+        if (!mesExtenso) mesExtenso = 'Outubro';
+
+        // DATA EXATA DD/MM/AAAA A PARTIR DA COLUNA A
+        let dataAberturaApenasDia = dataAberturaStr.split(' ')[0];
+
+        return {
+          id: evento,
+          data: dataAberturaApenasDia,
+          periodoAbertura,
+          encerramento,
+          turnoMaiorPerda,
+          semana: semanaCalculada,
+          mes: mesExtenso,
+          ddd: dddRaw,
+          municipio,
+          tipoAlarme,
+          site,
+          coordenador,
+          causa: causaE,
+          causaDesc: causaE,
+          tipoRede,
+          tempoMin,
+          amostragem,
+          status: isJustificado ? 'Justificado' : 'Pendente'
+        };
+      });
+
+      extractMesesExistentes();
+      populateFilters();
+      applyFilters();
+    }
+
+    function extractMesesExistentes() {
+      mesesExistentes = [...new Set(parsedData.map(d => d.mes))].filter(Boolean);
+    }
+
+    function populateFilters() {
+      const selMes = document.getElementById('filter-mes');
+      const selCoord = document.getElementById('filter-coordenador');
+      const selDDD = document.getElementById('filter-ddd');
+      const selAmostragem = document.getElementById('filter-amostragem');
+
+      selMes.innerHTML = '<option value="ALL">Todos os Meses</option>';
+      mesesExistentes.forEach(m => {
+        selMes.innerHTML += `<option value="${m}">${m}</option>`;
+      });
+
+      const mesAtualHoje = NOME_MESES[new Date().getMonth()];
+      if (mesesExistentes.includes(mesAtualHoje)) {
+        selMes.value = mesAtualHoje;
+      } else if (mesesExistentes.length > 0) {
+        selMes.value = mesesExistentes[mesesExistentes.length - 1];
+      } else {
+        selMes.value = "ALL";
+      }
+
+      const coords = [...new Set(parsedData.map(d => d.coordenador))].filter(Boolean).sort();
+      selCoord.innerHTML = '<option value="ALL">Todos os Coordenadores</option>';
+      coords.forEach(c => selCoord.innerHTML += `<option value="${c}">${c}</option>`);
+
+      const ddds = [...new Set(parsedData.map(d => d.ddd))].filter(Boolean).sort();
+      selDDD.innerHTML = '<option value="ALL">Todos os DDDs</option>';
+      ddds.forEach(d => selDDD.innerHTML += `<option value="${d}">${d}</option>`);
+
+      if (selAmostragem) {
+        const amostras = [...new Set(parsedData.map(d => d.amostragem))].filter(Boolean).sort();
+        selAmostragem.innerHTML = '<option value="ALL">Todas as Amostragens</option>';
+        amostras.forEach(a => selAmostragem.innerHTML += `<option value="${a}">${a}</option>`);
+      }
+    }
+
+    function applyFilters() {
+      const mesVal = document.getElementById('filter-mes').value;
+      const tipoRedeVal = document.getElementById('filter-tipo-rede').value;
+      const coordVal = document.getElementById('filter-coordenador').value;
+      const dddVal = document.getElementById('filter-ddd').value;
+      const statusVal = document.getElementById('filter-status').value;
+      const tempoVal = document.getElementById('filter-tempo') ? document.getElementById('filter-tempo').value : 'ALL';
+      const amostragemElem = document.getElementById('filter-amostragem');
+      const amostragemVal = amostragemElem ? amostragemElem.value : 'ALL';
+      const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+
+      filteredData = parsedData.filter(item => {
+        const matchMes = mesVal === "ALL" || item.mes === mesVal;
+        const matchRede = tipoRedeVal === "ALL" || item.tipoRede === tipoRedeVal;
+        const matchCoord = coordVal === "ALL" || item.coordenador === coordVal;
+        const matchDDD = dddVal === "ALL" || item.ddd === dddVal;
+        const matchStatus = statusVal === "ALL" || item.status === statusVal;
+        const matchAmostragem = amostragemVal === "ALL" || item.amostragem === amostragemVal;
+        
+        let matchTempo = true;
+        if (tempoVal === 'LT30') matchTempo = item.tempoMin < 30;
+        else if (tempoVal === 'GTE30') matchTempo = item.tempoMin >= 30;
+
+        const matchSearch = searchVal === "" ||
+          item.id.toLowerCase().includes(searchVal) ||
+          item.site.toLowerCase().includes(searchVal) ||
+          item.causa.toLowerCase().includes(searchVal) ||
+          item.tipoAlarme.toLowerCase().includes(searchVal) ||
+          item.coordenador.toLowerCase().includes(searchVal);
+
+        return matchMes && matchRede && matchCoord && matchDDD && matchStatus && matchAmostragem && matchTempo && matchSearch;
+      });
+
+      updateKPIs();
+      renderInsights();
+      renderCharts();
+      renderTopSites();
+      renderResumoCoordenadores();
+      renderTable();
+    }
+
+    function resetFilters() {
+      const mesAtualHoje = NOME_MESES[new Date().getMonth()];
+      document.getElementById('filter-mes').value = mesesExistentes.includes(mesAtualHoje) ? mesAtualHoje : "ALL";
+      document.getElementById('filter-tipo-rede').value = "ALL";
+      document.getElementById('filter-coordenador').value = "ALL";
+      document.getElementById('filter-ddd').value = "ALL";
+      document.getElementById('filter-status').value = "ALL";
+      if (document.getElementById('filter-tempo')) document.getElementById('filter-tempo').value = "ALL";
+      const amostragemElem = document.getElementById('filter-amostragem');
+      if (amostragemElem) amostragemElem.value = "ALL";
+      document.getElementById('search-input').value = "";
+      applyFilters();
+    }
+
+    function updateKPIs() {
+      const total = filteredData.length;
+      document.getElementById('kpi-total-tas').innerText = total;
+
+      const totalTempo = filteredData.reduce((acc, curr) => acc + curr.tempoMin, 0);
+      const mediaTempo = total > 0 ? Math.round(totalTempo / total) : 0;
+      document.getElementById('kpi-media-tempo').innerText = `${mediaTempo} min`;
+
+      if (filteredData.length > 0) {
+        const sortedTempo = [...filteredData].sort((a,b) => b.tempoMin - a.tempoMin);
+        document.getElementById('kpi-max-site').innerText = sortedTempo[0].site;
+        document.getElementById('kpi-max-tempo').innerText = `${sortedTempo[0].tempoMin} min`;
+      } else {
+        document.getElementById('kpi-max-site').innerText = '--';
+        document.getElementById('kpi-max-tempo').innerText = '0 min';
+      }
+
+      const count30m = filteredData.filter(d => d.tempoMin < 30).length;
+      document.getElementById('kpi-count-30m').innerText = count30m;
+      document.getElementById('kpi-perc-30m').innerText = total > 0 ? `${((count30m / total)*100).toFixed(1)}%` : '0%';
+
+      const justCount = filteredData.filter(d => d.status === 'Justificado').length;
+      const pendCount = total - justCount;
+
+      document.getElementById('kpi-justificados').innerText = justCount;
+      document.getElementById('kpi-perc-just').innerText = total > 0 ? `${((justCount / total)*100).toFixed(1)}%` : '0%';
+
+      document.getElementById('kpi-pendentes').innerText = pendCount;
+      document.getElementById('kpi-perc-pend').innerText = total > 0 ? `${((pendCount / total)*100).toFixed(1)}%` : '0%';
+    }
+
+    function renderInsights() {
+      if (filteredData.length === 0) {
+        document.getElementById('insight-segmento').innerHTML = "Sem dados no período selecionado.";
+        document.getElementById('insight-causa').innerHTML = "Sem dados no período selecionado.";
+        document.getElementById('insight-tratativa').innerHTML = "Sem dados no período selecionado.";
+        return;
+      }
+
+      const movelCount = filteredData.filter(d => d.tipoRede === 'Móvel').length;
+      const movelPerc = ((movelCount / filteredData.length)*100).toFixed(1);
+
+      document.getElementById('insight-segmento').innerHTML = 
+        `A tecnologia <strong>Móvel</strong> representa <strong>${movelPerc}%</strong> dos estouros de SLA (${movelCount} TAs).`;
+
+      const causaCounts = {};
+      filteredData.forEach(d => causaCounts[d.causa] = (causaCounts[d.causa] || 0) + 1);
+      const topCausa = Object.entries(causaCounts).sort((a,b) => b[1] - a[1])[0];
+      const topCausaPerc = topCausa ? ((topCausa[1] / filteredData.length)*100).toFixed(1) : 0;
+
+      document.getElementById('insight-causa').innerHTML = 
+        `A principal causa é <strong>"${topCausa ? topCausa[0] : 'N/A'}"</strong> com <strong>${topCausa ? topCausa[1] : 0} TAs (${topCausaPerc}%)</strong>.`;
+
+      const justCount = filteredData.filter(d => d.status === 'Justificado').length;
+      const justPerc = ((justCount / filteredData.length)*100).toFixed(1);
+
+      document.getElementById('insight-tratativa').innerHTML = 
+        `Atualmente <strong>${justPerc}%</strong> das ocorrências (${justCount} TAs) possuem justificativa/validação cadastrada na Coluna C.`;
+    }
+
+    function renderCharts() {
+      const totalTAsAtual = filteredData.length || 1;
+
+      // --- CHART 0: TOP 10 CAUSAS PRINCIPAIS (COLUNA E - NÃO INFORMADO EM ÚLTIMO) ---
+      const causaCounts = {};
+      filteredData.forEach(d => {
+        let key = d.causa;
+        if (!key || key.trim() === '') key = 'Não Informado';
+        causaCounts[key] = (causaCounts[key] || 0) + 1;
+      });
+
+      const naoInformadoVal = causaCounts['Não Informado'] || 0;
+      delete causaCounts['Não Informado'];
+
+      let sortedCausas = Object.entries(causaCounts).sort((a,b) => b[1] - a[1]);
+      
+      if (naoInformadoVal > 0) {
+        sortedCausas = sortedCausas.slice(0, 9);
+        sortedCausas.push(['Não Informado', naoInformadoVal]);
+      } else {
+        sortedCausas = sortedCausas.slice(0, 10);
+      }
+
+      const causaLabels = sortedCausas.map(c => c[0]);
+      const causaValues = sortedCausas.map(c => c[1]);
+
+      const causaDestCtx = document.getElementById('chart-causas-destaque').getContext('2d');
+      if (chartCausasDestaqueInst) chartCausasDestaqueInst.destroy();
+      
+      chartCausasDestaqueInst = new Chart(causaDestCtx, {
+        type: 'bar',
+        data: {
+          labels: causaLabels.length > 0 ? causaLabels : ['Sem dados'],
+          datasets: [{
+            label: 'Qtd TAs',
+            data: causaValues.length > 0 ? causaValues : [0],
+            backgroundColor: causaLabels.map(l => l === 'Não Informado' ? '#64748b' : '#e11d48'),
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            datalabels: {
+              anchor: 'end',
+              align: 'right',
+              color: '#334155',
+              font: { weight: 'bold', size: 11 },
+              formatter: (value) => {
+                if (value === 0) return '';
+                const perc = ((value / totalTAsAtual) * 100).toFixed(1);
+                return `${value} TAs (${perc}%)`;
+              }
+            }
+          },
+          scales: {
+            x: { 
+              grid: { color: '#f1f5f9' },
+              suggestedMax: Math.max(...causaValues, 10) * 1.25
+            },
+            y: { grid: { display: false } }
           }
         }
       });
 
-      renderizarTabela(dddMap);
+      // --- CHART 1: SEMANAL (COLUNA A) ---
+      const semanasUnicas = [...new Set(filteredData.map(d => d.semana))].filter(Boolean);
+      const semCounts = {};
+      semanasUnicas.forEach(s => semCounts[s] = 0);
+      filteredData.forEach(d => { if (semCounts[d.semana] !== undefined) semCounts[d.semana]++; });
+
+      const semCtx = document.getElementById('chart-semanal').getContext('2d');
+      if (chartSemanalInst) chartSemanalInst.destroy();
+      chartSemanalInst = new Chart(semCtx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(semCounts).length > 0 ? Object.keys(semCounts) : ['Sem dados'],
+          datasets: [{ label: 'Qtd TAs', data: Object.values(semCounts), backgroundColor: '#0284c7', borderRadius: 4 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
+      });
+
+      // --- CHART 2: EVOLUÇÃO MENSAL (COLUNAS EM BARRAS/COLUNAS - 12 MESES) ---
+      const mesCountsAnual = {};
+      NOME_MESES.forEach(m => mesCountsAnual[m] = 0);
+
+      parsedData.forEach(d => {
+        if (d.mes && mesCountsAnual[d.mes] !== undefined) {
+          mesCountsAnual[d.mes]++;
+        }
+      });
+
+      const mesCtx = document.getElementById('chart-mensal').getContext('2d');
+      if (chartMensalInst) chartMensalInst.destroy();
+      chartMensalInst = new Chart(mesCtx, {
+        type: 'bar', // CONVERTIDO DE LINHA PARA BARRA / COLUNAS
+        data: {
+          labels: NOME_MESES,
+          datasets: [{ label: 'Qtd TAs', data: Object.values(mesCountsAnual), backgroundColor: '#6366f1', borderRadius: 4 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
+      });
+
+      // --- CHART ENCERRAMENTO DIÁRIO (COLUNA A) ---
+      const dataCounts = {};
+      filteredData.forEach(d => {
+        let diaSo = d.data.split(' ')[0];
+        dataCounts[diaSo] = (dataCounts[diaSo] || 0) + 1;
+      });
+
+      const encDiarioCtx = document.getElementById('chart-encerramento-diario').getContext('2d');
+      if (chartEncerramentoDiarioInst) chartEncerramentoDiarioInst.destroy();
+      chartEncerramentoDiarioInst = new Chart(encDiarioCtx, {
+        type: 'line',
+        data: {
+          labels: Object.keys(dataCounts),
+          datasets: [
+            { label: 'Perdas SLA', data: Object.values(dataCounts), borderColor: '#e11d48', pointBackgroundColor: '#e11d48', tension: 0.3 }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } } }
+      });
+
+      // --- CHART 3: DDD (DESTAQUE EM VERMELHO PARA OS 2 MAIORES OFENSORES) ---
+      const dddCounts = {};
+      filteredData.forEach(d => dddCounts[d.ddd] = (dddCounts[d.ddd] || 0) + 1);
+
+      const sortedDDDList = Object.entries(dddCounts).sort((a,b) => b[1] - a[1]);
+      const top2DDDs = sortedDDDList.slice(0, 2).map(x => x[0]);
+
+      const dddLabels = Object.keys(dddCounts);
+      const dddValues = Object.values(dddCounts);
+      const dddColors = dddLabels.map(label => top2DDDs.includes(label) ? '#e11d48' : '#0284c7');
+
+      const dddCtx = document.getElementById('chart-ddd').getContext('2d');
+      if (chartDDDInst) chartDDDInst.destroy();
+      chartDDDInst = new Chart(dddCtx, {
+        type: 'bar',
+        data: {
+          labels: dddLabels.length > 0 ? dddLabels : ['Sem dados'],
+          datasets: [{ label: 'Qtd TAs', data: dddValues.length > 0 ? dddValues : [0], backgroundColor: dddColors, borderRadius: 4 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
+      });
+
+      // --- CHART 4: TOP 10 TIPOS DE ALARME (COLUNA O) ---
+      const alarmeCounts = {};
+      filteredData.forEach(d => {
+        if (d.tipoAlarme) {
+          alarmeCounts[d.tipoAlarme] = (alarmeCounts[d.tipoAlarme] || 0) + 1;
+        }
+      });
+
+      const sortedAlarmes = Object.entries(alarmeCounts)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0, 10);
+
+      const alarmeLabels = sortedAlarmes.map(a => a[0]);
+      const alarmeValues = sortedAlarmes.map(a => a[1]);
+
+      const alarmeCtx = document.getElementById('chart-alarme').getContext('2d');
+      if (chartAlarmeInst) chartAlarmeInst.destroy();
+      
+      chartAlarmeInst = new Chart(alarmeCtx, {
+        type: 'bar',
+        data: {
+          labels: alarmeLabels.length > 0 ? alarmeLabels : ['Sem dados'],
+          datasets: [{
+            label: 'Qtd TAs',
+            data: alarmeValues.length > 0 ? alarmeValues : [0],
+            backgroundColor: ['#6366f1', '#4f46e5', '#4338ca', '#3730a3', '#0284c7', '#0369a1', '#075985', '#0f766e', '#115e59', '#134e4a'],
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            datalabels: {
+              anchor: 'end',
+              align: 'right',
+              color: '#334155',
+              font: { weight: 'bold', size: 10 },
+              formatter: (value) => value > 0 ? `${value}` : ''
+            }
+          },
+          scales: {
+            x: { grid: { color: '#f1f5f9' } },
+            y: { grid: { display: false } }
+          }
+        }
+      });
+
+      // --- CHART 5: TIPO DE REDE ---
+      const movelCount = filteredData.filter(d => d.tipoRede === 'Móvel').length;
+      const fixaCount = filteredData.filter(d => d.tipoRede === 'Fixa').length;
+
+      const redeCtx = document.getElementById('chart-tipo-rede').getContext('2d');
+      if (chartTipoRedeInst) chartTipoRedeInst.destroy();
+      chartTipoRedeInst = new Chart(redeCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Fixa', 'Móvel'],
+          datasets: [{ data: [fixaCount, movelCount], backgroundColor: ['#0284c7', '#8b5cf6'] }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '65%',
+          plugins: {
+            datalabels: {
+              color: '#ffffff',
+              font: { weight: 'bold', size: 11 },
+              formatter: (val) => totalTAsAtual > 0 ? `${((val / totalTAsAtual) * 100).toFixed(1)}%` : '0%'
+            }
+          }
+        }
+      });
+
+      // --- HELPER BARRAS EMPILHADAS 100% DINÂMICAS COM CÁLCULO REAL ---
+      const buildDynamicStacked100 = (elemId, keyField) => {
+        const turnos = ['00h-06h', '06h-12h', '12h-18h', '18h-00h'];
+        const redes = ['Fixa', 'Móvel'];
+        
+        const counts = { Fixa: {}, Móvel: {} };
+        redes.forEach(r => turnos.forEach(t => counts[r][t] = 0));
+
+        filteredData.forEach(d => {
+          let r = d.tipoRede === 'Fixa' ? 'Fixa' : 'Móvel';
+          let t = d[keyField] || '06h-12h';
+          if (!turnos.includes(t)) {
+            t = parseTurnoString(t);
+          }
+          counts[r][t]++;
+        });
+
+        const datasets = [
+          { label: '00h-06h', backgroundColor: '#10b981', data: [] },
+          { label: '06h-12h', backgroundColor: '#0284c7', data: [] },
+          { label: '12h-18h', backgroundColor: '#f59e0b', data: [] },
+          { label: '18h-00h', backgroundColor: '#6366f1', data: [] }
+        ];
+
+        redes.forEach((r, idx) => {
+          let totalRede = turnos.reduce((sum, t) => sum + counts[r][t], 0) || 1;
+          turnos.forEach((t, tIdx) => {
+            let p = ((counts[r][t] / totalRede) * 100).toFixed(1);
+            datasets[tIdx].data[idx] = parseFloat(p);
+          });
+        });
+
+        const ctx = document.getElementById(elemId).getContext('2d');
+        return new Chart(ctx, {
+          type: 'bar',
+          data: { labels: redes, datasets },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { stacked: true, max: 100, ticks: { callback: v => v + '%' } },
+              y: { stacked: true }
+            },
+            plugins: {
+              legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } },
+              datalabels: {
+                color: '#ffffff',
+                font: { weight: 'bold', size: 10 },
+                formatter: (value) => value > 5 ? `${value}%` : ''
+              }
+            }
+          }
+        });
+      };
+
+      if (chartPeriodoAberturaInst) chartPeriodoAberturaInst.destroy();
+      chartPeriodoAberturaInst = buildDynamicStacked100('chart-periodo-abertura', 'periodoAbertura');
+
+      if (chartPeriodoEncerramentoInst) chartPeriodoEncerramentoInst.destroy();
+      chartPeriodoEncerramentoInst = buildDynamicStacked100('chart-periodo-encerramento', 'encerramento');
+
+      if (chartHorarioMaiorPerdaInst) chartHorarioMaiorPerdaInst.destroy();
+      chartHorarioMaiorPerdaInst = buildDynamicStacked100('chart-horario-maior-perda', 'turnoMaiorPerda');
     }
 
-    function renderizarTabela(dddMap) {
-      const tbody = document.getElementById('tbody-painel');
+    function renderTopSites() {
+      const siteMap = {};
+      filteredData.forEach(d => {
+        if (!siteMap[d.site]) {
+          siteMap[d.site] = { site: d.site, dddMun: `${d.ddd} / ${d.municipio}`, count: 0, totalTempo: 0 };
+        }
+        siteMap[d.site].count++;
+        siteMap[d.site].totalTempo += d.tempoMin;
+      });
+
+      const sortedSites = Object.values(siteMap).sort((a,b) => b.count - a.count).slice(0, 10);
+      const tbody = document.getElementById('tbody-top-sites');
       tbody.innerHTML = '';
 
-      const dddsOrdenados = Object.keys(dddMap).sort();
+      if (sortedSites.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Nenhum registro encontrado.</td></tr>`;
+        return;
+      }
 
-      dddsOrdenados.forEach(ddd => {
-        const item = dddMap[ddd];
-
-        // Média Entrante
-        const qtdDias = item.diasComEventos.size || 1;
-        const mediaEntrante = Math.round(item.totalHistorico / qtdDias) || item.entranteOntem || 100;
-
-        // Delta Volume
-        const deltaVolume = mediaEntrante > 0 
-          ? (((item.entranteOntem - mediaEntrante) / mediaEntrante) * 100).toFixed(1)
-          : '0.0';
-
-        // P1 Ontem SLA %
-        const p1OntemPerc = item.p1OntemTotal > 0 
-          ? ((item.p1OntemDentro / item.p1OntemTotal) * 100).toFixed(1) 
-          : '88.5';
-
-        // Acumulado Anterior %
-        const acumAnteriorPerc = item.acumAnteriorTotal > 0 
-          ? ((item.acumAnteriorDentro / item.acumAnteriorTotal) * 100).toFixed(1) 
-          : '91.0';
-
-        // Acumulado Atual %
-        const acumAtualPerc = item.acumAtualTotal > 0 
-          ? ((item.acumAtualDentro / item.acumAtualTotal) * 100).toFixed(1) 
-          : '90.8';
-
-        // Delta Acumulado em p.p. (pontos percentuais)
-        const deltaAcum = (parseFloat(acumAtualPerc) - parseFloat(acumAnteriorPerc)).toFixed(1);
-
-        // Formatação do Delta Volume
-        const isVolPositivo = parseFloat(deltaVolume) >= 0;
-        const strDeltaVol = `${isVolPositivo ? '+' : ''}${deltaVolume}%`;
-        const classDeltaVol = isVolPositivo ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold';
-
-        // Formatação do Delta Acumulado
-        const isAcumPositivo = parseFloat(deltaAcum) >= 0;
-        const strDeltaAcum = `${isAcumPositivo ? '+' : ''}${deltaAcum} p.p. ${isAcumPositivo ? '↗' : '↘'}`;
-        const classDeltaAcum = isAcumPositivo ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold';
-
+      sortedSites.forEach((s, idx) => {
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50/80 transition border-b border-slate-100";
+        tr.className = "hover:bg-slate-50 border-b border-slate-100";
         tr.innerHTML = `
-          <td class="py-3 px-4 font-bold text-slate-900">${ddd}</td>
-          <td class="py-3 px-4 text-center font-semibold text-slate-700">${mediaEntrante}</td>
-          <td class="py-3 px-4 text-center font-extrabold text-slate-900">${item.entranteOntem}</td>
-          <td class="py-3 px-4 text-center ${classDeltaVol}">${strDeltaVol}</td>
-          <td class="py-3 px-4 text-center font-bold text-slate-800">${p1OntemPerc}%</td>
-          <td class="py-3 px-4 text-center text-slate-600">${acumAnteriorPerc}%</td>
-          <td class="py-3 px-4 text-center font-bold text-slate-900">${acumAtualPerc}%</td>
-          <td class="py-3 px-4 text-center ${classDeltaAcum}">${strDeltaAcum}</td>
+          <td class="p-2 font-bold text-slate-800">${idx + 1}º</td>
+          <td class="p-2 font-bold text-sky-700">${s.site}</td>
+          <td class="p-2 text-slate-600">${s.dddMun}</td>
+          <td class="p-2 text-center font-extrabold text-rose-600">${s.count}</td>
+          <td class="p-2 text-right font-bold text-slate-800">${s.totalTempo} min</td>
         `;
         tbody.appendChild(tr);
       });
-
-      document.getElementById('loading-state').classList.add('hidden');
-      document.getElementById('content-table').classList.remove('hidden');
     }
 
-    // Auxiliar: Converter Data de Abertura (DD/MM/YY HH:MM:SS ou DD/MM/YYYY)
-    function parseDataCriacao(str) {
-      if (!str) return null;
-      const parts = str.trim().split(' ');
-      const dateParts = parts[0].split('/');
-      if (dateParts.length >= 3) {
-        let day = parseInt(dateParts[0]);
-        let month = parseInt(dateParts[1]) - 1;
-        let year = parseInt(dateParts[2]);
-        if (year < 100) year += 2000;
-        return new Date(year, month, day);
+    function renderResumoCoordenadores() {
+      const coordMap = {};
+      filteredData.forEach(d => {
+        if (!coordMap[d.coordenador]) {
+          coordMap[d.coordenador] = { coord: d.coordenador, count: 0, totalTempo: 0, justificados: 0 };
+        }
+        coordMap[d.coordenador].count++;
+        coordMap[d.coordenador].totalTempo += d.tempoMin;
+        if (d.status === 'Justificado') coordMap[d.coordenador].justificados++;
+      });
+
+      const listCoord = Object.values(coordMap).sort((a,b) => b.count - a.count);
+      const tbody = document.getElementById('tbody-coordenadores');
+      tbody.innerHTML = '';
+
+      if (listCoord.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Nenhum coordenador encontrado.</td></tr>`;
+        return;
       }
-      return null;
+
+      listCoord.forEach((c, idx) => {
+        const media = Math.round(c.totalTempo / c.count);
+        const percJust = Math.round((c.justificados / c.count) * 100);
+        let statusClass = percJust >= 80 ? 'status-green' : (percJust >= 50 ? 'status-yellow' : 'status-red');
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 border-b border-slate-100";
+        tr.innerHTML = `
+          <td class="p-2 text-center font-extrabold text-amber-500">${idx + 1}º</td>
+          <td class="p-2 font-bold text-slate-800">${c.coord}</td>
+          <td class="p-2 text-center font-extrabold text-sky-700">${c.count}</td>
+          <td class="p-2 text-center font-medium text-amber-600">${media} min</td>
+          <td class="p-2 text-center font-bold text-emerald-600">${percJust}%</td>
+          <td class="p-2 text-center"><span class="status-pill ${statusClass}"></span></td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
 
-    function formatDate(d) {
-      const day = d.getDate().toString().padStart(2, '0');
-      const month = (d.getMonth() + 1).toString().padStart(2, '0');
-      const year = d.getFullYear();
-      return `${day}/${month}/${year}`;
+    function renderTable() {
+      const tbody = document.getElementById('table-body');
+      tbody.innerHTML = '';
+
+      document.getElementById('rows-count').innerText = `Exibindo ${filteredData.length} registros`;
+
+      if (filteredData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-slate-400">Nenhum registro encontrado para os filtros selecionados.</td></tr>`;
+        return;
+      }
+
+      filteredData.slice(0, 100).forEach(row => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+        tr.innerHTML = `
+          <td class="p-3 font-bold text-slate-900">${row.data}</td>
+          <td class="p-3 font-medium text-slate-700">${row.periodoAbertura}</td>
+          <td class="p-3 font-medium text-slate-700">${row.encerramento}</td>
+          <td class="p-3 font-semibold text-slate-800">${row.ddd}</td>
+          <td class="p-3 font-semibold text-slate-800">${row.municipio}</td>
+          <td class="p-3 font-semibold text-indigo-700">${row.tipoAlarme}</td>
+          <td class="p-3 font-bold text-sky-700">${row.site}</td>
+          <td class="p-3 font-medium text-slate-700">${row.tipoRede}</td>
+          <td class="p-3 font-medium text-slate-700">${row.coordenador}</td>
+          <td class="p-3 text-center font-extrabold text-rose-600">${row.tempoMin} min</td>
+          <td class="p-3 text-center font-medium text-slate-600">${row.amostragem}</td>
+          <td class="p-3 text-center no-print">
+            <button class="px-2 py-1 text-[11px] font-bold text-sky-700 bg-sky-50 rounded hover:bg-sky-100 transition">VER</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function exportCSV() {
+      let csv = "ID;Data;PeriodoAbertura;Encerramento;DDD;Municipio;TipoAlarme;Site;TipoRede;Coordenador;Causa;TempoMin;Amostragem;Status\n";
+      filteredData.forEach(r => {
+        csv += `${r.id};${r.data};"${r.periodoAbertura}";"${r.encerramento}";"${r.ddd}";"${r.municipio}";"${r.tipoAlarme}";"${r.site}";"${r.tipoRede}";"${r.coordenador}";"${r.causa}";${r.tempoMin};"${r.amostragem}";"${r.status}"\n`;
+      });
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Base_TAs_SLA_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   </script>
 </body>
