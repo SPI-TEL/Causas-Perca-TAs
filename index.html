@@ -303,7 +303,7 @@
         <div class="h-56 relative">
           <canvas id="chart-mensal"></canvas>
         </div>
-        <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo acumulado dos meses do ano</span>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo acumulado de todos os meses do ano</span>
       </div>
     </section>
 
@@ -650,7 +650,7 @@
         // PERÍODO DE ENCERRAMENTO da COLUNA BC (Índice 54)
         const encerramento = parseTurnoString(getValByKey(['PERIODO ENCERRAMENTO', 'PERÍODO ENCERRAMENTO', 'PERIODO_ENCERRAMENTO'], 54));
 
-        // LEITURA OBRIGATÓRIA E DIRETA DA COLUNA BJ (Índice 61)
+        // LEITURA OBRIGATÓRIA DA COLUNA BJ (Índice 61) PARA O HORÁRIO DE MAIOR PERDA
         const rawTurnoBJ = getValByKey(['PERÍODO DE PERDA', 'PERIODO DE PERDA', 'PERIODO_PERDA', 'HORARIO_MAIOR_PERDA'], 61);
         const turnoMaiorPerda = parseTurnoString(rawTurnoBJ);
 
@@ -962,7 +962,7 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART 2: EVOLUÇÃO MENSAL (MANTER TODOS OS 12 MESES DO ANO) ---
+      // --- CHART 2: EVOLUÇÃO MENSAL (COLUNAS EM BARRAS/COLUNAS - 12 MESES) ---
       const mesCountsAnual = {};
       NOME_MESES.forEach(m => mesCountsAnual[m] = 0);
 
@@ -975,10 +975,10 @@
       const mesCtx = document.getElementById('chart-mensal').getContext('2d');
       if (chartMensalInst) chartMensalInst.destroy();
       chartMensalInst = new Chart(mesCtx, {
-        type: 'line',
+        type: 'bar', // CONVERTIDO DE LINHA PARA BARRA / COLUNAS
         data: {
           labels: NOME_MESES,
-          datasets: [{ label: 'Qtd TAs', data: Object.values(mesCountsAnual), borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true, tension: 0.3 }]
+          datasets: [{ label: 'Qtd TAs', data: Object.values(mesCountsAnual), backgroundColor: '#6366f1', borderRadius: 4 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
