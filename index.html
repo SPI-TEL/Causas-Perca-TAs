@@ -536,6 +536,7 @@
       return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
     }
 
+    // NORMALIZADOR FLEXÍVEL DE STRINGS DE PERÍODO (Ex: "18:00 às 00:00" -> "18h-00h")
     function parseTurnoString(str) {
       if (!str) return '06h-12h';
       let clean = str.toString().toLowerCase().trim();
@@ -649,7 +650,7 @@
         // PERÍODO DE ENCERRAMENTO da COLUNA BC (Índice 54)
         const encerramento = parseTurnoString(getValByKey(['PERIODO ENCERRAMENTO', 'PERÍODO ENCERRAMENTO', 'PERIODO_ENCERRAMENTO'], 54));
 
-        // LEITURA OBRIGATÓRIA DA COLUNA BJ (Índice 61) PARA O HORÁRIO DE MAIOR PERDA
+        // LEITURA OBRIGATÓRIA E DIRETA DA COLUNA BJ (Índice 61)
         const rawTurnoBJ = getValByKey(['PERÍODO DE PERDA', 'PERIODO DE PERDA', 'PERIODO_PERDA', 'HORARIO_MAIOR_PERDA'], 61);
         const turnoMaiorPerda = parseTurnoString(rawTurnoBJ);
 
@@ -692,7 +693,7 @@
         }
         if (!mesExtenso) mesExtenso = 'Outubro';
 
-        // FORMATAR EXATAMENTE COMO DD/MM/AAAA A PARTIR DA COLUNA A
+        // DATA EXATA DD/MM/AAAA A PARTIR DA COLUNA A
         let dataAberturaApenasDia = dataAberturaStr.split(' ')[0];
 
         return {
@@ -961,7 +962,7 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART 2: EVOLUÇÃO MENSAL (TODOS OS 12 MESES INDEPENDENTE DO FILTRO) ---
+      // --- CHART 2: EVOLUÇÃO MENSAL (MANTER TODOS OS 12 MESES DO ANO) ---
       const mesCountsAnual = {};
       NOME_MESES.forEach(m => mesCountsAnual[m] = 0);
 
@@ -1112,10 +1113,7 @@
           let r = d.tipoRede === 'Fixa' ? 'Fixa' : 'Móvel';
           let t = d[keyField] || '06h-12h';
           if (!turnos.includes(t)) {
-            if (t.includes('00') && t.includes('06')) t = '00h-06h';
-            else if (t.includes('06') && t.includes('12')) t = '06h-12h';
-            else if (t.includes('12') && t.includes('18')) t = '12h-18h';
-            else t = '18h-00h';
+            t = parseTurnoString(t);
           }
           counts[r][t]++;
         });
