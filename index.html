@@ -303,7 +303,7 @@
         <div class="h-56 relative">
           <canvas id="chart-mensal"></canvas>
         </div>
-        <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo acumulado dos meses com registros</span>
+        <span class="text-[10px] text-slate-400 text-center block mt-2">Comparativo anual acumulado de todos os meses</span>
       </div>
     </section>
 
@@ -315,7 +315,7 @@
         </h3>
         <span class="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Picos críticos de perdas SLA</span>
       </div>
-      <p class="text-[10px] text-slate-400 mb-2">Linha contínua por data de encerramento do evento (picos de desvios destacados em vermelho)</p>
+      <p class="text-[10px] text-slate-400 mb-2">Linha contínua por data de abertura do evento (picos de desvios destacados em vermelho)</p>
       <div class="h-48 relative">
         <canvas id="chart-encerramento-diario"></canvas>
       </div>
@@ -329,7 +329,7 @@
             <i class="fa-solid fa-map-pin text-emerald-600"></i> Ocorrências por DDD
           </h3>
         </div>
-        <p class="text-[10px] text-slate-400 mb-2">Destaque em vermelho para o maior ofensor</p>
+        <p class="text-[10px] text-slate-400 mb-2">Destaque em vermelho para os 2 maiores ofensores</p>
         <div class="h-64 relative">
           <canvas id="chart-ddd"></canvas>
         </div>
@@ -536,11 +536,14 @@
       return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
     }
 
-    function getTurnoByHour(hourNum) {
-      if (hourNum >= 0 && hourNum < 6) return '00h-06h';
-      if (hourNum >= 6 && hourNum < 12) return '06h-12h';
-      if (hourNum >= 12 && hourNum < 18) return '12h-18h';
-      return '18h-00h';
+    function parseTurnoString(str) {
+      if (!str) return '06h-12h';
+      let clean = str.toString().toLowerCase().trim();
+      if (clean.includes('00') && clean.includes('06')) return '00h-06h';
+      if (clean.includes('06') && clean.includes('12')) return '06h-12h';
+      if (clean.includes('12') && clean.includes('18')) return '12h-18h';
+      if (clean.includes('18') && (clean.includes('00') || clean.includes('24'))) return '18h-00h';
+      return '06h-12h';
     }
 
     async function fetchGoogleSheetsData(forceRefresh = false) {
@@ -617,15 +620,15 @@
 
         const evento = getValByKey(['EVENTO', 'TA', 'TICKET', 'ID']) || `EV-${3689000000 + index}`;
         
-        // COORDENADOR da COLUNA AU (Índice 46)
+        // COORDENADOR (COLUNA AU / Índice 46)
         const coordenador = getValByKey(['COORDENADOR', 'CADOR'], 46) || 'Não informado';
         const dddRaw = getValByKey(['DDD']) || 'Não Informado';
         const municipio = getValByKey(['MUNICÍPIO', 'MUNICIPIO', 'CIDADE']) || 'Não Informado';
 
-        // TIPO_ALARME da COLUNA O (Índice 14)
+        // TIPO_ALARME (COLUNA O / Índice 14)
         const tipoAlarme = getValByKey(['TIPO_ALARME', 'TIPO ALARME', 'ALARME'], 14) || 'Não Informado';
 
-        // CAUSA RAIZ PREDOMINANTE ESTRITAMENTE DA COLUNA E (Índice 4)
+        // CAUSA RAIZ PREDOMINANTE (COLUNA E / Índice 4)
         let causaE = getValByKey(['SEGMENTO', 'CAUSA DA PERDA', 'CAUSA'], 4);
         if (!causaE || causaE.trim() === '') causaE = 'Não Informado';
 
@@ -640,24 +643,26 @@
         const tempoMin = parseMinutes(getValByKey(['TEMPO PERDA SLA', 'TEMPO PERDA', 'TEMPO', 'ATRASO']));
         const amostragem = getValByKey(['AMOSTRAGEM', 'AMOSTRA']) || 'Todas as Amostragens';
 
-        // PERÍODO DE ABERTURA da COLUNA BB (Índice 53)
-        const periodoAbertura = getValByKey(['PERÍODO DE ABERTURA', 'PERIODO ABERTURA', 'PERIODO_ABERTURA'], 53) || '06:00 às 12:00';
+        // PERÍODO DE ABERTURA (COLUNA BB / Índice 53)
+        const periodoAbertura = parseTurnoString(getValByKey(['PERÍODO DE ABERTURA', 'PERIODO ABERTURA', 'PERIODO_ABERTURA'], 53));
         
-        // PERÍODO DE ENCERRAMENTO da COLUNA BC (Índice 54)
-        const encerramento = getValByKey(['PERIODO ENCERRAMENTO', 'PERÍODO ENCERRAMENTO', 'PERIODO_ENCERRAMENTO'], 54) || '12:00 às 18:00';
+        // PERÍODO DE ENCERRAMENTO (COLUNA BC / Índice 54)
+        const encerramento = parseTurnoString(getValByKey(['PERIODO ENCERRAMENTO', 'PERÍODO ENCERRAMENTO', 'PERIODO_ENCERRAMENTO'], 54));
+
+        // LEITURA OBRIGATÓRIA DA COLUNA BJ (Índice 61) PARA O HORÁRIO DE MAIOR PERDA
+        const rawTurnoBJ = getValByKey(['PERÍODO DE PERDA', 'PERIODO DE PERDA', 'PERIODO_PERDA', 'HORARIO_MAIOR_PERDA'], 61);
+        const turnoMaiorPerda = parseTurnoString(rawTurnoBJ);
 
         // CONTABILIZAÇÃO DAS TRATATIVAS PELA COLUNA C (Índice 2)
         const analiseValC = getValByKey(['VALIDAÇÃO', 'VALIDACAO', 'ANÁLISE', 'ANALISE', 'STATUS', 'JUSTIFICADO'], 2);
         const cleanC = analiseValC.toLowerCase();
-        
-        // Validados / Analisados vs Pendentes
         const isJustificado = cleanC.includes('validad') || cleanC.includes('justificad') || cleanC.includes('ok') || cleanC.includes('sim');
 
         // DATA DE ABERTURA (COLUNA A)
         const dataAberturaStr = getValByKey(['DATA_CRIACAO', 'DATA_CRIA', 'DATA_ABERTURA', 'ABERTURA'], 0) || '01/10/2026';
 
         // DATA DE ENCERRAMENTO (COLUNA Q / AY)
-        const dataEncerramentoStr = getValByKey(['DATA_ENCERRAMENTO', 'DT_ENCERRAMENTO', 'DATA_ENC', 'MES_ENCERRAMENTO'], 50) || getValByKey(['MES_ENCERRAMENTO'], 16) || dataAberturaStr;
+        const dataEncerramentoStr = getValByKey(['DATA_ENCERRAMENTO', 'DT_ENCERRAMENTO', 'DATA_ENC'], 16) || dataAberturaStr;
 
         let semanaCalculada = '';
         if (dataAberturaStr.includes('/') || dataAberturaStr.includes('-')) {
@@ -687,37 +692,12 @@
         }
         if (!mesExtenso) mesExtenso = 'Outubro';
 
-        // CÁLCULO EXATO DO HORÁRIO DE MAIOR PERDA (+4H)
-        let dataObjAbertura = null;
-
-        if (dataAberturaStr.includes('/') || dataAberturaStr.includes('-')) {
-          let parts = dataAberturaStr.replace(/-/g, '/').split(' ');
-          let dParts = parts[0].replace(/-/g, '/').split('/');
-          let tParts = parts[1] ? parts[1].split(':') : ['08', '00'];
-          
-          if (dParts.length >= 3) {
-            let day = parseInt(dParts[0]) || 1;
-            let month = parseInt(dParts[1]) - 1;
-            let year = parseInt(dParts[2]) || 2026;
-            let h = parseInt(tParts[0]) || 0;
-            let m = parseInt(tParts[1]) || 0;
-            dataObjAbertura = new Date(year, month, day, h, m);
-          }
-        }
-
-        if (!dataObjAbertura || isNaN(dataObjAbertura.getTime())) {
-          dataObjAbertura = new Date(2026, 9, 1, 8, 0);
-        }
-
-        // Soma 4 horas exatas no objeto Date de Abertura
-        let dataObjMais4 = new Date(dataObjAbertura.getTime() + (4 * 3600 * 1000));
-        let turnoMaiorPerda = getTurnoByHour(dataObjMais4.getHours());
-
-        let dataApenasDia = dataEncerramentoStr.split(' ')[0];
+        // FORMATAR EXATAMENTE COMO DD/MM/AAAA A PARTIR DA COLUNA A
+        let dataAberturaApenasDia = dataAberturaStr.split(' ')[0];
 
         return {
           id: evento,
-          data: dataApenasDia,
+          data: dataAberturaApenasDia,
           periodoAbertura,
           encerramento,
           turnoMaiorPerda,
@@ -964,11 +944,11 @@
         }
       });
 
-      // --- CHART 1: SEMANAL (COLUNA A) ---
-      const semanasUnicas = [...new Set(filteredData.map(d => d.semana))].filter(Boolean);
+      // --- CHART 1: SEMANAL (COLUNA A / ISO 8601) ---
       const semCounts = {};
-      semanasUnicas.forEach(s => semCounts[s] = 0);
-      filteredData.forEach(d => { if (semCounts[d.semana] !== undefined) semCounts[d.semana]++; });
+      filteredData.forEach(d => {
+        if (d.semana) semCounts[d.semana] = (semCounts[d.semana] || 0) + 1;
+      });
 
       const semCtx = document.getElementById('chart-semanal').getContext('2d');
       if (chartSemanalInst) chartSemanalInst.destroy();
@@ -981,27 +961,29 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART 2: EVOLUÇÃO MENSAL (COLUNA Q / AY) ---
-      const mesCounts = {};
-      filteredData.forEach(d => {
-        if (d.mes) mesCounts[d.mes] = (mesCounts[d.mes] || 0) + 1;
-      });
+      // --- CHART 2: EVOLUÇÃO MENSAL (MANTER TODOS OS 12 MESES DO ANO) ---
+      const mesCountsAnual = {};
+      NOME_MESES.forEach(m => mesCountsAnual[m] = 0);
 
-      const mesesComDados = Object.keys(mesCounts).sort((a, b) => NOME_MESES.indexOf(a) - NOME_MESES.indexOf(b));
-      const valoresMeses = mesesComDados.map(m => mesCounts[m]);
+      // Usar a base geral parsedData para manter a visão do ano independente do filtro aplicado
+      parsedData.forEach(d => {
+        if (d.mes && mesCountsAnual[d.mes] !== undefined) {
+          mesCountsAnual[d.mes]++;
+        }
+      });
 
       const mesCtx = document.getElementById('chart-mensal').getContext('2d');
       if (chartMensalInst) chartMensalInst.destroy();
       chartMensalInst = new Chart(mesCtx, {
         type: 'line',
         data: {
-          labels: mesesComDados.length > 0 ? mesesComDados : ['Sem dados'],
-          datasets: [{ label: 'Qtd TAs', data: valoresMeses.length > 0 ? valoresMeses : [0], borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true, tension: 0.3 }]
+          labels: NOME_MESES,
+          datasets: [{ label: 'Qtd TAs', data: Object.values(mesCountsAnual), borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true, tension: 0.3 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
 
-      // --- CHART ENCERRAMENTO DIÁRIO ---
+      // --- CHART ENCERRAMENTO DIÁRIO (COLUNA A) ---
       const dataCounts = {};
       filteredData.forEach(d => {
         let diaSo = d.data.split(' ')[0];
@@ -1021,16 +1003,24 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } } }
       });
 
-      // --- CHART 3: DDD ---
+      // --- CHART 3: DDD (DESTAQUE EM VERMELHO PARA OS 2 MAIORES OFENSORES) ---
       const dddCounts = {};
       filteredData.forEach(d => dddCounts[d.ddd] = (dddCounts[d.ddd] || 0) + 1);
+
+      const sortedDDDList = Object.entries(dddCounts).sort((a,b) => b[1] - a[1]);
+      const top2DDDs = sortedDDDList.slice(0, 2).map(x => x[0]);
+
+      const dddLabels = Object.keys(dddCounts);
+      const dddValues = Object.values(dddCounts);
+      const dddColors = dddLabels.map(label => top2DDDs.includes(label) ? '#e11d48' : '#0284c7');
+
       const dddCtx = document.getElementById('chart-ddd').getContext('2d');
       if (chartDDDInst) chartDDDInst.destroy();
       chartDDDInst = new Chart(dddCtx, {
         type: 'bar',
         data: {
-          labels: Object.keys(dddCounts),
-          datasets: [{ label: 'Qtd TAs', data: Object.values(dddCounts), backgroundColor: '#0284c7', borderRadius: 4 }]
+          labels: dddLabels.length > 0 ? dddLabels : ['Sem dados'],
+          datasets: [{ label: 'Qtd TAs', data: dddValues.length > 0 ? dddValues : [0], backgroundColor: dddColors, borderRadius: 4 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
       });
